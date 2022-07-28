@@ -1,1 +1,1 @@
-In the folder 'Monitor' are 2 versions of the monitor assembly for the SDK-85
+In the folder 'Monitor' are 2 versions of the monitor program for the SDK-85
