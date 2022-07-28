@@ -1,0 +1,137 @@
+<Introduction>
+
+This is an assembler/disassembler for the Intel-8085 microprocessor.
+It can also simulate an Intel SDK-85 developers board (keyboard/display).
+
+<Operations>
+
+After loading a source file into the main window you could debug (assemble) it with the debugger button.
+The first error it encounters will be highlighted in light red.
+Ajustments can be made in the main window (don't forget to save).
+If no errors where encountered the simulator is ready to run (or step) through the program and the first instruction to be executed will be highlighted in light green.
+Running will be with a delay of 50 ms between instructions (this can be adjusted in the main screen).
+
+At any time the memory and ports can be viewed in the right windows.
+The memory window will follow the next instruction to be executed, this can be prevented with the 'Lock' checkbox.
+The memory window can be easily set to the program counter or stack pointer with the designated buttons.
+
+On the left all registers of the 8085 are shown.
+Also the flags (including the undocumented ones, K(X5) and V) are displayed. 
+
+Above the memory window the interrupt register is shown.
+Also the IE bit in this register is shows as a green (Enabled) or red (Disabled) label.
+ 
+With the checkbox 'SDK-85' a keyboard/display of a SDK-85 can be shown/hidden.
+This will simulate the SDK-85, the display will show what has been written to 0x1800 (remember to set the control address too: 0x1900).
+The keyboard will fill address 0x1800 with the key value pressed (the key turns red and stays that way until it is handled).
+Only the 'Reset' key and 'Vect Intr' key will act directly as an interrupt in the running program.
+
+The two versions of the monitor program of the SDK-85 have been provided in the folder 'Monitor'.
+Slight adjustments have been made to account for some of the directives used (e.g IF ENDIF and >>).
+
+Tweak: the monitor program will overwrite address 0x0000 at address 0x000F (PUSH PSW) because the stack pointer wasn't initialized.
+This isn't a problem with the SDK-85 because you can't write at a ROM address.
+
+<Assembler>
+
+The assembler can use all of the instructions of the 8085 processor including the undocumented instructions.
+All instructions are implemented by buttons on the left of the screen for reference and/or inserting the selected instruction into the program.
+Numbers should be denoted in decimal or hexadecimal (0x00 or 00H style)
+
+The following directives can be used (example on next row(s)):
+
+`ORG address` Set locationcounter to this address (while assembling)
+ORG 0000H
+
+`LABEL EQU constant` Assignement of a constant
+DSPLY EQU 1800H 
+
+`$` Current location counter (while assembling)
+NUMC EQU $ - CMDTB ; NUMBER OF COMMANDS 
+
+`[LABEL] DB value` Reserving a (number of) byte(s) (with or without label), strings in double quotes will be terminated by a zero
+STRING DB "SDK-85"
+CHARARRAY DB 'SDK-85'
+AT DB '@', 00H
+DB 00H, 01H, 02H
+DB 'A', 'B', 'C'
+
+`[LABEL] DW value` Reserving a word (with or without label)
+DW 0000H
+CMDAD: 
+        DW      SSTEP   ; ADDRESS OF SINGLE STEP ROUTINE 
+        DW      EXAM    ; ADDRESS OF EXAMINE REGISTERS ROUTINE 
+        DW      SUBST   ; ADDRESS OF SUBSTITUTE MEMORY ROUTINE 
+        DW      GOCMD   ; ADDRESS OF GO ROUTINE 
+
+`[LABEL] DS number` Reserving 'number' of bytes  
+
+`LOW([LABEL])` will give the low byte of 2 bytes (usually an address) 
+`HIGH([LABEL])` will give the high byte of 2 bytes (usually an address) 
+
+`Arithmetic` e.g. +1, -2, *4, /2 
+USRBR EQU RAMST + 256 - (RMUSE + SKLN + UBRLN)
+
+`Logical` AND, OR 
+FLAG & 01H
+FLAG | 80H
+
+<DisAssembler>
+
+The disassembler will follow all possible paths from an entry address.
+Additional paths can be provided.
+
+<Menu>
+
+`File->New` 
+
+Delete source file and reset simulator
+
+`File->Open` 
+
+Load a new source file
+
+`File->Save` 
+
+Save the current source file
+
+`File->Save As`
+
+Save the current source file under a given name
+ 
+`File->Save Binary`
+
+Save the binary from assembling the current source
+
+`File->Quit`
+
+Quit program
+
+`Reset->Reset RAM`
+
+Clear RAM
+
+`Reset->Reset Ports`
+
+Clear Ports
+
+`Reset->Reset Simulator`
+
+Clear RAM, Ports, Registers, Flags
+
+`DisAssembler->Open Binary`
+
+`Help->Manual` 
+
+Show this manual
+
+`Help->About`
+
+Show program info
+
+-----------------------------------------------------
+Please report any bugs you encounter,
+Dirk
+info@fornext.nl 
+
+
