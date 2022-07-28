@@ -1,0 +1,14 @@
+C:\Users\dirkp\Documents\Visual Studio 2022\Projects\8085\Keyboard\bin\Debug\Keyboard.dll
+C:\Users\dirkp\Documents\Visual Studio 2022\Projects\8085\Keyboard\bin\Debug\Keyboard.pdb
+C:\Users\dirkp\Documents\Visual Studio 2022\Projects\8085\Keyboard\obj\Debug\Key.csproj.AssemblyReference.cache
+C:\Users\dirkp\Documents\Visual Studio 2022\Projects\8085\Keyboard\obj\Debug\Key.csproj.CoreCompileInputs.cache
+C:\Users\dirkp\Documents\Visual Studio 2022\Projects\8085\Keyboard\obj\Debug\Keyboard.dll
+C:\Users\dirkp\Documents\Visual Studio 2022\Projects\8085\Keyboard\obj\Debug\Keyboard.pdb
+C:\Users\dirkp\Documents\Visual Studio 2022\Projects\8085\Keyboard\obj\Debug\_8085.Key.resources
+C:\Users\dirkp\Documents\Visual Studio 2022\Projects\8085\Keyboard\obj\Debug\Key.csproj.GenerateResource.cache
+C:\Users\dprins\Documents\Visual Studio 2022\Projects\8085\Key\bin\Debug\Keyboard.dll
+C:\Users\dprins\Documents\Visual Studio 2022\Projects\8085\Key\bin\Debug\Keyboard.pdb
+C:\Users\dprins\Documents\Visual Studio 2022\Projects\8085\Key\obj\Debug\Key.csproj.AssemblyReference.cache
+C:\Users\dprins\Documents\Visual Studio 2022\Projects\8085\Key\obj\Debug\Key.csproj.CoreCompileInputs.cache
+C:\Users\dprins\Documents\Visual Studio 2022\Projects\8085\Key\obj\Debug\Keyboard.dll
+C:\Users\dprins\Documents\Visual Studio 2022\Projects\8085\Key\obj\Debug\Keyboard.pdb
