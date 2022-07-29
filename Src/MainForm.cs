@@ -326,6 +326,61 @@ namespace _8085
         }
 
         /// <summary>
+        /// Memory startaddress changing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbMemoryStartAddress_TextChanged(object sender, EventArgs e)
+        {
+            string hexdigits = "1234567890ABCDEFabcdef";
+            bool noHex = false;
+            foreach (char c in tbMemoryStartAddress.Text)
+            {
+                if (hexdigits.IndexOf(c) < 0)
+                {
+                    MessageBox.Show("Only hexadecimal values", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    noHex = true;
+                }
+            }
+
+            if (noHex) tbMemoryStartAddress.Text = "0000";
+        }
+
+        /// <summary>
+        /// View memory from this address
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbMemoryStartAddress_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == Convert.ToChar(Keys.Enter))
+            {
+                UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
+            }
+        }
+
+        /// <summary>
+        /// Startaddress changing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void tbStartAddress_TextChanged(object sender, EventArgs e)
+        {
+            string hexdigits = "1234567890ABCDEFabcdef";
+            bool noHex = false;
+            foreach (char c in tbStartAddress.Text)
+            {
+                if (hexdigits.IndexOf(c) < 0)
+                {
+                    MessageBox.Show("Only hexadecimal values", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    noHex = true;
+                }
+            }
+
+            if (noHex) tbStartAddress.Text = "0000";
+        }
+
+        /// <summary>
         /// Startaddress changed
         /// </summary>
         /// <param name="sender"></param>
@@ -386,19 +441,6 @@ namespace _8085
             Font font = new Font(FontFamily.GenericMonospace, 12.0f);
             Size size = TextRenderer.MeasureText(toolTip.GetToolTip(e.AssociatedControl), font);
             e.ToolTipSize = new Size(size.Width + 3, size.Height + 3);
-        }
-
-        /// <summary>
-        /// View memory from this address
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void tbMemoryStartAddress_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == Convert.ToChar(Keys.Enter))
-            {
-                UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
-            }
         }
 
         /// <summary>
@@ -686,6 +728,7 @@ namespace _8085
 
         private void new_Click(object sender, EventArgs e)
         {
+            assembler85 = null;
             UpdateMemoryPanel(0x0000, 0x0000);
             UpdatePortPanel();
             UpdateRegisters();
@@ -830,7 +873,18 @@ namespace _8085
                 ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], true);
                 MessageBox.Show(error, "RUNTIME ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+
+            // Get index of cursor in current program
+            int index = richTextBoxProgram.SelectionStart;
+
+            // Get line number
+            int line = richTextBoxProgram.GetLineFromCharIndex(index);
+            lblLine.Text = (line + 1).ToString();
+
+            int column = richTextBoxProgram.SelectionStart - richTextBoxProgram.GetFirstCharIndexFromLine(line);
+            lblColumn.Text = (column + 1).ToString();
         }
+
         private void stop_Click(object sender, EventArgs e)
         {
             if (assembler85 != null)
@@ -1246,11 +1300,22 @@ namespace _8085
         // Program adjusted, remove highlight
         private void richTextBoxProgram_TextChanged(object sender, EventArgs e)
         {
-            // Reset color
-            richTextBoxProgram.SelectionBackColor = System.Drawing.Color.White;
+            if (toolStripButtonRun.Enabled)
+            {
+                int pos = richTextBoxProgram.SelectionStart;
 
-            toolStripButtonRun.Enabled = false;
-            toolStripButtonStep.Enabled = false;
+                // Reset color
+                richTextBoxProgram.SelectionStart = 0;
+                richTextBoxProgram.SelectionLength = richTextBoxProgram.Text.Length;
+                richTextBoxProgram.SelectionBackColor = System.Drawing.Color.White;
+
+                richTextBoxProgram.SelectionLength = 0;
+
+                richTextBoxProgram.SelectionStart = pos;
+
+                toolStripButtonRun.Enabled = false;
+                toolStripButtonStep.Enabled = false;
+            }
 
             lineBreakPoint = -1;
 
@@ -1291,7 +1356,7 @@ namespace _8085
 
                         if ((row >= 0) && (col >= 0) && (row <= 16) && (col <= 16))
                         {
-                            if (memoryTableLabels[row, col].BackColor != Color.LightGreen) memoryTableLabels[row, col].BackColor = Color.LightPink;
+                            if (memoryTableLabels[row, col].BackColor != Color.LightGreen) memoryTableLabels[row, col].BackColor = SystemColors.GradientInactiveCaption;
                         }
                     }
                 }
@@ -1523,6 +1588,7 @@ namespace _8085
                 foreach (Label lbl in memoryTableLabels)
                 {
                     lbl.Text = "00";
+                    lbl.BackColor = SystemColors.Info;
                 }
             }
         }
@@ -1745,6 +1811,7 @@ namespace _8085
             {
                 // Disable event handler
                 richTextBoxProgram.TextChanged -= richTextBoxProgram_TextChanged;
+                richTextBoxProgram.SelectionChanged -= richTextBoxProgram_SelectionChanged;
 
                 // Reset color
                 richTextBoxProgram.SelectionStart = 0;
@@ -1781,6 +1848,7 @@ namespace _8085
 
                 // Enable event handler
                 richTextBoxProgram.TextChanged += new EventHandler(richTextBoxProgram_TextChanged);
+                richTextBoxProgram.SelectionChanged += new EventHandler(richTextBoxProgram_SelectionChanged);
             }
         }
 
@@ -1822,7 +1890,7 @@ namespace _8085
         private void InitButtons()
         {
             // Init instruction buttons with texts
-            foreach (Control control in groupBoxCommands.Controls)
+            foreach (Control control in groupBoxInstructions.Controls)
             {
                 CommandDescription commandDescription;
                 switch (control.Text)
@@ -1951,13 +2019,13 @@ namespace _8085
                         commandDescription = new CommandDescription(control.Text, "0000H", "Load HL direct");
                         break;
                     case "LXI":
-                        commandDescription = new CommandDescription(control.Text, "Rp", "Load 16-bit in RegisterPair");
+                        commandDescription = new CommandDescription(control.Text, "Rp, 0000H", "Load 16-bit in RegisterPair");
                         break;
                     case "MOV":
                         commandDescription = new CommandDescription(control.Text, "Rd, Rs", "Move Rs to Rd (or memory address M specified by H,L)");
                         break;
                     case "MVI":
-                        commandDescription = new CommandDescription(control.Text, "R", "Load 8-bit in R (or memory address M specified by H,L)");
+                        commandDescription = new CommandDescription(control.Text, "R, 00H", "Load 8-bit in R (or memory address M specified by H,L)");
                         break;
                     case "NOP":
                         commandDescription = new CommandDescription(control.Text, "", "No Operation");
@@ -2075,7 +2143,7 @@ namespace _8085
                 control.Tag = commandDescription;
             }
 
-            foreach (Control control in groupBoxUndocumentedCommands.Controls)
+            foreach (Control control in groupBoxUndocumentedInstructions.Controls)
             {
                 CommandDescription commandDescription;
                 switch (control.Text)
@@ -2084,7 +2152,7 @@ namespace _8085
                         commandDescription = new CommandDescription(control.Text, "", "Rotate HL Right (H7 -> H7, H0 -> L7, L0 -> C)");
                         break;
                     case "DSUB":
-                        commandDescription = new CommandDescription(control.Text, "Rp", "Subtract RegisterPair from HL");
+                        commandDescription = new CommandDescription(control.Text, "", "Subtract RegisterPair B,C from HL");
                         break;
                     case "JNK":
                         commandDescription = new CommandDescription(control.Text, "0000H", "Jump on No K");

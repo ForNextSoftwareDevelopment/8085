@@ -295,6 +295,88 @@ namespace _8085
             return (result);    
         }
 
+        /// <summary>
+        /// Calculate and adjust the flags on screen
+        /// </summary>
+        /// <param name="arg1"></param>
+        /// <param name="arg2"></param>
+        /// <param name="type"></param>
+        private UInt16 Calculate(UInt16 arg1, UInt16 arg2, OPERATOR type)
+        {
+            int i, count;
+            UInt16 result = (UInt16)0x0000;
+
+            flagV = false;
+            flagK = false;
+
+            switch (type)
+            {
+                case OPERATOR.ADD:
+                    result = (UInt16)(arg1 + arg2);
+
+                    // Carry flag
+                    if (arg1 + arg2 > 0xFFFF)
+                    {
+                        flagC = true;
+                    } else
+                    {
+                        flagC = false;
+                    }
+
+                    break;
+
+                case OPERATOR.SUB:
+                    result = (UInt16)(arg1 - arg2);
+                    string strResult = Convert.ToString(Convert.ToInt32(result.ToString("X4"), 16), 2).PadLeft(16, '0');
+
+                    // Carry flag
+                    if (arg1 - arg2 < 0x0000)
+                    {
+                        flagC = true;
+                    } else
+                    {
+                        flagC = false;
+                    }
+
+                    // Sign flag
+                    if (strResult[0] == '1')
+                    {
+                        flagS = true;
+                    } else
+                    {
+                        flagS = false;
+                    }
+
+                    // Zero flag
+                    if (strResult == "0000000000000000")
+                    {
+                        flagZ = true;
+                    } else
+                    {
+                        flagZ = false;
+                    }
+
+                    // Parity flag
+                    count = 0;
+                    for (i = 0; i < 16; i++)
+                    {
+                        if (strResult[i] == '1') count++;
+                    }
+
+                    if (count % 2 == 0)
+                    {
+                        flagP = true;
+                    } else
+                    {
+                        flagP = false;
+                    }
+
+                    break;
+            }
+
+            return (result);
+        }
+
         private byte GetByte(string arg, out string result)
         {
             // Replace all symbols from symbol table
@@ -2559,36 +2641,36 @@ namespace _8085
                     registerPC++;
                 } else if (byteInstruction == 0x09)                                                                         // DAD B
                 {
-                    int value1 = (0x0100 * registerB + registerC);
-                    int value2 = (0x0100 * registerH + registerL);
-                    int value = value1 + value2;
+                    UInt16 value1 = (UInt16)(0x0100 * registerB + registerC);
+                    UInt16 value2 = (UInt16)(0x0100 * registerH + registerL);
+                    UInt16 value = Calculate(value1, value2, OPERATOR.ADD);
                     Get2ByteFromInt(value, out lo, out hi);
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
                 } else if (byteInstruction == 0x19)                                                                         // DAD D
                 {
-                    int value1 = (0x0100 * registerD + registerE);
-                    int value2 = (0x0100 * registerH + registerL);
-                    int value = value1 + value2;
+                    UInt16 value1 = (UInt16)(0x0100 * registerD + registerE);
+                    UInt16 value2 = (UInt16)(0x0100 * registerH + registerL);
+                    UInt16 value = Calculate(value1, value2, OPERATOR.ADD);
                     Get2ByteFromInt(value, out lo, out hi);
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
                 } else if (byteInstruction == 0x29)                                                                         // DAD H
                 {
-                    int value1 = (0x0100 * registerH + registerL);
-                    int value2 = (0x0100 * registerH + registerL);
-                    int value = value1 + value2;
+                    UInt16 value1 = (UInt16)(0x0100 * registerH + registerL);
+                    UInt16 value2 = (UInt16)(0x0100 * registerH + registerL);
+                    UInt16 value = Calculate(value1, value2, OPERATOR.ADD);
                     Get2ByteFromInt(value, out lo, out hi);
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
                 } else if (byteInstruction == 0x39)                                                                         // DAD SP
                 {
-                    int value1 = registerSP;
-                    int value2 = (0x0100 * registerH + registerL);
-                    int value = value1 + value2;
+                    UInt16 value1 = registerSP;
+                    UInt16 value2 = (UInt16)(0x0100 * registerH + registerL);
+                    UInt16 value = Calculate(value1, value2, OPERATOR.ADD);
                     Get2ByteFromInt(value, out lo, out hi);
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
@@ -3448,6 +3530,7 @@ namespace _8085
                     registerSP++;
                     registerH = RAM[registerSP];
                     RAM[registerSP] = t2;
+                    registerPC++;
                 } else if (byteInstruction == 0x10)                                                                         // ARHL (UNDOCUMENTED)
                 {
                     byte h = registerH;
@@ -3467,17 +3550,18 @@ namespace _8085
                     {
                         flagC = false;
                     }
-                    h /= 2;
                     l /= 2;
+                    if ((h & 0x01) == 0x01) l += 0x80;
+                    h /= 2;
                     h += (byte)(saveC * 0x80);
                     registerH = h;
                     registerL = l;
                     registerPC++;
                 } else if (byteInstruction == 0x08)                                                                         // DSUB (UNDOCUMENTED)
                 {
-                    int value1 = (0x0100 * registerB + registerC);
-                    int value2 = (0x0100 * registerH + registerL);
-                    int value = value2 - value1;
+                    UInt16 value1 = (UInt16)(0x0100 * registerB + registerC);
+                    UInt16 value2 = (UInt16)(0x0100 * registerH + registerL);
+                    UInt16 value = Calculate(value2, value1, OPERATOR.SUB);
                     Get2ByteFromInt(value, out lo, out hi);
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);

@@ -16,7 +16,13 @@ namespace _8085
             Assembly thisAssem = typeof(MainForm).Assembly;
             AssemblyName thisAssemName = thisAssem.GetName();
             Version ver = thisAssemName.Version;
-            tbAbout.Text += "\r\n\r\nversion: " + ver.Major + "." + ver.Minor;
+
+            // Calculate assembly date
+            DateTime date = new DateTime(2000, 1, 1);
+            date = date.AddDays(ver.Build);
+            date = date.AddSeconds(ver.Revision * 2);    
+
+            tbAbout.Text += "\r\n\r\nversion: " + ver.Major + "." + ver.Minor + "\r\n(Build: " + ver.Build + ", " + date.ToShortDateString() + " " + date.ToShortTimeString() + ")";
 
             tbAbout.DeselectAll();
         }

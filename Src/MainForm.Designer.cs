@@ -51,7 +51,7 @@ namespace _8085
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupBoxCommands = new System.Windows.Forms.GroupBox();
+            this.groupBoxInstructions = new System.Windows.Forms.GroupBox();
             this.btnXRI = new System.Windows.Forms.Button();
             this.btnXRA = new System.Windows.Forms.Button();
             this.btnSTC = new System.Windows.Forms.Button();
@@ -216,7 +216,7 @@ namespace _8085
             this.lblStartAddress = new System.Windows.Forms.Label();
             this.tbStartAddress = new System.Windows.Forms.TextBox();
             this.chkSDK85 = new System.Windows.Forms.CheckBox();
-            this.groupBoxUndocumentedCommands = new System.Windows.Forms.GroupBox();
+            this.groupBoxUndocumentedInstructions = new System.Windows.Forms.GroupBox();
             this.btnSHLX = new System.Windows.Forms.Button();
             this.btnRSTV = new System.Windows.Forms.Button();
             this.btnRDEL = new System.Windows.Forms.Button();
@@ -245,7 +245,7 @@ namespace _8085
             this.lblP75 = new System.Windows.Forms.Label();
             this.lblInterrupts = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
-            this.groupBoxCommands.SuspendLayout();
+            this.groupBoxInstructions.SuspendLayout();
             this.groupBoxFlags.SuspendLayout();
             this.groupBoxRegisters.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numMemoryAddress)).BeginInit();
@@ -257,7 +257,7 @@ namespace _8085
             this.panelUpdatePort.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBreakPoint)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelay)).BeginInit();
-            this.groupBoxUndocumentedCommands.SuspendLayout();
+            this.groupBoxUndocumentedInstructions.SuspendLayout();
             this.panelInterrupt.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -440,95 +440,95 @@ namespace _8085
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.about_Click);
             // 
-            // groupBoxCommands
+            // groupBoxInstructions
             // 
-            this.groupBoxCommands.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            this.groupBoxCommands.Controls.Add(this.btnXRI);
-            this.groupBoxCommands.Controls.Add(this.btnXRA);
-            this.groupBoxCommands.Controls.Add(this.btnSTC);
-            this.groupBoxCommands.Controls.Add(this.btnSIM);
-            this.groupBoxCommands.Controls.Add(this.btnSBI);
-            this.groupBoxCommands.Controls.Add(this.btnSBB);
-            this.groupBoxCommands.Controls.Add(this.btnRZ);
-            this.groupBoxCommands.Controls.Add(this.btnRST);
-            this.groupBoxCommands.Controls.Add(this.btnRRC);
-            this.groupBoxCommands.Controls.Add(this.btnRPO);
-            this.groupBoxCommands.Controls.Add(this.btnRPE);
-            this.groupBoxCommands.Controls.Add(this.btnRP);
-            this.groupBoxCommands.Controls.Add(this.btnRNZ);
-            this.groupBoxCommands.Controls.Add(this.btnRNC);
-            this.groupBoxCommands.Controls.Add(this.btnRM);
-            this.groupBoxCommands.Controls.Add(this.btnRLC);
-            this.groupBoxCommands.Controls.Add(this.btnRIM);
-            this.groupBoxCommands.Controls.Add(this.btnRET);
-            this.groupBoxCommands.Controls.Add(this.btnRC);
-            this.groupBoxCommands.Controls.Add(this.btnRAR);
-            this.groupBoxCommands.Controls.Add(this.btnRAL);
-            this.groupBoxCommands.Controls.Add(this.btnPCHL);
-            this.groupBoxCommands.Controls.Add(this.btnORI);
-            this.groupBoxCommands.Controls.Add(this.btnORA);
-            this.groupBoxCommands.Controls.Add(this.btnNOP);
-            this.groupBoxCommands.Controls.Add(this.btnJZ);
-            this.groupBoxCommands.Controls.Add(this.btnJPO);
-            this.groupBoxCommands.Controls.Add(this.btnJPE);
-            this.groupBoxCommands.Controls.Add(this.btnJP);
-            this.groupBoxCommands.Controls.Add(this.btnJNZ);
-            this.groupBoxCommands.Controls.Add(this.btnJNC);
-            this.groupBoxCommands.Controls.Add(this.btnJMP);
-            this.groupBoxCommands.Controls.Add(this.btnJM);
-            this.groupBoxCommands.Controls.Add(this.btnJC);
-            this.groupBoxCommands.Controls.Add(this.btnEI);
-            this.groupBoxCommands.Controls.Add(this.btnDI);
-            this.groupBoxCommands.Controls.Add(this.btnDCX);
-            this.groupBoxCommands.Controls.Add(this.btnDAD);
-            this.groupBoxCommands.Controls.Add(this.btnDAA);
-            this.groupBoxCommands.Controls.Add(this.btnCZ);
-            this.groupBoxCommands.Controls.Add(this.btnCPO);
-            this.groupBoxCommands.Controls.Add(this.btnCPI);
-            this.groupBoxCommands.Controls.Add(this.btnCPE);
-            this.groupBoxCommands.Controls.Add(this.btnCP);
-            this.groupBoxCommands.Controls.Add(this.btnCNZ);
-            this.groupBoxCommands.Controls.Add(this.btnCNC);
-            this.groupBoxCommands.Controls.Add(this.btnCMC);
-            this.groupBoxCommands.Controls.Add(this.btnCMA);
-            this.groupBoxCommands.Controls.Add(this.btnCM);
-            this.groupBoxCommands.Controls.Add(this.btnCC);
-            this.groupBoxCommands.Controls.Add(this.btnCALL);
-            this.groupBoxCommands.Controls.Add(this.btnANI);
-            this.groupBoxCommands.Controls.Add(this.btnANA);
-            this.groupBoxCommands.Controls.Add(this.btnADC);
-            this.groupBoxCommands.Controls.Add(this.btnACI);
-            this.groupBoxCommands.Controls.Add(this.btnDCR);
-            this.groupBoxCommands.Controls.Add(this.btnINR);
-            this.groupBoxCommands.Controls.Add(this.btnSUB);
-            this.groupBoxCommands.Controls.Add(this.btnSUI);
-            this.groupBoxCommands.Controls.Add(this.btnADI);
-            this.groupBoxCommands.Controls.Add(this.btnCMP);
-            this.groupBoxCommands.Controls.Add(this.btnINX);
-            this.groupBoxCommands.Controls.Add(this.btnHLT);
-            this.groupBoxCommands.Controls.Add(this.btnADD);
-            this.groupBoxCommands.Controls.Add(this.btnIN);
-            this.groupBoxCommands.Controls.Add(this.btnOUT);
-            this.groupBoxCommands.Controls.Add(this.btnPOP);
-            this.groupBoxCommands.Controls.Add(this.btnPUSH);
-            this.groupBoxCommands.Controls.Add(this.btnXTHL);
-            this.groupBoxCommands.Controls.Add(this.btnSPHL);
-            this.groupBoxCommands.Controls.Add(this.btnXCHG);
-            this.groupBoxCommands.Controls.Add(this.btnSHLD);
-            this.groupBoxCommands.Controls.Add(this.btnSTAX);
-            this.groupBoxCommands.Controls.Add(this.btnSTA);
-            this.groupBoxCommands.Controls.Add(this.btnLHLD);
-            this.groupBoxCommands.Controls.Add(this.btnLXI);
-            this.groupBoxCommands.Controls.Add(this.btnLDAX);
-            this.groupBoxCommands.Controls.Add(this.btnLDA);
-            this.groupBoxCommands.Controls.Add(this.btnMVI);
-            this.groupBoxCommands.Controls.Add(this.btnMOV);
-            this.groupBoxCommands.Location = new System.Drawing.Point(12, 245);
-            this.groupBoxCommands.Name = "groupBoxCommands";
-            this.groupBoxCommands.Size = new System.Drawing.Size(231, 599);
-            this.groupBoxCommands.TabIndex = 4;
-            this.groupBoxCommands.TabStop = false;
-            this.groupBoxCommands.Text = "Commands";
+            this.groupBoxInstructions.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.groupBoxInstructions.Controls.Add(this.btnXRI);
+            this.groupBoxInstructions.Controls.Add(this.btnXRA);
+            this.groupBoxInstructions.Controls.Add(this.btnSTC);
+            this.groupBoxInstructions.Controls.Add(this.btnSIM);
+            this.groupBoxInstructions.Controls.Add(this.btnSBI);
+            this.groupBoxInstructions.Controls.Add(this.btnSBB);
+            this.groupBoxInstructions.Controls.Add(this.btnRZ);
+            this.groupBoxInstructions.Controls.Add(this.btnRST);
+            this.groupBoxInstructions.Controls.Add(this.btnRRC);
+            this.groupBoxInstructions.Controls.Add(this.btnRPO);
+            this.groupBoxInstructions.Controls.Add(this.btnRPE);
+            this.groupBoxInstructions.Controls.Add(this.btnRP);
+            this.groupBoxInstructions.Controls.Add(this.btnRNZ);
+            this.groupBoxInstructions.Controls.Add(this.btnRNC);
+            this.groupBoxInstructions.Controls.Add(this.btnRM);
+            this.groupBoxInstructions.Controls.Add(this.btnRLC);
+            this.groupBoxInstructions.Controls.Add(this.btnRIM);
+            this.groupBoxInstructions.Controls.Add(this.btnRET);
+            this.groupBoxInstructions.Controls.Add(this.btnRC);
+            this.groupBoxInstructions.Controls.Add(this.btnRAR);
+            this.groupBoxInstructions.Controls.Add(this.btnRAL);
+            this.groupBoxInstructions.Controls.Add(this.btnPCHL);
+            this.groupBoxInstructions.Controls.Add(this.btnORI);
+            this.groupBoxInstructions.Controls.Add(this.btnORA);
+            this.groupBoxInstructions.Controls.Add(this.btnNOP);
+            this.groupBoxInstructions.Controls.Add(this.btnJZ);
+            this.groupBoxInstructions.Controls.Add(this.btnJPO);
+            this.groupBoxInstructions.Controls.Add(this.btnJPE);
+            this.groupBoxInstructions.Controls.Add(this.btnJP);
+            this.groupBoxInstructions.Controls.Add(this.btnJNZ);
+            this.groupBoxInstructions.Controls.Add(this.btnJNC);
+            this.groupBoxInstructions.Controls.Add(this.btnJMP);
+            this.groupBoxInstructions.Controls.Add(this.btnJM);
+            this.groupBoxInstructions.Controls.Add(this.btnJC);
+            this.groupBoxInstructions.Controls.Add(this.btnEI);
+            this.groupBoxInstructions.Controls.Add(this.btnDI);
+            this.groupBoxInstructions.Controls.Add(this.btnDCX);
+            this.groupBoxInstructions.Controls.Add(this.btnDAD);
+            this.groupBoxInstructions.Controls.Add(this.btnDAA);
+            this.groupBoxInstructions.Controls.Add(this.btnCZ);
+            this.groupBoxInstructions.Controls.Add(this.btnCPO);
+            this.groupBoxInstructions.Controls.Add(this.btnCPI);
+            this.groupBoxInstructions.Controls.Add(this.btnCPE);
+            this.groupBoxInstructions.Controls.Add(this.btnCP);
+            this.groupBoxInstructions.Controls.Add(this.btnCNZ);
+            this.groupBoxInstructions.Controls.Add(this.btnCNC);
+            this.groupBoxInstructions.Controls.Add(this.btnCMC);
+            this.groupBoxInstructions.Controls.Add(this.btnCMA);
+            this.groupBoxInstructions.Controls.Add(this.btnCM);
+            this.groupBoxInstructions.Controls.Add(this.btnCC);
+            this.groupBoxInstructions.Controls.Add(this.btnCALL);
+            this.groupBoxInstructions.Controls.Add(this.btnANI);
+            this.groupBoxInstructions.Controls.Add(this.btnANA);
+            this.groupBoxInstructions.Controls.Add(this.btnADC);
+            this.groupBoxInstructions.Controls.Add(this.btnACI);
+            this.groupBoxInstructions.Controls.Add(this.btnDCR);
+            this.groupBoxInstructions.Controls.Add(this.btnINR);
+            this.groupBoxInstructions.Controls.Add(this.btnSUB);
+            this.groupBoxInstructions.Controls.Add(this.btnSUI);
+            this.groupBoxInstructions.Controls.Add(this.btnADI);
+            this.groupBoxInstructions.Controls.Add(this.btnCMP);
+            this.groupBoxInstructions.Controls.Add(this.btnINX);
+            this.groupBoxInstructions.Controls.Add(this.btnHLT);
+            this.groupBoxInstructions.Controls.Add(this.btnADD);
+            this.groupBoxInstructions.Controls.Add(this.btnIN);
+            this.groupBoxInstructions.Controls.Add(this.btnOUT);
+            this.groupBoxInstructions.Controls.Add(this.btnPOP);
+            this.groupBoxInstructions.Controls.Add(this.btnPUSH);
+            this.groupBoxInstructions.Controls.Add(this.btnXTHL);
+            this.groupBoxInstructions.Controls.Add(this.btnSPHL);
+            this.groupBoxInstructions.Controls.Add(this.btnXCHG);
+            this.groupBoxInstructions.Controls.Add(this.btnSHLD);
+            this.groupBoxInstructions.Controls.Add(this.btnSTAX);
+            this.groupBoxInstructions.Controls.Add(this.btnSTA);
+            this.groupBoxInstructions.Controls.Add(this.btnLHLD);
+            this.groupBoxInstructions.Controls.Add(this.btnLXI);
+            this.groupBoxInstructions.Controls.Add(this.btnLDAX);
+            this.groupBoxInstructions.Controls.Add(this.btnLDA);
+            this.groupBoxInstructions.Controls.Add(this.btnMVI);
+            this.groupBoxInstructions.Controls.Add(this.btnMOV);
+            this.groupBoxInstructions.Location = new System.Drawing.Point(12, 245);
+            this.groupBoxInstructions.Name = "groupBoxInstructions";
+            this.groupBoxInstructions.Size = new System.Drawing.Size(231, 599);
+            this.groupBoxInstructions.TabIndex = 4;
+            this.groupBoxInstructions.TabStop = false;
+            this.groupBoxInstructions.Text = "Instructions";
             // 
             // btnXRI
             // 
@@ -1879,21 +1879,23 @@ namespace _8085
             // btnMemoryStartAddress
             // 
             this.btnMemoryStartAddress.BackColor = System.Drawing.Color.LightGreen;
-            this.btnMemoryStartAddress.Location = new System.Drawing.Point(118, 6);
+            this.btnMemoryStartAddress.Location = new System.Drawing.Point(107, 6);
             this.btnMemoryStartAddress.Name = "btnMemoryStartAddress";
-            this.btnMemoryStartAddress.Size = new System.Drawing.Size(49, 23);
+            this.btnMemoryStartAddress.Size = new System.Drawing.Size(83, 23);
             this.btnMemoryStartAddress.TabIndex = 4;
-            this.btnMemoryStartAddress.Text = "View";
+            this.btnMemoryStartAddress.Text = "View Address";
             this.btnMemoryStartAddress.UseVisualStyleBackColor = false;
             this.btnMemoryStartAddress.Click += new System.EventHandler(this.btnMemoryStartAddress_Click);
             // 
             // tbMemoryStartAddress
             // 
             this.tbMemoryStartAddress.Location = new System.Drawing.Point(59, 8);
+            this.tbMemoryStartAddress.MaxLength = 4;
             this.tbMemoryStartAddress.Name = "tbMemoryStartAddress";
-            this.tbMemoryStartAddress.Size = new System.Drawing.Size(53, 20);
+            this.tbMemoryStartAddress.Size = new System.Drawing.Size(42, 20);
             this.tbMemoryStartAddress.TabIndex = 3;
             this.tbMemoryStartAddress.Text = "0000";
+            this.tbMemoryStartAddress.TextChanged += new System.EventHandler(this.tbMemoryStartAddress_TextChanged);
             this.tbMemoryStartAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbMemoryStartAddress_KeyPress);
             // 
             // lblAddress
@@ -2147,7 +2149,7 @@ namespace _8085
             // btnViewSP
             // 
             this.btnViewSP.BackColor = System.Drawing.Color.LightGreen;
-            this.btnViewSP.Location = new System.Drawing.Point(298, 6);
+            this.btnViewSP.Location = new System.Drawing.Point(321, 6);
             this.btnViewSP.Name = "btnViewSP";
             this.btnViewSP.Size = new System.Drawing.Size(119, 23);
             this.btnViewSP.TabIndex = 12;
@@ -2158,7 +2160,7 @@ namespace _8085
             // btnViewPC
             // 
             this.btnViewPC.BackColor = System.Drawing.Color.LightGreen;
-            this.btnViewPC.Location = new System.Drawing.Point(173, 6);
+            this.btnViewPC.Location = new System.Drawing.Point(196, 6);
             this.btnViewPC.Name = "btnViewPC";
             this.btnViewPC.Size = new System.Drawing.Size(119, 23);
             this.btnViewPC.TabIndex = 11;
@@ -2324,9 +2326,10 @@ namespace _8085
             // 
             this.tbStartAddress.Location = new System.Drawing.Point(567, 14);
             this.tbStartAddress.Name = "tbStartAddress";
-            this.tbStartAddress.Size = new System.Drawing.Size(53, 20);
+            this.tbStartAddress.Size = new System.Drawing.Size(42, 20);
             this.tbStartAddress.TabIndex = 32;
             this.tbStartAddress.Text = "0000";
+            this.tbStartAddress.TextChanged += new System.EventHandler(this.tbStartAddress_TextChanged);
             this.tbStartAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbStartAddress_KeyPress);
             // 
             // chkSDK85
@@ -2341,27 +2344,27 @@ namespace _8085
             this.chkSDK85.UseVisualStyleBackColor = true;
             this.chkSDK85.CheckedChanged += new System.EventHandler(this.chkSDK85_CheckedChanged);
             // 
-            // groupBoxUndocumentedCommands
+            // groupBoxUndocumentedInstructions
             // 
-            this.groupBoxUndocumentedCommands.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.groupBoxUndocumentedInstructions.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.groupBoxUndocumentedCommands.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnSHLX);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnRSTV);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnRDEL);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnLHLX);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnLDSI);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnLDHI);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnJK);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnJNK);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnDSUB);
-            this.groupBoxUndocumentedCommands.Controls.Add(this.btnARHL);
-            this.groupBoxUndocumentedCommands.Location = new System.Drawing.Point(9, 850);
-            this.groupBoxUndocumentedCommands.Name = "groupBoxUndocumentedCommands";
-            this.groupBoxUndocumentedCommands.Size = new System.Drawing.Size(231, 107);
-            this.groupBoxUndocumentedCommands.TabIndex = 34;
-            this.groupBoxUndocumentedCommands.TabStop = false;
-            this.groupBoxUndocumentedCommands.Text = "Undocumented Commands";
+            this.groupBoxUndocumentedInstructions.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnSHLX);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnRSTV);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnRDEL);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnLHLX);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnLDSI);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnLDHI);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnJK);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnJNK);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnDSUB);
+            this.groupBoxUndocumentedInstructions.Controls.Add(this.btnARHL);
+            this.groupBoxUndocumentedInstructions.Location = new System.Drawing.Point(9, 850);
+            this.groupBoxUndocumentedInstructions.Name = "groupBoxUndocumentedInstructions";
+            this.groupBoxUndocumentedInstructions.Size = new System.Drawing.Size(231, 107);
+            this.groupBoxUndocumentedInstructions.TabIndex = 34;
+            this.groupBoxUndocumentedInstructions.TabStop = false;
+            this.groupBoxUndocumentedInstructions.Text = "Undocumented Instructions";
             // 
             // btnSHLX
             // 
@@ -2658,7 +2661,7 @@ namespace _8085
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1384, 961);
             this.Controls.Add(this.panelInterrupt);
-            this.Controls.Add(this.groupBoxUndocumentedCommands);
+            this.Controls.Add(this.groupBoxUndocumentedInstructions);
             this.Controls.Add(this.chkSDK85);
             this.Controls.Add(this.lblStartAddress);
             this.Controls.Add(this.tbStartAddress);
@@ -2673,7 +2676,7 @@ namespace _8085
             this.Controls.Add(this.lblColumn);
             this.Controls.Add(this.lblLine);
             this.Controls.Add(this.richTextBoxProgram);
-            this.Controls.Add(this.groupBoxCommands);
+            this.Controls.Add(this.groupBoxInstructions);
             this.Controls.Add(this.groupBoxFlags);
             this.Controls.Add(this.groupBoxRegisters);
             this.Controls.Add(this.toolStrip);
@@ -2685,7 +2688,7 @@ namespace _8085
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
-            this.groupBoxCommands.ResumeLayout(false);
+            this.groupBoxInstructions.ResumeLayout(false);
             this.groupBoxFlags.ResumeLayout(false);
             this.groupBoxFlags.PerformLayout();
             this.groupBoxRegisters.ResumeLayout(false);
@@ -2703,7 +2706,7 @@ namespace _8085
             this.panelUpdatePort.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbBreakPoint)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelay)).EndInit();
-            this.groupBoxUndocumentedCommands.ResumeLayout(false);
+            this.groupBoxUndocumentedInstructions.ResumeLayout(false);
             this.panelInterrupt.ResumeLayout(false);
             this.panelInterrupt.PerformLayout();
             this.ResumeLayout(false);
@@ -2776,7 +2779,7 @@ namespace _8085
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton toolStripButtonStartDebug;
         private System.Windows.Forms.ToolStripButton toolStripButtonStep;
-        private System.Windows.Forms.GroupBox groupBoxCommands;
+        private System.Windows.Forms.GroupBox groupBoxInstructions;
         private System.Windows.Forms.Button btnIN;
         private System.Windows.Forms.Button btnOUT;
         private System.Windows.Forms.Button btnPOP;
@@ -2866,7 +2869,7 @@ namespace _8085
         private System.Windows.Forms.Button btnANA;
         private System.Windows.Forms.Button btnADC;
         private System.Windows.Forms.Button btnACI;
-        private System.Windows.Forms.GroupBox groupBoxUndocumentedCommands;
+        private System.Windows.Forms.GroupBox groupBoxUndocumentedInstructions;
         private System.Windows.Forms.Button btnSHLX;
         private System.Windows.Forms.Button btnRSTV;
         private System.Windows.Forms.Button btnRDEL;
