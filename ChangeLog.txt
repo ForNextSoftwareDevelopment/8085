@@ -14,3 +14,9 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ### Updates
 - Minor adjustments to the behaviour of the new and reset buttons
 
+## [1.2] - 2022-07-30
+### Debug
+- JK/JX5 jumped on 'no flag set'
+- LHLX inplemented
+- RSTV implemented (was incorrect)
+- RST didn't save return address to stack
