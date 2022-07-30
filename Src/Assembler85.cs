@@ -3387,27 +3387,67 @@ namespace _8085
                     registerPC++;
                 } else if (byteInstruction == 0xC7)                                                                         // RST 0
                 {
+                    Get2ByteFromInt(registerPC, out lo, out hi);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(hi, 16);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0000;
                 } else if (byteInstruction == 0xCF)                                                                         // RST 1
                 {
+                    Get2ByteFromInt(registerPC, out lo, out hi);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(hi, 16);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0008;
                 } else if (byteInstruction == 0xD7)                                                                         // RST 2
                 {
+                    Get2ByteFromInt(registerPC, out lo, out hi);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(hi, 16);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0010;
                 } else if (byteInstruction == 0xDF)                                                                         // RST 3
                 {
+                    Get2ByteFromInt(registerPC, out lo, out hi);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(hi, 16);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0018;
                 } else if (byteInstruction == 0xE7)                                                                         // RST 4
                 {
+                    Get2ByteFromInt(registerPC, out lo, out hi);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(hi, 16);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0020;
                 } else if (byteInstruction == 0xEF)                                                                         // RST 5
                 {
+                    Get2ByteFromInt(registerPC, out lo, out hi);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(hi, 16);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0028;
                 } else if (byteInstruction == 0xF7)                                                                         // RST 6
                 {
+                    Get2ByteFromInt(registerPC, out lo, out hi);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(hi, 16);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0030;
                 } else if (byteInstruction == 0xFF)                                                                         // RST 7
                 {
+                    Get2ByteFromInt(registerPC, out lo, out hi);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(hi, 16);
+                    registerSP--;
+                    RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0038;
                 } else if (byteInstruction == 0xC8)                                                                         // RZ
                 {
@@ -3570,19 +3610,18 @@ namespace _8085
                 {
                     if (flagK)
                     {
-                        registerPC++;
-                        registerPC++;
-                        registerPC++;
-                    } else
-                    {
                         UInt16 address = 0;
                         registerPC++;
                         address += RAM[registerPC];
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC++;
-                        MessageBox.Show(address.ToString());
                         registerPC = address;
+                    } else
+                    {
+                        registerPC++;
+                        registerPC++;
+                        registerPC++;
                     }
                 } else if (byteInstruction == 0xDD)                                                                         // JNK/JNX5 (UNDOCUMENTED)
                 {
@@ -3599,7 +3638,6 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC++;
-                        MessageBox.Show(address.ToString());
                         registerPC = address;
                     }
                 } else if (byteInstruction == 0x28)                                                                         // LDHI (UNDOCUMENTED)
@@ -3622,6 +3660,12 @@ namespace _8085
                     registerPC++;
                 } else if (byteInstruction == 0xED)                                                                         // LHLX (UNDOCUMENTED)
                 {
+                    UInt16 address = 0;
+                    address += registerE;
+                    address += (UInt16)(0x0100 * registerD);
+                    registerL = RAM[address];
+                    address++;
+                    registerH = RAM[address];
                     registerPC++;
                 } else if (byteInstruction == 0x18)                                                                         // RDEL (UNDOCUMENTED)
                 {
@@ -3652,12 +3696,12 @@ namespace _8085
                 {
                     if (flagV)
                     {
-                        UInt16 address;
-                        address = RAM[registerSP];
-                        registerSP++;
-                        address += (UInt16)(RAM[registerSP] * 0x0100);
-                        registerSP++;
-                        registerPC = address;
+                        Get2ByteFromInt(registerPC, out lo, out hi);
+                        registerSP--;
+                        RAM[registerSP] = Convert.ToByte(hi, 16);
+                        registerSP--;
+                        RAM[registerSP] = Convert.ToByte(lo, 16);
+                        registerPC = 0x0040;
                     } else
                     {
                         registerPC++;
