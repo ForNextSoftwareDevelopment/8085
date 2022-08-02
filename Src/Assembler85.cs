@@ -8,6 +8,7 @@ namespace _8085
     {
         #region Members
 
+        // Operator types at arithmetic operations
         public enum OPERATOR
         {
             NONE = 0,
@@ -17,6 +18,22 @@ namespace _8085
             OR = 4,
             XOR = 5
         }
+
+        // Segment types
+        public enum SEGMENT
+        {
+            ASEG = 0,
+            CSEG = 1,
+            DSEG = 2
+        }
+
+        // Segment currently active
+        SEGMENT segment = SEGMENT.ASEG;
+
+        // Absolute program segment, Code program segment, Data program segment
+        UInt16 ASEG = 0x0000;
+        UInt16 CSEG = 0x0000;
+        UInt16 DSEG = 0x0000;
 
         // Total RAM of 65536 bytes (0x0000 - 0xFFFF)
         public byte[] RAM = new byte[0x10000];
@@ -640,10 +657,21 @@ namespace _8085
                     if (line == "") continue;
 
                     // if a comment is found, remove
-                    if (line.IndexOf(';') != -1)            
+                    int start_of_comment_pos = line.IndexOf(';');
+                    if (start_of_comment_pos != -1)            
                     {
-                        line = line.Remove(line.IndexOf(';')).Trim();
-                        if (line == "") continue;
+                        // Check if really a comment (; could be in a string or char array)
+                        int num_quotes = 0;
+                        for (int i = 0; i < start_of_comment_pos; i++)
+                        {
+                            if ((line[i] == '\'') || (line[i] == '\"')) num_quotes++;
+                        }
+
+                        if ((num_quotes % 2) == 0)
+                        {
+                            line = line.Remove(line.IndexOf(';')).Trim();
+                            if (line == "") continue;
+                        }
                     }
 
                     // Replace single characters (in between single quotes) with HEX value
@@ -723,28 +751,45 @@ namespace _8085
                     try
                     {
                         int end_of_label_pos = line.IndexOf(':');
-                        string label = line.Substring(0, end_of_label_pos).Trim();
 
-                        if (addressSymbolTable.ContainsKey(label))
+                        // Check if really a LABEL (: could be in a string or char array)
+                        int num_quotes = 0;
+                        for (int i = 0; i < end_of_label_pos; i++)
                         {
-                            return ("Label already used at line " + (lineNumber + 1));
+                            if ((line[i] == '\'') || (line[i] == '\"')) num_quotes++;
                         }
 
-                        if (line.Length > end_of_label_pos + 1)
+                        if ((num_quotes % 2) == 0)
                         {
-                            line = line.Substring(end_of_label_pos + 1, line.Length - end_of_label_pos - 1).Trim();
+                            string label = line.Substring(0, end_of_label_pos).Trim();
 
-                            // ADD the label/value
-                            addressSymbolTable.Add(label, locationCounter);
-                        } else
-                        {
-                            line = "";
+                            // Check for spaces in label
+                            if (label.Contains(" "))
+                            {
+                                return ("label '" + label + "' contains spaces at line " + (lineNumber + 1));
+                            }
 
-                            // ADD the label/value
-                            addressSymbolTable.Add(label, locationCounter);
+                            if (addressSymbolTable.ContainsKey(label))
+                            {
+                                return ("Label already used at line " + (lineNumber + 1));
+                            }
 
-                            // Next line
-                            continue;
+                            if (line.Length > end_of_label_pos + 1)
+                            {
+                                line = line.Substring(end_of_label_pos + 1, line.Length - end_of_label_pos - 1).Trim();
+
+                                // ADD the label/value
+                                addressSymbolTable.Add(label, locationCounter);
+                            } else
+                            {
+                                line = "";
+
+                                // ADD the label/value
+                                addressSymbolTable.Add(label, locationCounter);
+
+                                // Next line
+                                continue;
+                            }
                         }
                     } catch (Exception exception)
                     {
@@ -786,7 +831,7 @@ namespace _8085
 
                 try
                 {
-                    // Check for opcode (statement) DB
+                    // Check for opcode (directive) DB
                     if (opcode.Equals("DB"))
                     {
                         line = "DB    ";
@@ -806,12 +851,12 @@ namespace _8085
                                     end = operands[i].IndexOf("\"", start + 1);
                                 } else
                                 {
-                                    return ("DB statement has an unclosed string at line " + (lineNumber + 1));
+                                    return ("DB directive has an unclosed string at line " + (lineNumber + 1));
                                 }
 
                                 if (end <= 0)
                                 {
-                                    return ("DB statement has an unclosed string at line " + (lineNumber + 1));
+                                    return ("DB directive has an unclosed string at line " + (lineNumber + 1));
                                 }
 
                                 string str = operands[i].Substring(start, end - start);
@@ -833,12 +878,12 @@ namespace _8085
                                     end = operands[i].IndexOf("\'", start + 1);
                                 } else
                                 {
-                                    return ("DB statement has an unclosed string at line " + (lineNumber + 1));
+                                    return ("DB directive has an unclosed string at line " + (lineNumber + 1));
                                 }
 
                                 if (end <= 0)
                                 {
-                                    return ("DB statement has an unclosed string at line " + (lineNumber + 1));
+                                    return ("DB directive has an unclosed string at line " + (lineNumber + 1));
                                 }
 
                                 string str = operands[i].Substring(start, end - start);
@@ -861,13 +906,91 @@ namespace _8085
 
                 try
                 {
-                    // Check for opcode (statement) ORG
+                    // Check for opcode (directive) ASEG
+                    if (opcode.Equals("ASEG"))
+                    {
+                        // Set current segment
+                        segment = SEGMENT.ASEG;
+
+                        // Set locationcounter
+                        locationCounter = ASEG;
+
+                        // Copy to program for second pass
+                        programRun[lineNumber] = opcode;
+
+                        // Copy to programView for examining
+                        programView[lineNumber] = opcode;
+
+                        // Next line
+                        continue;
+                    }
+                } catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "FirstPass:ASEG", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return ("EXCEPTION ERROR AT LINE " + (lineNumber + 1));
+                }
+
+                try
+                {
+                    // Check for opcode (directive) CSEG
+                    if (opcode.Equals("CSEG"))
+                    {
+                        // Set current segment
+                        segment = SEGMENT.CSEG;
+
+                        // Set locationcounter
+                        locationCounter = CSEG;
+
+                        // Copy to program for second pass
+                        programRun[lineNumber] = opcode;
+
+                        // Copy to programView for examining
+                        programView[lineNumber] = opcode;
+
+                        // Next line
+                        continue;
+                    }
+                } catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "FirstPass:CSEG", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return ("EXCEPTION ERROR AT LINE " + (lineNumber + 1));
+                }
+
+                try
+                {
+                    // Check for opcode (directive) DSEG
+                    if (opcode.Equals("DSEG"))
+                    {
+                        // Set current segment
+                        segment = SEGMENT.DSEG;
+
+                        // Set locationcounter
+                        locationCounter = DSEG;
+
+                        // Copy to program for second pass
+                        programRun[lineNumber] = opcode;
+
+                        // Copy to programView for examining
+                        programView[lineNumber] = opcode;
+
+                        // Next line
+                        continue;
+                    }
+                } catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message, "FirstPass:DSEG", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return ("EXCEPTION ERROR AT LINE " + (lineNumber + 1));
+                }
+
+                try
+                {
+                    // Check for opcode (directive) ORG
                     if (opcode.Equals("ORG"))
                     {
                         // Line must have an argument after the opcode
                         if (operands.Length == 0)
                         {
-                            return ("ORG statement must have an argument following at line " + (lineNumber + 1));
+                            return ("ORG directive must have an argument following at line " + (lineNumber + 1));
                         }
 
                         // If valid address then store in locationCounter
@@ -1002,7 +1125,12 @@ namespace _8085
                             }
 
                             // Single byte instructions
-                            locationCounter += 1;   
+                            locationCounter += 1;
+
+                            if (segment == SEGMENT.ASEG) ASEG = (UInt16)locationCounter;
+                            if (segment == SEGMENT.CSEG) CSEG = (UInt16)locationCounter;
+                            if (segment == SEGMENT.DSEG) DSEG = (UInt16)locationCounter;
+
                             break;
 
                         case "ADC":
@@ -1142,6 +1270,11 @@ namespace _8085
                     return ("EXCEPTION ERROR AT LINE " + (lineNumber + 1));
                 }
 
+                // Update current segment
+                if (segment == SEGMENT.ASEG) ASEG = (UInt16)locationCounter;
+                if (segment == SEGMENT.CSEG) CSEG = (UInt16)locationCounter;
+                if (segment == SEGMENT.DSEG) DSEG = (UInt16)locationCounter;
+
                 //  Copy the edited program (without labels and EQU) to new array of strings
                 //  The new program array of strings will be used in second pass
                 programRun[lineNumber] = line;
@@ -1173,7 +1306,13 @@ namespace _8085
             // Operand(s) for the opcode 
             string[] operands;
 
+            // Split operands by these delimeter(s)
             char[] delimiters = new[] {','};
+
+            // Reset segments
+            ASEG = 0;
+            CSEG = 0;
+            DSEG = 0;
 
             // Temporary variables
             byte calcByte;
@@ -1224,6 +1363,18 @@ namespace _8085
                     // Check instruction
                     switch (opcode)        
                     {
+                        case "ASEG":                                                                                     // ASEG
+                            segment = SEGMENT.ASEG;
+                            locationCounter = ASEG;
+                            break;
+                        case "CSEG":                                                                                     // CSEG
+                            segment = SEGMENT.CSEG;
+                            locationCounter = CSEG;
+                            break;
+                        case "DSEG":                                                                                     // DSEG
+                            segment = SEGMENT.DSEG;
+                            locationCounter = DSEG;
+                            break;
                         case "ORG":                                                                                     // ORG
                             if (operands.Length == 0)   
                             {
@@ -1241,7 +1392,6 @@ namespace _8085
                                     return ("Invalid operand for " + opcode + ": " + resultOrg + " at line " + (lineNumber + 1));
                                 }
                             }
-
                             break;
                         case "END":                                                                                     // END
                             return ("OK");
@@ -2327,8 +2477,13 @@ namespace _8085
                         }
                     }
 
-                    if (opcode != "ORG")
-                    {
+                    // Update current segment
+                    if (segment == SEGMENT.ASEG) ASEG = (UInt16)locationCounter;
+                    if (segment == SEGMENT.CSEG) CSEG = (UInt16)locationCounter;
+                    if (segment == SEGMENT.DSEG) DSEG = (UInt16)locationCounter;
+
+                    if ((opcode != "ORG") && (opcode != "ASEG") && (opcode != "CSEG") && (opcode != "DSEG"))
+                     {
                         while (programView[lineNumber].Length < 46)
                         {
                             programView[lineNumber] += " ";

@@ -291,8 +291,15 @@ namespace _8085
                 // Enable event handler for updating row/column 
                 richTextBoxProgram.SelectionChanged += new EventHandler(richTextBoxProgram_SelectionChanged);
 
-                ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], true);
-                MessageBox.Show(error, "RUNTIME ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                if (error == "System Halted")
+                {
+                    ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], false);
+                    MessageBox.Show(error, "SYSTEM HALTED", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                } else
+                {
+                    ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], true);
+                    MessageBox.Show(error, "RUNTIME ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
             }
 
             Application.DoEvents();
@@ -364,11 +371,11 @@ namespace _8085
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void tbStartAddress_TextChanged(object sender, EventArgs e)
+        private void tbSetProgramCounter_TextChanged(object sender, EventArgs e)
         {
             string hexdigits = "1234567890ABCDEFabcdef";
             bool noHex = false;
-            foreach (char c in tbStartAddress.Text)
+            foreach (char c in tbSetProgramCounter.Text)
             {
                 if (hexdigits.IndexOf(c) < 0)
                 {
@@ -377,7 +384,7 @@ namespace _8085
                 }
             }
 
-            if (noHex) tbStartAddress.Text = "0000";
+            if (noHex) tbSetProgramCounter.Text = "0000";
         }
 
         /// <summary>
@@ -385,11 +392,12 @@ namespace _8085
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void tbStartAddress_KeyPress(object sender, KeyPressEventArgs e)
+        private void tbSetProgramCounter_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == Convert.ToChar(Keys.Enter))
             {
-                nextInstrAddress = Convert.ToUInt16(tbStartAddress.Text, 16);
+                nextInstrAddress = Convert.ToUInt16(tbSetProgramCounter.Text, 16);
+                labelPCRegister.Text = tbSetProgramCounter.Text;
                 ChangeColorRTBLine(assembler85.RAMprogramLine[nextInstrAddress], false);
             }
         }
@@ -697,7 +705,7 @@ namespace _8085
             richTextBoxProgram.SelectionLength = richTextBoxProgram.Text.Length;
             richTextBoxProgram.SelectionBackColor = System.Drawing.Color.White;
 
-            tbStartAddress.Text = "0000";
+            tbSetProgramCounter.Text = "0000";
             tbMemoryStartAddress.Text = "0000";
             tbMemoryUpdateByte.Text = "00";
             numMemoryAddress.Value = 0000;
@@ -739,7 +747,7 @@ namespace _8085
             richTextBoxProgram.Clear();
             sourceFile = "";
 
-            tbStartAddress.Text = "0000";
+            tbSetProgramCounter.Text = "0000";
             tbMemoryStartAddress.Text = "0000";
             tbMemoryUpdateByte.Text = "00";
             numMemoryAddress.Value = 0000;
@@ -807,7 +815,7 @@ namespace _8085
                 if (startline != -1)
                 {
                     tbMemoryStartAddress.Text = startline.ToString("X");
-                    tbStartAddress.Text = startline.ToString("X");
+                    tbSetProgramCounter.Text = startline.ToString("X");
                 }
 
                 // Show Updated memory
@@ -819,7 +827,7 @@ namespace _8085
                 return;
             }
 
-            nextInstrAddress = Convert.ToUInt16(tbStartAddress.Text, 16);
+            nextInstrAddress = Convert.ToUInt16(tbSetProgramCounter.Text, 16);
             ChangeColorRTBLine(assembler85.RAMprogramLine[nextInstrAddress], false);
 
             UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
@@ -868,8 +876,18 @@ namespace _8085
             if (error == "")
             {
                 ChangeColorRTBLine(assembler85.RAMprogramLine[nextInstrAddress], false);
-            } else
+            } else if (error == "System Halted")
             {
+                toolStripButtonRun.Enabled = false;
+                toolStripButtonStep.Enabled = false;
+
+                ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], false);
+                MessageBox.Show(error, "SYSTEM HALTED", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else 
+            {
+                toolStripButtonRun.Enabled = false;
+                toolStripButtonStep.Enabled = false;
+
                 ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], true);
                 MessageBox.Show(error, "RUNTIME ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
@@ -1272,7 +1290,7 @@ namespace _8085
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void btnClearBreakPoints_Click(object sender, EventArgs e)
+        private void btnClearBreakPoint_Click(object sender, EventArgs e)
         {
             lineBreakPoint = -1;
 
@@ -1809,14 +1827,22 @@ namespace _8085
         {
             if ((line_number >= 0) && (richTextBoxProgram.Lines.Length > line_number))
             {
-                // Disable event handler
+                // No layout events for now (postpone)
+                richTextBoxProgram.SuspendLayout();
+
+                // Disable certain event handlers completely
                 richTextBoxProgram.TextChanged -= richTextBoxProgram_TextChanged;
                 richTextBoxProgram.SelectionChanged -= richTextBoxProgram_SelectionChanged;
 
+                // No focus so we won't see flicker from selection changes
+                lblSetProgramCounter.Focus();
+
                 // Reset color
-                richTextBoxProgram.SelectionStart = 0;
-                richTextBoxProgram.SelectionLength = richTextBoxProgram.Text.Length;
+                richTextBoxProgram.HideSelection = true;
+                richTextBoxProgram.SelectAll();
                 richTextBoxProgram.SelectionBackColor = System.Drawing.Color.White;
+                richTextBoxProgram.DeselectAll();
+                richTextBoxProgram.HideSelection = false;
 
                 // Get location in RTB
                 int firstcharindex = richTextBoxProgram.GetFirstCharIndexFromLine(line_number);
@@ -1846,9 +1872,15 @@ namespace _8085
                 richTextBoxProgram.SelectionStart = firstcharindex;
                 richTextBoxProgram.SelectionLength = 0;
 
+                // Set focus again
+                richTextBoxProgram.Focus();
+
                 // Enable event handler
                 richTextBoxProgram.TextChanged += new EventHandler(richTextBoxProgram_TextChanged);
                 richTextBoxProgram.SelectionChanged += new EventHandler(richTextBoxProgram_SelectionChanged);
+
+                // Resume events 
+                richTextBoxProgram.ResumeLayout();
             }
         }
 

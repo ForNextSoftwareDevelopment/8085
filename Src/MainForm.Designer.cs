@@ -209,12 +209,12 @@ namespace _8085
             this.lblValuePort = new System.Windows.Forms.Label();
             this.lblPort = new System.Windows.Forms.Label();
             this.richTextBoxProgram = new System.Windows.Forms.RichTextBox();
-            this.btnClearBreakPoints = new System.Windows.Forms.Button();
+            this.btnClearBreakPoint = new System.Windows.Forms.Button();
             this.pbBreakPoint = new System.Windows.Forms.PictureBox();
             this.numericUpDownDelay = new System.Windows.Forms.NumericUpDown();
             this.lblDelay = new System.Windows.Forms.Label();
-            this.lblStartAddress = new System.Windows.Forms.Label();
-            this.tbStartAddress = new System.Windows.Forms.TextBox();
+            this.lblSetProgramCounter = new System.Windows.Forms.Label();
+            this.tbSetProgramCounter = new System.Windows.Forms.TextBox();
             this.chkSDK85 = new System.Windows.Forms.CheckBox();
             this.groupBoxUndocumentedInstructions = new System.Windows.Forms.GroupBox();
             this.btnSHLX = new System.Windows.Forms.Button();
@@ -2108,7 +2108,7 @@ namespace _8085
             // btnViewProgram
             // 
             this.btnViewProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnViewProgram.Location = new System.Drawing.Point(1044, 12);
+            this.btnViewProgram.Location = new System.Drawing.Point(1040, 11);
             this.btnViewProgram.Name = "btnViewProgram";
             this.btnViewProgram.Size = new System.Drawing.Size(82, 23);
             this.btnViewProgram.TabIndex = 22;
@@ -2119,7 +2119,7 @@ namespace _8085
             // btnViewSymbolTable
             // 
             this.btnViewSymbolTable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnViewSymbolTable.Location = new System.Drawing.Point(933, 12);
+            this.btnViewSymbolTable.Location = new System.Drawing.Point(926, 11);
             this.btnViewSymbolTable.Name = "btnViewSymbolTable";
             this.btnViewSymbolTable.Size = new System.Drawing.Size(108, 23);
             this.btnViewSymbolTable.TabIndex = 23;
@@ -2256,16 +2256,16 @@ namespace _8085
             this.richTextBoxProgram.MouseLeave += new System.EventHandler(this.richTextBoxProgram_MouseLeave);
             this.richTextBoxProgram.MouseMove += new System.Windows.Forms.MouseEventHandler(this.richTextBoxProgram_MouseMove);
             // 
-            // btnClearBreakPoints
+            // btnClearBreakPoint
             // 
-            this.btnClearBreakPoints.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearBreakPoints.Location = new System.Drawing.Point(826, 12);
-            this.btnClearBreakPoints.Name = "btnClearBreakPoints";
-            this.btnClearBreakPoints.Size = new System.Drawing.Size(101, 22);
-            this.btnClearBreakPoints.TabIndex = 27;
-            this.btnClearBreakPoints.Text = "Clear Breakpoints";
-            this.btnClearBreakPoints.UseVisualStyleBackColor = true;
-            this.btnClearBreakPoints.Click += new System.EventHandler(this.btnClearBreakPoints_Click);
+            this.btnClearBreakPoint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearBreakPoint.Location = new System.Drawing.Point(826, 12);
+            this.btnClearBreakPoint.Name = "btnClearBreakPoint";
+            this.btnClearBreakPoint.Size = new System.Drawing.Size(94, 22);
+            this.btnClearBreakPoint.TabIndex = 27;
+            this.btnClearBreakPoint.Text = "Clear Breakpoint";
+            this.btnClearBreakPoint.UseVisualStyleBackColor = true;
+            this.btnClearBreakPoint.Click += new System.EventHandler(this.btnClearBreakPoint_Click);
             // 
             // pbBreakPoint
             // 
@@ -2297,7 +2297,7 @@ namespace _8085
             this.numericUpDownDelay.Size = new System.Drawing.Size(49, 20);
             this.numericUpDownDelay.TabIndex = 29;
             this.numericUpDownDelay.Value = new decimal(new int[] {
-            50,
+            100,
             0,
             0,
             0});
@@ -2307,30 +2307,30 @@ namespace _8085
             // 
             this.lblDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDelay.AutoSize = true;
-            this.lblDelay.Location = new System.Drawing.Point(1249, 19);
+            this.lblDelay.Location = new System.Drawing.Point(1246, 18);
             this.lblDelay.Name = "lblDelay";
             this.lblDelay.Size = new System.Drawing.Size(71, 13);
             this.lblDelay.TabIndex = 30;
             this.lblDelay.Text = "Delay (msec):";
             // 
-            // lblStartAddress
+            // lblSetProgramCounter
             // 
-            this.lblStartAddress.AutoSize = true;
-            this.lblStartAddress.Location = new System.Drawing.Point(494, 17);
-            this.lblStartAddress.Name = "lblStartAddress";
-            this.lblStartAddress.Size = new System.Drawing.Size(67, 13);
-            this.lblStartAddress.TabIndex = 31;
-            this.lblStartAddress.Text = "StartAddress";
+            this.lblSetProgramCounter.AutoSize = true;
+            this.lblSetProgramCounter.Location = new System.Drawing.Point(494, 17);
+            this.lblSetProgramCounter.Name = "lblSetProgramCounter";
+            this.lblSetProgramCounter.Size = new System.Drawing.Size(105, 13);
+            this.lblSetProgramCounter.TabIndex = 31;
+            this.lblSetProgramCounter.Text = "Set Program Counter";
             // 
-            // tbStartAddress
+            // tbSetProgramCounter
             // 
-            this.tbStartAddress.Location = new System.Drawing.Point(567, 14);
-            this.tbStartAddress.Name = "tbStartAddress";
-            this.tbStartAddress.Size = new System.Drawing.Size(42, 20);
-            this.tbStartAddress.TabIndex = 32;
-            this.tbStartAddress.Text = "0000";
-            this.tbStartAddress.TextChanged += new System.EventHandler(this.tbStartAddress_TextChanged);
-            this.tbStartAddress.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbStartAddress_KeyPress);
+            this.tbSetProgramCounter.Location = new System.Drawing.Point(605, 15);
+            this.tbSetProgramCounter.Name = "tbSetProgramCounter";
+            this.tbSetProgramCounter.Size = new System.Drawing.Size(42, 20);
+            this.tbSetProgramCounter.TabIndex = 32;
+            this.tbSetProgramCounter.Text = "0000";
+            this.tbSetProgramCounter.TextChanged += new System.EventHandler(this.tbSetProgramCounter_TextChanged);
+            this.tbSetProgramCounter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbSetProgramCounter_KeyPress);
             // 
             // chkSDK85
             // 
@@ -2663,12 +2663,12 @@ namespace _8085
             this.Controls.Add(this.panelInterrupt);
             this.Controls.Add(this.groupBoxUndocumentedInstructions);
             this.Controls.Add(this.chkSDK85);
-            this.Controls.Add(this.lblStartAddress);
-            this.Controls.Add(this.tbStartAddress);
+            this.Controls.Add(this.lblSetProgramCounter);
+            this.Controls.Add(this.tbSetProgramCounter);
             this.Controls.Add(this.lblDelay);
             this.Controls.Add(this.numericUpDownDelay);
             this.Controls.Add(this.pbBreakPoint);
-            this.Controls.Add(this.btnClearBreakPoints);
+            this.Controls.Add(this.btnClearBreakPoint);
             this.Controls.Add(this.panelPorts);
             this.Controls.Add(this.panelMemory);
             this.Controls.Add(this.btnViewSymbolTable);
@@ -2826,7 +2826,7 @@ namespace _8085
         private System.Windows.Forms.Label lblPort;
         private System.Windows.Forms.RichTextBox richTextBoxProgram;
         private System.Windows.Forms.ToolStripButton toolStripButtonRun;
-        private System.Windows.Forms.Button btnClearBreakPoints;
+        private System.Windows.Forms.Button btnClearBreakPoint;
         private System.Windows.Forms.ToolStripMenuItem viewHelpToolStripMenuItem;
         private System.Windows.Forms.PictureBox pbBreakPoint;
         private System.Windows.Forms.CheckBox chkFlagK;
@@ -2840,8 +2840,8 @@ namespace _8085
         private System.Windows.Forms.NumericUpDown numericUpDownDelay;
         private System.Windows.Forms.Label lblDelay;
         private System.Windows.Forms.CheckBox chkLock;
-        private System.Windows.Forms.Label lblStartAddress;
-        private System.Windows.Forms.TextBox tbStartAddress;
+        private System.Windows.Forms.Label lblSetProgramCounter;
+        private System.Windows.Forms.TextBox tbSetProgramCounter;
         private System.Windows.Forms.CheckBox chkSDK85;
         private System.Windows.Forms.Button btnJNZ;
         private System.Windows.Forms.Button btnJNC;
