@@ -6,10 +6,13 @@ It can also simulate an Intel SDK-85 developers board (keyboard/display).
 <Operations>
 
 After loading a source file into the main window you could debug (assemble) it with the debugger button.
+If the code doesn't start with an ORG directive the startaddress is set to 0000H.
 The first error it encounters will be highlighted in light red.
 Ajustments can be made in the main window (don't forget to save).
 If no errors where encountered the simulator is ready to run (or step) through the program and the first instruction to be executed will be highlighted in light green.
 Running will be with a delay of 50 ms between instructions (this can be adjusted in the main screen).
+
+Setting the program counter to a specific address can be done by entering this address in the the 'set program counter' textbox and close with an enter. 
 
 At any time the memory and ports can be viewed in the right windows.
 The memory window will follow the next instruction to be executed, this can be prevented with the 'Lock' checkbox.
@@ -39,6 +42,11 @@ All instructions are implemented by buttons on the left of the screen for refere
 Numbers should be denoted in decimal or hexadecimal (0x00 or 00H style)
 
 The following directives can be used (example on next row(s)):
+
+`ASEG` Use the location counter for the absolute program segment
+`CSEG` Use the location counter for the code program segment
+`DSEG` Use the location counter for the data program segment
+Followed by and 'ORG' directive the assembler will set the segemnt to this address
 
 `ORG address` Set locationcounter to this address (while assembling)
 ORG 0000H
@@ -120,6 +128,8 @@ Clear Ports
 Clear RAM, Ports, Registers, Flags
 
 `DisAssembler->Open Binary`
+
+Open a binary file for disassembly
 
 `Help->Manual` 
 
