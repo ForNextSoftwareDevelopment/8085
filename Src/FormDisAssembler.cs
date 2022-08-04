@@ -15,6 +15,7 @@ namespace _8085
         #region Members
 
         private DisAssembler85 disAssembler85;
+        byte[] bytes;
         public UInt16 loadAddress;
         public UInt16 startAddress;
         public int programSize;
@@ -29,13 +30,31 @@ namespace _8085
         {
             InitializeComponent();
 
+            this.bytes = bytes;
+            this.loadAddress = loadAddress;
+            this.startAddress = startAddress;
+        }
+
+        #endregion
+
+        #region EventHandlers
+
+        /// <summary>
+        /// Form loaded
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>        
+        private void FormDisAssembler_Load(object sender, EventArgs e)
+        {
+            Cursor.Current = Cursors.WaitCursor;
+
             program = "";
             programSize = bytes.Length;
 
             this.textBoxExeAddress.Text = "0000";
 
             UInt16 address = loadAddress;
-            for (int i=0; i<bytes.Length; i++)
+            for (int i = 0; i < bytes.Length; i++)
             {
                 if ((i % 8) == 0)
                 {
@@ -51,12 +70,13 @@ namespace _8085
 
             disAssembler85 = new DisAssembler85(bytes, loadAddress, startAddress);
             program = disAssembler85.Parse();
-            textBoxProgram.Text = disAssembler85.linedprogram;
+            richTextBoxProgram.Text = disAssembler85.linedprogram;
+
+            // Highlight warnings in pink
+            HighlightProgram();
+
+            Cursor.Current = Cursors.Arrow;
         }
-
-        #endregion
-
-        #region EventHandlers
 
         /// <summary>
         /// Add extra address to disassemble
@@ -68,7 +88,7 @@ namespace _8085
             UInt16 exeAddress;
 
             // Get current position
-            int index = textBoxProgram.GetFirstCharIndexOfCurrentLine();
+            int index = richTextBoxProgram.GetFirstCharIndexOfCurrentLine();
 
             try
             {
@@ -80,16 +100,19 @@ namespace _8085
             }
 
             program = disAssembler85.Parse(exeAddress);
-            textBoxProgram.Text = disAssembler85.linedprogram;
+            richTextBoxProgram.Text = disAssembler85.linedprogram;
+
+            // Highlight warnings in pink
+            HighlightProgram();
 
             // Set newly formed code at the top of textbox
-            textBoxProgram.SelectionStart = textBoxProgram.TextLength - 1;
-            textBoxProgram.ScrollToCaret();
+            richTextBoxProgram.SelectionStart = richTextBoxProgram.TextLength - 1;
+            richTextBoxProgram.ScrollToCaret();
 
-            textBoxProgram.SelectionStart = index;
-            textBoxProgram.SelectionLength = 4;
-            textBoxProgram.ScrollToCaret();
-            textBoxProgram.Focus();
+            richTextBoxProgram.SelectionStart = index;
+            richTextBoxProgram.SelectionLength = 4;
+            richTextBoxProgram.ScrollToCaret();
+            richTextBoxProgram.Focus();
         }
 
         /// <summary>
@@ -97,13 +120,13 @@ namespace _8085
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>        
-        private void textBoxProgram_MouseDown(object sender, MouseEventArgs e)
+        private void richTextBoxProgram_MouseDown(object sender, MouseEventArgs e)
         {
             // Get character index from start of line at cursor position
-            int index = textBoxProgram.GetFirstCharIndexOfCurrentLine();
+            int index = richTextBoxProgram.GetFirstCharIndexOfCurrentLine();
 
             // Get address
-            string str = textBoxProgram.Text.Substring(index, 4);
+            string str = richTextBoxProgram.Text.Substring(index, 4);
 
             // If valid, put in textbox for adding exe addresses    
             try
@@ -115,6 +138,35 @@ namespace _8085
             }
 
             textBoxExeAddress.Text = str;
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Highlight warnings in pink
+        /// </summary>
+        private void HighlightProgram()
+        {
+            // Make lines red if warning
+            for (int i = 0; i < richTextBoxProgram.Lines.Length; i++)
+            {
+                if (richTextBoxProgram.Lines[i].Contains("Warning"))
+                {
+                    int firstcharindex = richTextBoxProgram.GetFirstCharIndexFromLine(i);
+                    string currentlinetext = richTextBoxProgram.Lines[i];
+
+                    // Select line and color to pink
+                    richTextBoxProgram.SelectionStart = firstcharindex;
+                    richTextBoxProgram.SelectionLength = currentlinetext.Length;
+                    richTextBoxProgram.SelectionBackColor = System.Drawing.Color.LightPink;
+
+                    // Reset selection
+                    richTextBoxProgram.SelectionStart = firstcharindex;
+                    richTextBoxProgram.SelectionLength = 0;
+                }
+            }
         }
 
         #endregion

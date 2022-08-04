@@ -57,7 +57,7 @@ namespace _8085
         // Line on which a breakpoint has been set
         private int lineBreakPoint = -1;
 
-        // Tooltip for menu items
+        // Tooltip for button/menu items
         private ToolTip toolTip;
 
         // Delay for running program
@@ -425,7 +425,19 @@ namespace _8085
             // Get line number
             lineBreakPoint = richTextBoxProgram.GetLineFromCharIndex(index);
 
-            UpdateBreakPoint();
+            // Set (update) breakpoint on screen
+            UpdateBreakPoint(lineBreakPoint);
+        }
+
+        /// <summary>
+        /// Main form resized
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_SizeChanged(object sender, EventArgs e)
+        {
+            // Set (update) breakpoint on screen
+            UpdateBreakPoint(lineBreakPoint);
         }
 
         /// <summary>
@@ -532,6 +544,20 @@ namespace _8085
         private void chkFlagC_CheckedChanged(object sender, EventArgs e)
         {
             if (assembler85 != null) assembler85.flagC = chkFlagC.Checked;
+        }
+
+        /// <summary>
+        /// Show tooltiptext
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Control_MouseHover(object sender, EventArgs e)
+        {
+            Control control = (Control)sender;
+            CommandDescription commandDescription = (CommandDescription)control.Tag;
+
+            toolTip.SetToolTip(control, commandDescription.Description);
+            toolTip.Active = true;
         }
 
         #endregion
@@ -1362,7 +1388,7 @@ namespace _8085
                     if (assembler85.RAMprogramLine[address] == lineIndex)
                     {
                         found = true;
-                        int startAddress = GetTextBoxMemoryStartAddress();
+                        int startAddress = Convert.ToInt32(memoryAddressLabels[0].Text, 16);
 
                         int row = (address - startAddress) / 16;
                         int col = (address - startAddress) % 16;
@@ -1432,14 +1458,9 @@ namespace _8085
             }
         }
 
-        private void richTextBoxProgram_SizeChanged(object sender, EventArgs e)
-        {
-            UpdateBreakPoint();
-        }
-
         private void richTextBoxProgram_VScroll(object sender, EventArgs e)
         {
-            UpdateBreakPoint();
+            UpdateBreakPoint(lineBreakPoint);
             toolTip.Hide(richTextBoxProgram);
         }
 
@@ -1475,7 +1496,7 @@ namespace _8085
                 labelLRegister.Text = "00";
 
                 labelPCRegister.Text = "0000";
-                labelSPRegister.Text = "FFFF";
+                labelSPRegister.Text = "0000";
             }
         }
 
@@ -1486,22 +1507,22 @@ namespace _8085
         {
             if (assembler85 != null)
             {
-                chkFlagC.Checked = assembler85.flagC;
-                chkFlagV.Checked = assembler85.flagV;
+                chkFlagC.Checked  = assembler85.flagC;
+                chkFlagV.Checked  = assembler85.flagV;
                 chkFlagAC.Checked = assembler85.flagAC;
-                chkFlagP.Checked = assembler85.flagP;
-                chkFlagK.Checked = assembler85.flagK;
-                chkFlagZ.Checked = assembler85.flagZ;
-                chkFlagS.Checked = assembler85.flagS;
+                chkFlagP.Checked  = assembler85.flagP;
+                chkFlagK.Checked  = assembler85.flagK;
+                chkFlagZ.Checked  = assembler85.flagZ;
+                chkFlagS.Checked  = assembler85.flagS;
             } else
             {
-                chkFlagC.Checked = false;
-                chkFlagV.Checked = false;
+                chkFlagC.Checked  = false;
+                chkFlagV.Checked  = false;
                 chkFlagAC.Checked = false;
-                chkFlagP.Checked = false;
-                chkFlagK.Checked = false;
-                chkFlagZ.Checked = false;
-                chkFlagS.Checked = false;
+                chkFlagP.Checked  = false;
+                chkFlagK.Checked  = false;
+                chkFlagZ.Checked  = false;
+                chkFlagS.Checked  = false;
             }
         }
 
@@ -1901,18 +1922,20 @@ namespace _8085
         /// <summary>
         /// Update picturebox with breakpoint
         /// </summary>
-        private void UpdateBreakPoint()
+        private void UpdateBreakPoint(int line)
         {
             // Clear other breakpoint
             Graphics g = pbBreakPoint.CreateGraphics();
             g.Clear(Color.LightGray);
 
-            if (lineBreakPoint >= 0)
+            if (line >= 0)
             {
-                int index = richTextBoxProgram.GetFirstCharIndexFromLine(lineBreakPoint);
-                Point point = richTextBoxProgram.GetPositionFromCharIndex(index);
-
-                g.FillEllipse(Brushes.Red, new Rectangle(1, richTextBoxProgram.Margin.Top + point.Y, 15, 15));
+                int index = richTextBoxProgram.GetFirstCharIndexFromLine(line);
+                if (index > 0)
+                {
+                    Point point = richTextBoxProgram.GetPositionFromCharIndex(index);
+                    g.FillEllipse(Brushes.Red, new Rectangle(1, richTextBoxProgram.Margin.Top + point.Y, 15, 15));
+                }
             }
         }
 
@@ -1924,6 +1947,9 @@ namespace _8085
             // Init instruction buttons with texts
             foreach (Control control in groupBoxInstructions.Controls)
             {
+                // Add tooltip
+                control.MouseHover += Control_MouseHover;
+
                 CommandDescription commandDescription;
                 switch (control.Text)
                 {
@@ -2047,7 +2073,7 @@ namespace _8085
                     case "LDAX":
                         commandDescription = new CommandDescription(control.Text, "Rp", "Load A from memory address in BC / DE");
                         break;
-                    case "LHLD ":
+                    case "LHLD":
                         commandDescription = new CommandDescription(control.Text, "0000H", "Load HL direct");
                         break;
                     case "LXI":
@@ -2080,16 +2106,16 @@ namespace _8085
                     case "PUSH":
                         commandDescription = new CommandDescription(control.Text, "Rp", "Push RegisterPair");
                         break;
-                    case "RAL ":
+                    case "RAL":
                         commandDescription = new CommandDescription(control.Text, "", "Rotate A Left through Carry (A7 -> C -> A0)");
                         break;
                     case "RAR":
                         commandDescription = new CommandDescription(control.Text, "", "Rotate A Right through Carry (A0 -> C -> A7)");
                         break;
-                    case "RC ":
+                    case "RC":
                         commandDescription = new CommandDescription(control.Text, "", "Return on Carry");
                         break;
-                    case "RET ":
+                    case "RET":
                         commandDescription = new CommandDescription(control.Text, "", "Return");
                         break;
                     case "RIM":
@@ -2169,6 +2195,7 @@ namespace _8085
                         break;
                     default:
                         commandDescription = new CommandDescription("-", "-", "-");
+                        MessageBox.Show("Unknown command in Instructions: " + control.Text, "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                 }
 
@@ -2204,14 +2231,15 @@ namespace _8085
                     case "RDEL":
                         commandDescription = new CommandDescription(control.Text, "", "Rotate DE Left through Carry (D7 -> C, E7 -> D0, C -> E0)");
                         break;
-                    case "RSTV ":
+                    case "RSTV":
                         commandDescription = new CommandDescription(control.Text, "", "Restart on overflow (RST 5");
                         break;
-                    case "SHLX ":
+                    case "SHLX":
                         commandDescription = new CommandDescription(control.Text, "", "Store H and L indirect through D and E");
                         break;
                     default:
                         commandDescription = new CommandDescription("-", "-", "-");
+                        MessageBox.Show("Unknown command in UndocumentedInstructions: " + control.Text, "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         break;
                 }
 

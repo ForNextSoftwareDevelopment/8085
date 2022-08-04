@@ -14,7 +14,16 @@ namespace _8085
         // Type of the decoded instruction: (un)conditional jump/call/restart or none
         private enum TYPE
         {
-            NONE, CONDITIONALJUMP, CONDITIONALCALL, UNCONDITIONALJUMP, UNCONDITIONALCALL, CONDITIONALRETURN, UNCONDITIONALRETURN, CONDITIONALRESTART, UNCONDITIONALRESTART
+            NONE, 
+            CONDITIONALJUMP, 
+            CONDITIONALCALL, 
+            UNCONDITIONALJUMP, 
+            UNCONDITIONALCALL, 
+            CONDITIONALRETURN, 
+            UNCONDITIONALRETURN, 
+            CONDITIONALRESTART, 
+            UNCONDITIONALRESTART,
+            PCHL
         }
 
         // Binary file buffer
@@ -149,8 +158,9 @@ namespace _8085
             dtProgram.Columns.Add("address", typeof(UInt16));
             dtProgram.Columns.Add("instruction", typeof(String));
             dtProgram.Columns.Add("size", typeof(UInt16));
+            dtProgram.Columns.Add("type", typeof(int));
 
-            dtProgram.Rows.Add(null, "ORG " + loadAddress.ToString("X4"));
+            dtProgram.Rows.Add(null, "ORG " + loadAddress.ToString("X4"), 0);
         }
 
         #endregion
@@ -202,7 +212,8 @@ namespace _8085
                         {
                             // Check for end of the path (RETURN, RESTART)
                             if ((type == TYPE.UNCONDITIONALRETURN) ||
-                                (type == TYPE.UNCONDITIONALRESTART))
+                                (type == TYPE.UNCONDITIONALRESTART) ||
+                                (type == TYPE.PCHL))
                             {
                                 done = true;
                             }
@@ -279,7 +290,7 @@ namespace _8085
                         }
 
                         // Add program line (address + instruction)
-                        dtProgram.Rows.Add(addressCurrentInstruction, instruction, count + 1);
+                        dtProgram.Rows.Add(addressCurrentInstruction, instruction, count + 1, type);
                     }
 
                     // Set this key has been done
@@ -335,7 +346,9 @@ namespace _8085
                 program += row["instruction"] + "\r\n";
 
                 linedprogram += row["address"] != DBNull.Value ? Convert.ToUInt16(row["address"]).ToString("X4") + ": " : "";
-                linedprogram += row["instruction"] + "\r\n";
+                linedprogram += row["instruction"];
+                if ((row["type"] != DBNull.Value) && (Convert.ToInt32(row["type"]) == Convert.ToInt32(TYPE.PCHL))) linedprogram += " ; Warning: Branch address cannot be determined";
+                linedprogram += "\r\n";
             }
 
             return (program);
@@ -1119,6 +1132,7 @@ namespace _8085
                     break;
 		        case 0xe9:
                     opcode = "PCHL";
+                    type = TYPE.PCHL;
                     break;
 		        case 0xea:
                     opcode = "JPE";

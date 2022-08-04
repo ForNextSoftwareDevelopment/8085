@@ -73,7 +73,7 @@ namespace _8085
         public byte registerM = 0x00;
 
         public UInt16 registerPC = 0x0000;
-        public UInt16 registerSP = 0xFFFF;
+        public UInt16 registerSP = 0x0000;
 
         // Flag values
         public bool flagC  = false;
@@ -109,7 +109,7 @@ namespace _8085
             this.programView = new string[program.Length];
 
             startLocation = 0;
-            registerSP = 0xFFFF;
+            registerSP = 0x0000;
 
             for (int i= 0; i < RAMprogramLine.Length; i++)
             {

@@ -32,9 +32,9 @@
             this.textBoxBinary = new System.Windows.Forms.TextBox();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
-            this.textBoxProgram = new System.Windows.Forms.TextBox();
             this.textBoxExeAddress = new System.Windows.Forms.TextBox();
             this.btnAddExeAddress = new System.Windows.Forms.Button();
+            this.richTextBoxProgram = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
             // textBoxBinary
@@ -73,22 +73,6 @@
             this.buttonCancel.Text = "Cancel";
             this.buttonCancel.UseVisualStyleBackColor = true;
             // 
-            // textBoxProgram
-            // 
-            this.textBoxProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBoxProgram.BackColor = System.Drawing.SystemColors.Info;
-            this.textBoxProgram.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.textBoxProgram.Location = new System.Drawing.Point(352, 12);
-            this.textBoxProgram.Multiline = true;
-            this.textBoxProgram.Name = "textBoxProgram";
-            this.textBoxProgram.ReadOnly = true;
-            this.textBoxProgram.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxProgram.Size = new System.Drawing.Size(436, 397);
-            this.textBoxProgram.TabIndex = 4;
-            this.textBoxProgram.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBoxProgram_MouseDown);
-            // 
             // textBoxExeAddress
             // 
             this.textBoxExeAddress.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -108,14 +92,30 @@
             this.btnAddExeAddress.UseVisualStyleBackColor = true;
             this.btnAddExeAddress.Click += new System.EventHandler(this.btnAddExeAddress_Click);
             // 
+            // richTextBoxProgram
+            // 
+            this.richTextBoxProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBoxProgram.BackColor = System.Drawing.SystemColors.Info;
+            this.richTextBoxProgram.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.richTextBoxProgram.Location = new System.Drawing.Point(352, 12);
+            this.richTextBoxProgram.Name = "richTextBoxProgram";
+            this.richTextBoxProgram.ReadOnly = true;
+            this.richTextBoxProgram.Size = new System.Drawing.Size(436, 397);
+            this.richTextBoxProgram.TabIndex = 11;
+            this.richTextBoxProgram.Text = "";
+            this.richTextBoxProgram.WordWrap = false;
+            this.richTextBoxProgram.MouseDown += new System.Windows.Forms.MouseEventHandler(this.richTextBoxProgram_MouseDown);
+            // 
             // FormDisAssembler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.richTextBoxProgram);
             this.Controls.Add(this.textBoxExeAddress);
             this.Controls.Add(this.btnAddExeAddress);
-            this.Controls.Add(this.textBoxProgram);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
             this.Controls.Add(this.textBoxBinary);
@@ -123,6 +123,7 @@
             this.Name = "FormDisAssembler";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "DisAssemblerForm";
+            this.Load += new System.EventHandler(this.FormDisAssembler_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -133,8 +134,8 @@
         private System.Windows.Forms.TextBox textBoxBinary;
         private System.Windows.Forms.Button buttonOK;
         private System.Windows.Forms.Button buttonCancel;
-        private System.Windows.Forms.TextBox textBoxProgram;
         private System.Windows.Forms.TextBox textBoxExeAddress;
         private System.Windows.Forms.Button btnAddExeAddress;
+        private System.Windows.Forms.RichTextBox richTextBoxProgram;
     }
 }

@@ -1,0 +1,39 @@
+# Changelog
+All notable changes to this project will be documented in this file.
+
+## [1.0] - 2022-07-28
+### Initial Release
+https://github.com/ForNextSoftwareDevelopment/8085
+
+## [1.1] - 2022-07-29
+### Debug
+- ARHL instruction didn't shift lsb from H to msb of L
+- PC wasn't increased after XTHL instruction
+- Flag setting wasn't done with DAD and DSUB
+- Checking address textboxes for non hexadecimal digits
+### Updates
+- Minor adjustments to the behaviour of the new and reset buttons
+
+## [1.2] - 2022-07-30
+### Debug
+- JK/JX5 jumped on 'no flag set'
+- LHLX inplemented
+- RSTV implemented (was incorrect)
+- RST didn't save return address to stack
+
+## [1.3] - 2022-08-02
+### Debug
+- Error was reported if DB "string" or DB 'char array' contained a colon (:)   
+- Manual updated with explanation of 'StartAddress' textbox (now called 'Set Program Counter')
+### Updates
+- ASEG, CSEG and DSEG implemented
+- Minor adjustments to the user interface
+
+## [1.4] - 2022-08-04
+### Debug
+- Some instruction buttons where not recognized
+- Instruction PCHL should be treated as an endpoint when disassembling (can't determine branch address)
+### Updates
+- Instruction buttons now have a tooltext with description
+- Initializing StackPointer at 0x0000 
+- Highlighting undetermined branch instructions (PCHL) in the disassembler (+ warning)  

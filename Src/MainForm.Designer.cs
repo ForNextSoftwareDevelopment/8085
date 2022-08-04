@@ -779,7 +779,7 @@ namespace _8085
             this.btnORI.Name = "btnORI";
             this.btnORI.Size = new System.Drawing.Size(50, 23);
             this.btnORI.TabIndex = 57;
-            this.btnORI.Text = "ÓRI";
+            this.btnORI.Text = "ORI";
             this.btnORI.UseVisualStyleBackColor = false;
             this.btnORI.Click += new System.EventHandler(this.btnCommand_Click);
             // 
@@ -1606,9 +1606,9 @@ namespace _8085
             this.labelSPRegister.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelSPRegister.Location = new System.Drawing.Point(169, 35);
             this.labelSPRegister.Name = "labelSPRegister";
-            this.labelSPRegister.Size = new System.Drawing.Size(49, 20);
+            this.labelSPRegister.Size = new System.Drawing.Size(45, 20);
             this.labelSPRegister.TabIndex = 27;
-            this.labelSPRegister.Text = "FFFF";
+            this.labelSPRegister.Text = "0000";
             this.labelSPRegister.MouseHover += new System.EventHandler(this.labelSPRegister_MouseHover);
             // 
             // labelPCRegister
@@ -2249,7 +2249,6 @@ namespace _8085
             this.richTextBoxProgram.WordWrap = false;
             this.richTextBoxProgram.SelectionChanged += new System.EventHandler(this.richTextBoxProgram_SelectionChanged);
             this.richTextBoxProgram.VScroll += new System.EventHandler(this.richTextBoxProgram_VScroll);
-            this.richTextBoxProgram.SizeChanged += new System.EventHandler(this.richTextBoxProgram_SizeChanged);
             this.richTextBoxProgram.TextChanged += new System.EventHandler(this.richTextBoxProgram_TextChanged);
             this.richTextBoxProgram.MouseDown += new System.Windows.Forms.MouseEventHandler(this.richTextBoxProgram_MouseDown);
             this.richTextBoxProgram.MouseEnter += new System.EventHandler(this.richTextBoxProgram_MouseEnter);
@@ -2686,6 +2685,7 @@ namespace _8085
             this.Name = "MainForm";
             this.Text = "8085 Simulator";
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.groupBoxInstructions.ResumeLayout(false);
