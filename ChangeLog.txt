@@ -28,4 +28,14 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ### Updates
 - ASEG, CSEG and DSEG implemented
 - Minor adjustments to the user interface
+
+## [1.4] - 2022-08-04
+### Debug
+- Some instruction buttons where not recognized
+- Instruction PCHL should be treated as an endpoint when disassembling (can't determine branch address)
+### Updates
+- Instruction buttons now have a tooltext with description
+- Initializing StackPointer at 0x0000 
+- Highlighting undetermined branch instructions (PCHL) in the disassembler (+ warning) 
+- Choice to use labels when disassembling
  
