@@ -88,6 +88,7 @@ FLAG | 80H
 
 The disassembler will follow all possible paths from an entry address.
 Additional paths can be provided.
+As an option labels can be inserted for jump and call addresses.
 
 <Menu>
 
