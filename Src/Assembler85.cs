@@ -619,7 +619,6 @@ namespace _8085
         /// <summary>
         /// First pass through the code, remove labels, check etc.
         /// </summary>
-        /// <param name="line"></param>
         /// <returns></returns>
         public string FirstPass()
         {
@@ -689,16 +688,8 @@ namespace _8085
                     return ("EXCEPTION ERROR AT LINE " + (lineNumber + 1));
                 }
 
-                // Check for CPU directive 
-                int equ_pos = line.IndexOf("CPU");
-                if (equ_pos == 0)
-                {
-                    // Next line
-                    continue;
-                }
-
                 // Check for $ directive
-                equ_pos = line.Trim().IndexOf("$");
+                int equ_pos = line.Trim().IndexOf("$");
                 if (equ_pos == 0)
                 {
                     // Next line
