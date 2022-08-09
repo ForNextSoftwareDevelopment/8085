@@ -67,7 +67,7 @@
 ; SETRG 
 ; UPDAD 
 ; UPDDT 
-        NAME    SDK85 
+;        NAME    SDK85 
 ; 
 ;**********************************************************************
 ;
@@ -2105,9 +2105,9 @@ HILO:
         MOV     A,D     ; CHECK  FOR  DE = 0000H  
         ORA     E  
         JZ      HIL05   ; WE'RE AUTOMATICALLY  DONE  IF IT  IS  
-	INX 	H	; INCREMENT HL BY 1 
-	MOV 	A,H	; WANT TO TEST FOR 0 RESULT AFTER 
-	ORA 	L	; /INCREMENTING 
+        INX 	H	; INCREMENT HL BY 1 
+        MOV 	A,H	; WANT TO TEST FOR 0 RESULT AFTER 
+        ORA 	L	; /INCREMENTING 
         JZ      HIL05   ; IF  SO,  HL  MUST  HAVE  CONTAINED  0FFFFH  
         POP     H       ; IF  NOT,  RESTORE  ORIGINAL  HL  
         PUSH    D       ; SAVE  DE  

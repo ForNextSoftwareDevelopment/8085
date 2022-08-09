@@ -67,7 +67,7 @@
 ; SETRG 
 ; UPDAD 
 ; UPDDT 
-        NAME    SDK85 
+;        NAME    SDK85 
 ; 
 ;**********************************************************************
 ;
@@ -1990,7 +1990,7 @@ GETHX:
 GHX05: 
 	CALL 	GETCH	; GET A CHARACTER 
 	MOV     C,A
-        CALL 	ECHO	; ECHO THE CHARACTER 
+    CALL 	ECHO	; ECHO THE CHARACTER 
 	CALL 	VALDL	; SEE IF DELIMITER 
 	JNC 	GHX10	; NO - BRANCH 
 	MOV 	D,C	; YES -ALL DONE, BUT WANT TO RETURN DELIMITER 
