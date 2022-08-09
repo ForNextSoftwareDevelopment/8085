@@ -697,14 +697,6 @@ namespace _8085
                     continue;
                 }
 
-                // Check for NAME directive 
-                equ_pos = line.IndexOf("NAME");
-                if (equ_pos == 0)
-                {
-                    // Next line
-                    continue;
-                }
-
                 // Check for $ directive
                 equ_pos = line.Trim().IndexOf("$");
                 if (equ_pos == 0)

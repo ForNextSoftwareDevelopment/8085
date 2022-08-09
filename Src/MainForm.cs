@@ -694,7 +694,7 @@ namespace _8085
                 FormAddresses formAddresses = new FormAddresses();
                 formAddresses.ShowDialog();
 
-                FormDisAssembler disAssemblerForm = new FormDisAssembler(bytes, formAddresses.loadAddress, formAddresses.startAddress);
+                FormDisAssembler disAssemblerForm = new FormDisAssembler(bytes, formAddresses.loadAddress, formAddresses.startAddress, formAddresses.useLabels);
                 DialogResult dialogResult = disAssemblerForm.ShowDialog();
                 if (dialogResult == DialogResult.OK)
                 {
@@ -818,6 +818,9 @@ namespace _8085
                 if (message != "OK")
                 {
                     MessageBox.Show(this, message, "SECONDPASS", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    // Show Updated memory
+                    UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
 
                     // Check if a linenumber has been given
                     string[] fields = message.Split(' ');
@@ -1517,10 +1520,10 @@ namespace _8085
             } else
             {
                 chkFlagC.Checked  = false;
-                chkFlagV.Checked  = false;
+                chkFlagV.CheckState = CheckState.Indeterminate;
                 chkFlagAC.Checked = false;
                 chkFlagP.Checked  = false;
-                chkFlagK.Checked  = false;
+                chkFlagK.CheckState = CheckState.Indeterminate;
                 chkFlagZ.Checked  = false;
                 chkFlagS.Checked  = false;
             }
