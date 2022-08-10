@@ -88,7 +88,7 @@ namespace _8085
                     str = str.Replace("0x" + hex, dec);
                 } else
                 {
-                    Exception ex = new Exception("Error in hexadecimal value in: " + str);
+                    Exception ex = new Exception("\r\nError in hexadecimal value in: " + str);
                     throw (ex);
                 }
             }
@@ -117,7 +117,7 @@ namespace _8085
                     str = str.Replace(hex + "h", dec);
                 } else
                 {
-                    Exception ex = new Exception("Error in hexadecimal value in: " + str);
+                    Exception ex = new Exception("\r\nError in hexadecimal value in: " + str);
                     throw (ex);
                 }
             }
@@ -160,6 +160,17 @@ namespace _8085
                     while (stack.Count != 0 && Compare(stack.Peek(), str[i]) < 0)
                     {
                         queue.Enqueue(stack.Pop() + "");
+                    }
+
+                    // Check if symbol or integer
+                    if (!str[i].Equals('+') && !str[i].Equals('-') && !str[i].Equals('*') && !str[i].Equals('/') && !str[i].Equals('&') && !str[i].Equals('|') && !str[i].Equals('('))
+                    {
+                        bool result = int.TryParse(str[i].ToString(), out int x);
+                        if (!result)
+                        {
+                            Exception ex = new Exception("\r\nCan't convert operand '" + str + "' to a value");
+                            throw (ex);
+                        }
                     }
 
                     stack.Push(str[i]);
@@ -210,7 +221,15 @@ namespace _8085
                     res.Push(result);
                 } else
                 {
-                    res.Push(int.Parse(t));
+                    bool result = int.TryParse(t, out int x);
+                    if (result)
+                    {
+                        res.Push(x);
+                    } else
+                    {
+                        Exception ex = new Exception("\r\nCan't convert argument to an integer value");
+                        throw (ex);
+                    }
                 }
             }
 

@@ -1520,10 +1520,10 @@ namespace _8085
             } else
             {
                 chkFlagC.Checked  = false;
-                chkFlagV.CheckState = CheckState.Indeterminate;
+                chkFlagV.Checked = false;
                 chkFlagAC.Checked = false;
                 chkFlagP.Checked  = false;
-                chkFlagK.CheckState = CheckState.Indeterminate;
+                chkFlagK.Checked = false;
                 chkFlagZ.Checked  = false;
                 chkFlagS.Checked  = false;
             }
