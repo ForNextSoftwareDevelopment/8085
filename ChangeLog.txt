@@ -38,4 +38,11 @@ https://github.com/ForNextSoftwareDevelopment/8085
 - Initializing StackPointer at 0x0000 
 - Highlighting undetermined branch instructions (PCHL) in the disassembler (+ warning) 
 - Choice to use labels when disassembling
+
+## [1.5] - 2022-08-16
+### Debug
+- A label starting with 'NAME' was ignored (the assembler thought it was an irrelevant line, just a name comment)
+### Updates
+- Adjusted the feedback on unknown labels / non-numerical operands
+
  
