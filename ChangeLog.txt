@@ -45,4 +45,8 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ### Updates
 - Adjusted the feedback on unknown labels / non-numerical operands
 
+## [1.6] - 2022-09-07
+### Debug
+- Fixed tooltips on undocumented instruction buttons
+- Updated the address textbox when choosing the 'View' buttons
  
