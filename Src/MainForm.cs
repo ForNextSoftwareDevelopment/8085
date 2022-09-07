@@ -478,7 +478,7 @@ namespace _8085
                     {
                         UInt16 n = (UInt16)(Convert.ToUInt16(memoryAddressLabels[0].Text, 16) + 0x0010);
 
-                        tbMemoryStartAddress.Text = n.ToString("X");
+                        tbMemoryStartAddress.Text = n.ToString("X4");
                         UpdateMemoryPanel(n, nextInstrAddress);
                     }
                 }
@@ -489,7 +489,7 @@ namespace _8085
                     {
                         UInt16 n = (UInt16)(Convert.ToUInt16(memoryAddressLabels[0].Text, 16) - 0x0010);
 
-                        tbMemoryStartAddress.Text = n.ToString("X");
+                        tbMemoryStartAddress.Text = n.ToString("X4");
                         UpdateMemoryPanel(n, nextInstrAddress);
                     }
                 }
@@ -843,8 +843,8 @@ namespace _8085
 
                 if (startline != -1)
                 {
-                    tbMemoryStartAddress.Text = startline.ToString("X");
-                    tbSetProgramCounter.Text = startline.ToString("X");
+                    tbMemoryStartAddress.Text = startline.ToString("X4");
+                    tbSetProgramCounter.Text = startline.ToString("X4");
                 }
 
                 // Show Updated memory
@@ -1208,6 +1208,7 @@ namespace _8085
             if (assembler85 != null)
             {
                 UpdateMemoryPanel(assembler85.registerPC, nextInstrAddress);
+                tbMemoryStartAddress.Text = assembler85.registerPC.ToString("X4");
             }
         }
 
@@ -1221,6 +1222,7 @@ namespace _8085
             if (assembler85 != null)
             {
                 UpdateMemoryPanel(assembler85.registerSP, nextInstrAddress);
+                tbMemoryStartAddress.Text = assembler85.registerSP.ToString("X4");
             }
         }
 
@@ -1237,7 +1239,7 @@ namespace _8085
                 {
                     UInt16 n = (UInt16)(Convert.ToUInt16(memoryAddressLabels[0].Text, 16) - 0x0100);
 
-                    tbMemoryStartAddress.Text = n.ToString("X");
+                    tbMemoryStartAddress.Text = n.ToString("X4");
                     UpdateMemoryPanel(n, nextInstrAddress);
                 }
             }
@@ -1256,7 +1258,7 @@ namespace _8085
                 {
                     UInt16 n = (UInt16)(Convert.ToUInt16(memoryAddressLabels[0].Text, 16) + 0x0100);
 
-                    tbMemoryStartAddress.Text = n.ToString("X");
+                    tbMemoryStartAddress.Text = n.ToString("X4");
                     UpdateMemoryPanel(n, nextInstrAddress);
                 }
             }
@@ -2207,6 +2209,9 @@ namespace _8085
 
             foreach (Control control in groupBoxUndocumentedInstructions.Controls)
             {
+                // Add tooltip
+                control.MouseHover += Control_MouseHover;
+
                 CommandDescription commandDescription;
                 switch (control.Text)
                 {
