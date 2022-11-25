@@ -38,6 +38,12 @@ namespace _8085
         // Load address of the code
         private UInt16 loadAddress;
 
+        // Use labels for jump/call adresses
+        private bool useLabels;
+
+        // Address Symbol Table
+        private Dictionary<UInt16, string> addressSymbolTable = new Dictionary<UInt16, string>();
+
         // Datatable with addresses and instructions of resulting program 
         private DataTable dtProgram;
 
@@ -55,10 +61,11 @@ namespace _8085
         /// <param name="bytes"></param>
         /// <param name="loadAddress"></param>
         /// <param name="startAddress"></param>
-        public DisAssembler85(byte[] bytes, UInt16 loadAddress, UInt16 startAddress)
+        public DisAssembler85(byte[] bytes, UInt16 loadAddress, UInt16 startAddress, bool useLabels)
         {
             this.bytes = bytes;
             this.loadAddress = loadAddress;
+            this.useLabels = useLabels;
 
             lineDecoded = new bool[0xFFFF];
             addresses = new Dictionary<ushort, bool>();
@@ -184,7 +191,7 @@ namespace _8085
             {
                 ready = true;
                 
-                // Copy addresses table for the loop (otherwise we can't add to the original addresses dictionary)
+                // Copy address table for the loop (otherwise we can't add to the original addresses dictionary)
                 Dictionary<UInt16, bool> addresses_copy = new Dictionary<UInt16, bool>(addresses);
                 
                 // Check all adddresses in the dictionary for the program path to decode the instructions in this path
@@ -266,10 +273,45 @@ namespace _8085
                                 }
                             }
 
-                            // Inverted (low byte first, high byte second)
-                            string operand = " " + second + first + "H";
+                            if ((useLabels)  &&
+                                ((type == TYPE.CONDITIONALJUMP) ||
+                                 (type == TYPE.UNCONDITIONALJUMP) ||
+                                 (type == TYPE.CONDITIONALCALL) ||
+                                 (type == TYPE.UNCONDITIONALCALL)))
+                            {
+                                UInt16 jmpsubAddress = (UInt16)(secondByte * 0x100 + firstByte);
 
-                            instruction += operand;
+                                if (!addressSymbolTable.ContainsKey(jmpsubAddress))
+                                {
+                                    // Add to dictionary and insert
+                                    int i = 0;
+                                    if ((type == TYPE.CONDITIONALJUMP) || (type == TYPE.UNCONDITIONALJUMP))
+                                    {
+                                        while (addressSymbolTable.ContainsValue("lbl_jmp" + i.ToString("D4"))) i++;
+                                        addressSymbolTable.Add(jmpsubAddress, "lbl_jmp" + i.ToString("D4"));
+                                        instruction += " lbl_jmp" + i.ToString("D4");
+                                    }
+
+                                    if ((type == TYPE.CONDITIONALCALL) || (type == TYPE.UNCONDITIONALCALL))
+                                    {
+                                        while (addressSymbolTable.ContainsValue("lbl_sub" + i.ToString("D4"))) i++;
+                                        addressSymbolTable.Add(jmpsubAddress, "lbl_sub" + i.ToString("D4"));
+                                        instruction += " lbl_sub" + i.ToString("D4");
+                                    }
+                                } else
+                                {
+                                    // Just insert
+                                    instruction += " " + addressSymbolTable[jmpsubAddress];
+                                }
+                            } else
+                            {
+                                // Inverted (low byte first, high byte second)
+                                string operand = " " + second + first + "H";
+
+                                instruction += operand;
+                            }
+
+                            // Next address
                             address++;
 
                             // Check for 'fork' of the path (JUMP ON PARITY, CALL ON ZERO etc.)
@@ -286,7 +328,6 @@ namespace _8085
                             {
                                 address = (UInt16)(secondByte * 0x100 + firstByte);
                             }
-
                         }
 
                         // Add program line (address + instruction)
@@ -301,6 +342,9 @@ namespace _8085
             // Order program lines to address
             dtProgram.DefaultView.Sort = "address";
             dtProgram = dtProgram.DefaultView.ToTable();
+
+            // Copy addressSymbolTable to check for use
+            Dictionary<UInt16, string> addressSymbolTableNotUsed = new Dictionary<UInt16, string>(addressSymbolTable);
 
             program = "";
             linedprogram = "";
@@ -333,9 +377,11 @@ namespace _8085
                             argASCII += (dataByte > 0x20) && (dataByte < 0x80) ? ((char)(bytes[(UInt16)(i - loadAddress)])).ToString() : ".";
                         }
 
+                        if (useLabels) program += "             ";
                         program += "DB " + arg + argASCII + "\r\n";
 
                         linedprogram += (lastAddress + lastSize).ToString("X4") + ": ";
+                        if (useLabels) linedprogram += "         ";
                         linedprogram += "DB " + arg + argASCII + "\r\n";
                     }
 
@@ -343,12 +389,67 @@ namespace _8085
                     if (currentSize != 0) lastSize = currentSize;
                 }
 
-                program += row["instruction"] + "\r\n";
+                // If labels are being used, fill them into the program
+                if (useLabels)
+                {
+                    if (row["address"] != DBNull.Value)
+                    {
+                        UInt16 currentAddress = Convert.ToUInt16(row["address"]);
 
-                linedprogram += row["address"] != DBNull.Value ? Convert.ToUInt16(row["address"]).ToString("X4") + ": " : "";
-                linedprogram += row["instruction"];
+                        if (addressSymbolTable.ContainsKey(currentAddress))
+                        {
+                            program += addressSymbolTable[currentAddress] + ": ";
+                            program += row["instruction"] + "\r\n";
+
+                            linedprogram += row["address"] != DBNull.Value ? Convert.ToUInt16(row["address"]).ToString("X4") + ": " : "";
+                            linedprogram += addressSymbolTable[currentAddress] + ": ";
+                            linedprogram += row["instruction"];
+
+                            // Delete from (copied) table
+                            if (addressSymbolTableNotUsed.ContainsKey(currentAddress))
+                            {
+                                addressSymbolTableNotUsed.Remove(currentAddress);
+                            }
+                        } else
+                        {
+                            program += "             ";
+                            program += row["instruction"] + "\r\n";
+
+                            linedprogram += row["address"] != DBNull.Value ? Convert.ToUInt16(row["address"]).ToString("X4") + ": " : "";
+                            linedprogram += "             ";
+                            linedprogram += row["instruction"];
+                        }
+                    } else
+                    {
+                        program += row["instruction"] + "\r\n";
+                        linedprogram += row["address"] != DBNull.Value ? Convert.ToUInt16(row["address"]).ToString("X4") + ": " : "";
+                        linedprogram += row["instruction"];
+                    }
+                } else
+                {
+                    program += row["instruction"] + "\r\n";
+                    linedprogram += row["address"] != DBNull.Value ? Convert.ToUInt16(row["address"]).ToString("X4") + ": " : "";
+                    linedprogram += row["instruction"];
+                }
+
                 if ((row["type"] != DBNull.Value) && (Convert.ToInt32(row["type"]) == Convert.ToInt32(TYPE.PCHL))) linedprogram += " ; Warning: Branch address cannot be determined";
                 linedprogram += "\r\n";
+            }
+
+            // Add not used address labels as EQU statements
+            if (useLabels)
+            {
+                string labels = "";
+                foreach (KeyValuePair<UInt16, string> kvp in addressSymbolTableNotUsed)
+                {
+                    labels += kvp.Value + " EQU " + kvp.Key.ToString("X4") + "H\r\n";
+                }
+
+                if (labels != "")
+                {
+                    program = labels + "\r\n" + program;
+                    linedprogram = labels + "\r\n" + linedprogram;
+                }
             }
 
             return (program);

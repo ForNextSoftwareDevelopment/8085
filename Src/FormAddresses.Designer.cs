@@ -34,12 +34,13 @@
             this.textBoxLoadAddress = new System.Windows.Forms.TextBox();
             this.textBoxStartAddress = new System.Windows.Forms.TextBox();
             this.labelStartAddress = new System.Windows.Forms.Label();
+            this.chkLabels = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonOK
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOK.Location = new System.Drawing.Point(12, 75);
+            this.buttonOK.Location = new System.Drawing.Point(12, 115);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(160, 23);
             this.buttonOK.TabIndex = 3;
@@ -79,12 +80,25 @@
             this.labelStartAddress.TabIndex = 6;
             this.labelStartAddress.Text = "Start Address:";
             // 
+            // chkLabels
+            // 
+            this.chkLabels.AutoSize = true;
+            this.chkLabels.Location = new System.Drawing.Point(12, 81);
+            this.chkLabels.Name = "chkLabels";
+            this.chkLabels.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.chkLabels.Size = new System.Drawing.Size(109, 17);
+            this.chkLabels.TabIndex = 8;
+            this.chkLabels.Text = "      Create Labels";
+            this.chkLabels.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.chkLabels.UseVisualStyleBackColor = true;
+            // 
             // FormAddresses
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(184, 110);
+            this.ClientSize = new System.Drawing.Size(184, 150);
             this.ControlBox = false;
+            this.Controls.Add(this.chkLabels);
             this.Controls.Add(this.textBoxStartAddress);
             this.Controls.Add(this.labelStartAddress);
             this.Controls.Add(this.textBoxLoadAddress);
@@ -107,5 +121,6 @@
         private System.Windows.Forms.TextBox textBoxLoadAddress;
         private System.Windows.Forms.TextBox textBoxStartAddress;
         private System.Windows.Forms.Label labelStartAddress;
+        private System.Windows.Forms.CheckBox chkLabels;
     }
 }

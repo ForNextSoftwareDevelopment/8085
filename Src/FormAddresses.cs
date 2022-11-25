@@ -16,6 +16,7 @@ namespace _8085
 
         public UInt16 loadAddress;
         public UInt16 startAddress;
+        public bool useLabels;
 
         #endregion
 
@@ -27,6 +28,7 @@ namespace _8085
 
             loadAddress = 0;
             startAddress = 0;
+            useLabels = false;
         }
 
         #endregion
@@ -107,6 +109,8 @@ namespace _8085
                 MessageBox.Show("The start address can't be in front of the load address", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            useLabels = chkLabels.Checked ? true : false;
 
             this.DialogResult = DialogResult.OK;
         }

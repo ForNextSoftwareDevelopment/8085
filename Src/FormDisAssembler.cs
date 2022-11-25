@@ -18,6 +18,7 @@ namespace _8085
         byte[] bytes;
         public UInt16 loadAddress;
         public UInt16 startAddress;
+        public bool useLabels;
         public int programSize;
         public string program;
         public string lines;
@@ -26,13 +27,14 @@ namespace _8085
 
         #region Constructor
 
-        public FormDisAssembler(byte[] bytes, UInt16 loadAddress, UInt16 startAddress)
+        public FormDisAssembler(byte[] bytes, UInt16 loadAddress, UInt16 startAddress, bool useLabels)
         {
             InitializeComponent();
 
             this.bytes = bytes;
             this.loadAddress = loadAddress;
             this.startAddress = startAddress;
+            this.useLabels = useLabels;
         }
 
         #endregion
@@ -68,7 +70,7 @@ namespace _8085
             textBoxBinary.SelectionStart = 0;
             textBoxBinary.SelectionLength = 0;
 
-            disAssembler85 = new DisAssembler85(bytes, loadAddress, startAddress);
+            disAssembler85 = new DisAssembler85(bytes, loadAddress, startAddress, useLabels);
             program = disAssembler85.Parse();
             richTextBoxProgram.Text = disAssembler85.linedprogram;
 
