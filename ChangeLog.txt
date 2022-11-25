@@ -49,4 +49,8 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ### Debug
 - Fixed tooltips on undocumented instruction buttons
 - Updated the address textbox when choosing the 'View' buttons
+
+## [1.7] - 2022-11-25
+### Debug
+- Minor improvements in the calculation when using labels
  
