@@ -54,6 +54,12 @@ namespace _8085
         /// <returns></returns>
         private static Queue<string> CreateRPN(string str)
         {
+            // If starting with symbol, insert 0 as start
+            if (str.StartsWith("-") || str.StartsWith("+") || str.StartsWith("*") || str.StartsWith("/") || str.StartsWith("&") || str.StartsWith("|"))
+            {
+                str = "0" + str;
+            }
+
             // Stack of temporary storage + - * / (symbols)
             Stack<char> stack = new Stack<char>();
 

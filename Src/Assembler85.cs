@@ -396,12 +396,16 @@ namespace _8085
 
         private byte GetByte(string arg, out string result)
         {
-            // Replace all symbols from symbol table
-            foreach (KeyValuePair<string, int> keyValuePair in addressSymbolTable)
-            {
-                string[] args = arg.Split(new char[] { ' ', '(', ')', '+', '-', '*', '/' });
+            /// Split arguments
+            string[] args = arg.Split(new char[] { ' ', '(', ')', '+', '-', '*', '/' });
 
-                foreach (string str in args)
+            // Sort by size, longest string first to avoid partial replacements
+            Array.Sort(args, (x, y) => y.Length.CompareTo(x.Length));
+
+            // Replace all symbols from symbol table
+            foreach (string str in args)
+            {
+                foreach (KeyValuePair<string, int> keyValuePair in addressSymbolTable)
                 {
                     if (str.ToUpper().Trim() == keyValuePair.Key.ToUpper().Trim())
                     {
@@ -466,12 +470,16 @@ namespace _8085
             // Replace $ with location counter
             arg = arg.Replace("$", locationCounter.ToString());
 
-            // Replace all symbols from symbol table
-            foreach (KeyValuePair<string, int> keyValuePair in addressSymbolTable)
-            {
-                string[] args = arg.Split(new char[] { ' ', '(', ')', '+', '-', '*', '/' });
+            /// Split arguments
+            string[] args = arg.Split(new char[] { ' ', '(', ')', '+', '-', '*', '/' });
 
-                foreach (string str in args)
+            // Sort by size, longest string first to avoid partial replacements
+            Array.Sort(args, (x, y) => y.Length.CompareTo(x.Length));
+
+            // Replace all symbols from symbol table
+            foreach (string str in args)
+            {
+                foreach (KeyValuePair<string, int> keyValuePair in addressSymbolTable)
                 {
                     if (str.ToUpper().Trim() == keyValuePair.Key.ToUpper().Trim())
                     {
