@@ -3426,7 +3426,6 @@ namespace _8085
                     registerPC++;
                 } else if (byteInstruction == 0x07)                                                                         // RLC
                 {
-                    bool saveC = flagC;
                     flagC = (registerA & 0x80) != 0 ? true : false;
                     registerA = (byte)(registerA << 1);
                     if (flagC) registerA = (byte)(registerA | 0x01);
@@ -3517,7 +3516,6 @@ namespace _8085
                     }
                 } else if (byteInstruction == 0x0F)                                                                         // RRC
                 {
-                    bool saveC = flagC;
                     flagC = (registerA & 0x01) != 0 ? true : false;
                     registerA = (byte)(registerA >> 1);
                     if (flagC) registerA = (byte)(registerA | 0x80);
@@ -3668,7 +3666,7 @@ namespace _8085
                     num = byteInstruction - 0x90;
                     result = GetRegisterValue((byte)num, ref val);
                     if (!result) return ("Can't get the register value");
-                    registerA -= Calculate(registerA, val, OPERATOR.SUB);
+                    registerA = Calculate(registerA, val, OPERATOR.SUB);
                     registerPC++;
                 } else if (byteInstruction == 0xD6)                                                                         // SUI
                 {
