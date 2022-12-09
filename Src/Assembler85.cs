@@ -2622,21 +2622,12 @@ namespace _8085
                     registerPC++;
                 } else if ((byteInstruction >= 0xB8) && (byteInstruction <= 0xBF))                                          // CMP  
                 {
-                    if (byteInstruction == 0xBE)
-                    {
-                        UInt16 address = (UInt16)(registerH * 0x0100 + registerL);
-                        Calculate(registerA, RAM[address], OPERATOR.SUB);
-                        registerPC++;
-                    } else
-                    {
-                        num = byteInstruction - 0xB8;
-                        byte tempRegisterA = registerA;
-                        byte compareValue = 0x00;
-                        result = GetRegisterValue((byte)num, ref compareValue);
-                        if (!result) return ("Can't get the register value");
-                        Calculate(registerA, compareValue, OPERATOR.SUB);
-                        registerPC++;
-                    }
+                    num = byteInstruction - 0xB8;
+                    byte compareValue = 0x00;
+                    result = GetRegisterValue((byte)num, ref compareValue);
+                    if (!result) return ("Can't get the register value");
+                    Calculate(registerA, compareValue, OPERATOR.SUB);
+                    registerPC++;
                 } else if (byteInstruction == 0xD4)                                                                         // CNC 
                 {
                     if (flagC)
@@ -2680,6 +2671,11 @@ namespace _8085
                 {
                     if (flagS)
                     {
+                        registerPC++;
+                        registerPC++;
+                        registerPC++;
+                    } else
+                    {
                         UInt16 address = 0;
                         registerPC++;
                         address += RAM[registerPC];
@@ -2692,11 +2688,6 @@ namespace _8085
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(lo, 16);
                         registerPC = address;
-                    } else
-                    {
-                        registerPC++;
-                        registerPC++;
-                        registerPC++;
                     }
                 } else if (byteInstruction == 0xEC)                                                                         // CPE
                 {
