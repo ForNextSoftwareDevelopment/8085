@@ -53,4 +53,8 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ## [1.7] - 2022-11-25
 ### Debug
 - Minor improvements in the calculation when using labels
- 
+
+## [1.8] - 2022-12-08
+### Debug
+- Call on positive (CP) called on negative instead
+- Stack pointer was increased on instruction XTHL  
