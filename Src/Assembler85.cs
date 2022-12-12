@@ -3702,9 +3702,8 @@ namespace _8085
                     t2 = registerH;
                     registerL = RAM[registerSP];
                     RAM[registerSP] = t1;
-                    registerSP++;
-                    registerH = RAM[registerSP];
-                    RAM[registerSP] = t2;
+                    registerH = RAM[registerSP + 1];
+                    RAM[registerSP + 1] = t2;
                     registerPC++;
                 } else if (byteInstruction == 0x10)                                                                         // ARHL (UNDOCUMENTED)
                 {
