@@ -58,3 +58,7 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ### Debug
 - Call on positive (CP) called on negative instead
 - Stack pointer was increased on instruction XTHL  
+
+## [1.9] - 2023-01-09
+### Debug
+- Calculation routine adjusted regarding carry flag 
