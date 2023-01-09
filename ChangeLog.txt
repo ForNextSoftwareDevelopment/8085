@@ -61,4 +61,4 @@ https://github.com/ForNextSoftwareDevelopment/8085
 
 ## [1.9] - 2023-01-09
 ### Debug
-- Calculation routine adjusted regarding carry flag 
+- Calculation routine adjusted regarding carry flag (In certain cases it could be incorrectly set/reset)
