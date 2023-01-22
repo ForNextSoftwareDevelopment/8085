@@ -1278,10 +1278,9 @@ namespace _8085
                 // Convert memoryaddress(hex) to int, convert string from textbox to BYTE
                 if (
                     (((int)numMemoryAddress.Value) >= GetTextBoxMemoryStartAddress()) &&
-                    (((int)numMemoryAddress.Value) <= GetTextBoxMemoryStartAddress() + 0x7F)
+                    (((int)numMemoryAddress.Value) <= GetTextBoxMemoryStartAddress() + 0xFF)
                    )
                 {
-                    nextInstrAddress = Convert.ToUInt16(tbMemoryStartAddress.Text, 16);
                     UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
                 }
             }
