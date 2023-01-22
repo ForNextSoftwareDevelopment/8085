@@ -1275,13 +1275,13 @@ namespace _8085
             {
                 assembler85.RAM[(int)numMemoryAddress.Value] = Convert.ToByte(tbMemoryUpdateByte.Text, 16);
 
-                // Convert memoryaddress(hex) to int, convert string from textbox to BYTE
+                UInt16 n = (UInt16)(Convert.ToUInt16(memoryAddressLabels[0].Text, 16));
                 if (
-                    (((int)numMemoryAddress.Value) >= GetTextBoxMemoryStartAddress()) &&
-                    (((int)numMemoryAddress.Value) <= GetTextBoxMemoryStartAddress() + 0xFF)
+                    (((UInt16)numMemoryAddress.Value) >= n) &&
+                    (((UInt16)numMemoryAddress.Value) < n + 0x100)
                    )
                 {
-                    UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
+                    UpdateMemoryPanel(n, nextInstrAddress);
                 }
             }
         }
