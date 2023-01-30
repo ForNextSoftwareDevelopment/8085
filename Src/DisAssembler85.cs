@@ -436,6 +436,27 @@ namespace _8085
                 linedprogram += "\r\n";
             }
 
+            // If any data left after last line processed, treat this as byte data (DB)
+            if (loadAddress + bytes.Length - lastAddress - lastSize > 0)
+            {
+                string arg = " ";
+                string argASCII = "    ; ASCII: ";
+                for (int i = lastAddress + lastSize; i < (loadAddress + bytes.Length); i++)
+                {
+                    if (i != lastAddress + lastSize) arg += ", ";
+                    byte dataByte = bytes[(UInt16)(i - loadAddress)];
+                    arg += dataByte.ToString("X2") + "h";
+                    argASCII += (dataByte > 0x20) && (dataByte < 0x80) ? ((char)(bytes[(UInt16)(i - loadAddress)])).ToString() : ".";
+                }
+
+                if (useLabels) program += "             ";
+                program += "db " + arg + argASCII + "\r\n";
+
+                linedprogram += (lastAddress + lastSize).ToString("X4") + ": ";
+                if (useLabels) linedprogram += "         ";
+                linedprogram += "db " + arg + argASCII + "\r\n";
+            }
+
             // Add not used address labels as EQU statements
             if (useLabels)
             {
