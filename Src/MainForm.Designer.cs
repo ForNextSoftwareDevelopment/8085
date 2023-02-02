@@ -244,6 +244,7 @@ namespace _8085
             this.lblP55 = new System.Windows.Forms.Label();
             this.lblP75 = new System.Windows.Forms.Label();
             this.lblInterrupts = new System.Windows.Forms.Label();
+            this.chkInsertMonitor = new System.Windows.Forms.CheckBox();
             this.menuStrip.SuspendLayout();
             this.groupBoxInstructions.SuspendLayout();
             this.groupBoxFlags.SuspendLayout();
@@ -2281,7 +2282,8 @@ namespace _8085
             // numericUpDownDelay
             // 
             this.numericUpDownDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDownDelay.Location = new System.Drawing.Point(1323, 15);
+            this.numericUpDownDelay.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.numericUpDownDelay.Location = new System.Drawing.Point(1307, 10);
             this.numericUpDownDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -2293,8 +2295,10 @@ namespace _8085
             0,
             0});
             this.numericUpDownDelay.Name = "numericUpDownDelay";
-            this.numericUpDownDelay.Size = new System.Drawing.Size(49, 20);
+            this.numericUpDownDelay.Size = new System.Drawing.Size(65, 24);
             this.numericUpDownDelay.TabIndex = 29;
+            this.numericUpDownDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numericUpDownDelay.UseWaitCursor = true;
             this.numericUpDownDelay.Value = new decimal(new int[] {
             100,
             0,
@@ -2306,7 +2310,7 @@ namespace _8085
             // 
             this.lblDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDelay.AutoSize = true;
-            this.lblDelay.Location = new System.Drawing.Point(1246, 18);
+            this.lblDelay.Location = new System.Drawing.Point(1230, 18);
             this.lblDelay.Name = "lblDelay";
             this.lblDelay.Size = new System.Drawing.Size(71, 13);
             this.lblDelay.TabIndex = 30;
@@ -2315,7 +2319,7 @@ namespace _8085
             // lblSetProgramCounter
             // 
             this.lblSetProgramCounter.AutoSize = true;
-            this.lblSetProgramCounter.Location = new System.Drawing.Point(494, 17);
+            this.lblSetProgramCounter.Location = new System.Drawing.Point(474, 17);
             this.lblSetProgramCounter.Name = "lblSetProgramCounter";
             this.lblSetProgramCounter.Size = new System.Drawing.Size(105, 13);
             this.lblSetProgramCounter.TabIndex = 31;
@@ -2323,11 +2327,12 @@ namespace _8085
             // 
             // tbSetProgramCounter
             // 
-            this.tbSetProgramCounter.Location = new System.Drawing.Point(605, 15);
+            this.tbSetProgramCounter.Location = new System.Drawing.Point(585, 15);
             this.tbSetProgramCounter.Name = "tbSetProgramCounter";
             this.tbSetProgramCounter.Size = new System.Drawing.Size(42, 20);
             this.tbSetProgramCounter.TabIndex = 32;
             this.tbSetProgramCounter.Text = "0000";
+            this.tbSetProgramCounter.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.tbSetProgramCounter.TextChanged += new System.EventHandler(this.tbSetProgramCounter_TextChanged);
             this.tbSetProgramCounter.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbSetProgramCounter_KeyPress);
             // 
@@ -2654,11 +2659,25 @@ namespace _8085
             this.lblInterrupts.TabIndex = 0;
             this.lblInterrupts.Text = "Interrupts";
             // 
+            // chkInsertMonitor
+            // 
+            this.chkInsertMonitor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkInsertMonitor.AutoSize = true;
+            this.chkInsertMonitor.BackColor = System.Drawing.Color.Transparent;
+            this.chkInsertMonitor.ForeColor = System.Drawing.Color.Black;
+            this.chkInsertMonitor.Location = new System.Drawing.Point(638, 17);
+            this.chkInsertMonitor.Name = "chkInsertMonitor";
+            this.chkInsertMonitor.Size = new System.Drawing.Size(182, 17);
+            this.chkInsertMonitor.TabIndex = 42;
+            this.chkInsertMonitor.Text = "Insert Monitor Program on Debug";
+            this.chkInsertMonitor.UseVisualStyleBackColor = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1384, 961);
+            this.Controls.Add(this.chkInsertMonitor);
             this.Controls.Add(this.panelInterrupt);
             this.Controls.Add(this.groupBoxUndocumentedInstructions);
             this.Controls.Add(this.chkSDK85);
@@ -2928,6 +2947,7 @@ namespace _8085
         private System.Windows.Forms.Label lblInterrupts;
         private System.Windows.Forms.Button btnViewSP;
         private System.Windows.Forms.Button btnViewPC;
+        public System.Windows.Forms.CheckBox chkInsertMonitor;
     }
 }
 

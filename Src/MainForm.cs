@@ -398,7 +398,10 @@ namespace _8085
             {
                 nextInstrAddress = Convert.ToUInt16(tbSetProgramCounter.Text, 16);
                 labelPCRegister.Text = tbSetProgramCounter.Text;
+
                 ChangeColorRTBLine(assembler85.RAMprogramLine[nextInstrAddress], false);
+
+                if (!chkLock.Checked) UpdateMemoryPanel(nextInstrAddress, nextInstrAddress);
             }
         }
 
@@ -858,6 +861,34 @@ namespace _8085
 
             nextInstrAddress = Convert.ToUInt16(tbSetProgramCounter.Text, 16);
             ChangeColorRTBLine(assembler85.RAMprogramLine[nextInstrAddress], false);
+
+            // Insert monitor program if required
+            if (chkInsertMonitor.Checked)
+            {
+                // Check if current program overlaps
+                bool overlap = false;
+                for (int i = 0; i < 0x0800; i++)
+                {
+                    if (assembler85.RAMprogramLine[i] >= 0)
+                    {
+                        overlap = true;
+                    }
+                }
+
+                if (overlap) MessageBox.Show("The monitor program (0x0000 to 0x0800) will overwrite (some of) the user program", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                byte[] bytes = Properties.Resources.sdk85;
+                int index = 0x0000;
+                foreach (byte bt in bytes)
+                {
+                    assembler85.RAM[index] = bt;
+
+                    // Indicate this is not a regular program line but also not an invalid one (-1)
+                    assembler85.RAMprogramLine[index] = -2;
+
+                    index++;
+                }
+            }
 
             UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
             UpdatePortPanel();

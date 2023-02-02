@@ -156,6 +156,7 @@
   <ItemGroup>
     <Content Include="8085.ico" />
     <Content Include="Resources\help.png" />
+    <None Include="Resources\sdk85.bin" />
     <None Include="Resources\stop.png" />
     <None Include="Resources\Manual.txt" />
     <None Include="Resources\pcb.png" />
