@@ -91,31 +91,18 @@ namespace _8085.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Algemeen&gt;
+        ///   Looks up a localized string similar to &lt;Introduction&gt;
         ///
-        ///Using LOW([LABEL]) als start
-        ///Using HIGH([LABEL]) als start
-        ///Using + 1, -2, *4, /2 na voorgaande. 
-        ///
-        ///using 0xA0, &quot;Test&quot;, &apos;test&apos; in DB etc
-        ///
-        ///&lt;Menu&gt;
-        ///
-        ///`File-&gt;New` 
-        ///
-        ///`File-&gt;Open` 
-        ///
-        ///`File-&gt;Save` 
-        ///
-        ///`File-&gt;Save As`
-        /// 
-        ///`Help-&gt;Manual` 
-        ///
-        ///`Help-&gt;About`
+        ///This is an assembler/disassembler for the Intel-8085 microprocessor.
+        ///It can also simulate an Intel SDK-85 developers board (keyboard/display).
         ///
         ///&lt;Operations&gt;
         ///
-        ///.
+        ///After loading a source file into the main window you can debug (assemble) it with the debugger button.
+        ///If the code doesn&apos;t start with an ORG directive the startaddress is set to 0000H.
+        ///The first error it encounters will be highlighted in light red.
+        ///Ajustments can be made in the main window (don&apos;t forget to save).
+        ///If no errors [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string manual {
             get {
@@ -190,6 +177,16 @@ namespace _8085.Properties {
             get {
                 object obj = ResourceManager.GetObject("save_binary", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] sdk85 {
+            get {
+                object obj = ResourceManager.GetObject("sdk85", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
