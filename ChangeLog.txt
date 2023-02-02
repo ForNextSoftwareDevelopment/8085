@@ -62,3 +62,10 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ## [1.9] - 2023-01-09
 ### Debug
 - Calculation routine adjusted regarding carry flag (In certain cases it could be incorrectly set/reset)
+
+## [2.0] - 2023-02-02
+### Debug
+- Minor correction for writing a memory location by hand 
+- Disassembling: if data was left after the last found instruction, it wasn't included, now it is as DB
+### Updates
+- Added the option to insert the monitor code (binary) at debug so the user program can use these routines 
