@@ -5,12 +5,15 @@ It can also simulate an Intel SDK-85 developers board (keyboard/display).
 
 <Operations>
 
-After loading a source file into the main window you could debug (assemble) it with the debugger button.
+After loading a source file into the main window you can debug (assemble) it with the debugger button.
+If the checkbox 'Insert Monitor Program on Debug' is checked it will also insert the monitor program version 2.1 (after assembly of the user program) at 0x0000 to 0x0800.
+
 If the code doesn't start with an ORG directive the startaddress is set to 0000H.
 The first error it encounters will be highlighted in light red.
 Ajustments can be made in the main window (don't forget to save).
-If no errors where encountered the simulator is ready to run (or step) through the program and the first instruction to be executed will be highlighted in light green.
-Running will be with a delay of 50 ms between instructions (this can be adjusted in the main screen).
+If no errors were encountered, the simulator is ready to run (or step) through the program and the first instruction to be executed will be highlighted in light green.
+
+Running will be with a delay of 100 ms between instructions (this can be adjusted in the main screen).
 
 Setting the program counter to a specific address can be done by entering this address in the the 'set program counter' textbox and close with an enter. 
 
@@ -22,7 +25,7 @@ On the left all registers of the 8085 are shown.
 Also the flags (including the undocumented ones, K(X5) and V) are displayed. 
 
 Above the memory window the interrupt register is shown.
-Also the IE bit in this register is shows as a green (Enabled) or red (Disabled) label.
+Also the IE bit in this register is shown as a green (Enabled) or red (Disabled) label.
  
 With the checkbox 'SDK-85' a keyboard/display of a SDK-85 can be shown/hidden.
 This will simulate the SDK-85, the display will show what has been written to 0x1800 (remember to set the control address too: 0x1900).
@@ -39,7 +42,7 @@ This isn't a problem with the SDK-85 because you can't write at a ROM address.
 
 The assembler can use all of the instructions of the 8085 processor including the undocumented instructions.
 All instructions are implemented by buttons on the left of the screen for reference and/or inserting the selected instruction into the program.
-Numbers should be denoted in decimal or hexadecimal (0x00 or 00H style)
+Numbers should be denoted in decimal, hexadecimal (0x00, $00 or 00H style) or binary (10101010B style).
 
 The following directives can be used (example on next row(s)):
 
