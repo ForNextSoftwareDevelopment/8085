@@ -69,3 +69,9 @@ https://github.com/ForNextSoftwareDevelopment/8085
 - Disassembling: if data was left after the last found instruction, it wasn't included, now it is as DB
 ### Updates
 - Added the option to insert the monitor code (binary) at debug so the user program can use these routines 
+
+## [2.1] - 2023-03-23
+### Debug
+- A DB statement with a string (in between double quotes) wasn't counted correctly
+### Updates
+- Added SID/SOD indicators, expanded sim/rim instructions to interact with these indicators 
