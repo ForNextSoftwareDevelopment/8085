@@ -83,6 +83,16 @@ namespace _8085.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap green {
+            get {
+                object obj = ResourceManager.GetObject("green", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap help {
             get {
                 object obj = ResourceManager.GetObject("help", resourceCulture);
@@ -99,10 +109,9 @@ namespace _8085.Properties {
         ///&lt;Operations&gt;
         ///
         ///After loading a source file into the main window you can debug (assemble) it with the debugger button.
-        ///If the code doesn&apos;t start with an ORG directive the startaddress is set to 0000H.
-        ///The first error it encounters will be highlighted in light red.
-        ///Ajustments can be made in the main window (don&apos;t forget to save).
-        ///If no errors [rest of string was truncated]&quot;;.
+        ///If the checkbox &apos;Insert Monitor Program on Debug&apos; is checked it will also insert the monitor program version 2.1 (after assembly of the user program) at 0x0000 to 0x0800.
+        ///
+        ///If the code doesn&apos;t start with an ORG directive the s [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string manual {
             get {
@@ -136,6 +145,16 @@ namespace _8085.Properties {
         internal static System.Drawing.Bitmap play {
             get {
                 object obj = ResourceManager.GetObject("play", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap red {
+            get {
+                object obj = ResourceManager.GetObject("red", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
