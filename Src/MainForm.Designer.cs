@@ -228,6 +228,10 @@ namespace _8085
             this.btnDSUB = new System.Windows.Forms.Button();
             this.btnARHL = new System.Windows.Forms.Button();
             this.panelInterrupt = new System.Windows.Forms.Panel();
+            this.pbSOD = new System.Windows.Forms.PictureBox();
+            this.pbSID = new System.Windows.Forms.PictureBox();
+            this.lblSOD = new System.Windows.Forms.Label();
+            this.lblSID = new System.Windows.Forms.Label();
             this.chkM75 = new System.Windows.Forms.CheckBox();
             this.lblM75 = new System.Windows.Forms.Label();
             this.lblMask = new System.Windows.Forms.Label();
@@ -260,6 +264,8 @@ namespace _8085
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownDelay)).BeginInit();
             this.groupBoxUndocumentedInstructions.SuspendLayout();
             this.panelInterrupt.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSOD)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSID)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -2142,9 +2148,9 @@ namespace _8085
             this.panelMemory.Controls.Add(this.tbMemoryStartAddress);
             this.panelMemory.Controls.Add(this.btnNextPage);
             this.panelMemory.Controls.Add(this.btnMemoryStartAddress);
-            this.panelMemory.Location = new System.Drawing.Point(826, 85);
+            this.panelMemory.Location = new System.Drawing.Point(826, 89);
             this.panelMemory.Name = "panelMemory";
-            this.panelMemory.Size = new System.Drawing.Size(546, 450);
+            this.panelMemory.Size = new System.Drawing.Size(546, 446);
             this.panelMemory.TabIndex = 24;
             // 
             // btnViewSP
@@ -2290,7 +2296,7 @@ namespace _8085
             0,
             0});
             this.numericUpDownDelay.Minimum = new decimal(new int[] {
-            30,
+            50,
             0,
             0,
             0});
@@ -2300,7 +2306,7 @@ namespace _8085
             this.numericUpDownDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.numericUpDownDelay.UseWaitCursor = true;
             this.numericUpDownDelay.Value = new decimal(new int[] {
-            100,
+            50,
             0,
             0,
             0});
@@ -2484,6 +2490,10 @@ namespace _8085
             // 
             this.panelInterrupt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.panelInterrupt.BackColor = System.Drawing.Color.LightGray;
+            this.panelInterrupt.Controls.Add(this.pbSOD);
+            this.panelInterrupt.Controls.Add(this.pbSID);
+            this.panelInterrupt.Controls.Add(this.lblSOD);
+            this.panelInterrupt.Controls.Add(this.lblSID);
             this.panelInterrupt.Controls.Add(this.chkM75);
             this.panelInterrupt.Controls.Add(this.lblM75);
             this.panelInterrupt.Controls.Add(this.lblMask);
@@ -2502,8 +2512,49 @@ namespace _8085
             this.panelInterrupt.Controls.Add(this.lblInterrupts);
             this.panelInterrupt.Location = new System.Drawing.Point(826, 41);
             this.panelInterrupt.Name = "panelInterrupt";
-            this.panelInterrupt.Size = new System.Drawing.Size(546, 38);
+            this.panelInterrupt.Size = new System.Drawing.Size(546, 42);
             this.panelInterrupt.TabIndex = 35;
+            // 
+            // pbSOD
+            // 
+            this.pbSOD.BackColor = System.Drawing.Color.Transparent;
+            this.pbSOD.Image = global::_8085.Properties.Resources.red;
+            this.pbSOD.Location = new System.Drawing.Point(160, 16);
+            this.pbSOD.Name = "pbSOD";
+            this.pbSOD.Size = new System.Drawing.Size(22, 22);
+            this.pbSOD.TabIndex = 43;
+            this.pbSOD.TabStop = false;
+            // 
+            // pbSID
+            // 
+            this.pbSID.BackColor = System.Drawing.Color.Transparent;
+            this.pbSID.Image = global::_8085.Properties.Resources.red;
+            this.pbSID.Location = new System.Drawing.Point(118, 16);
+            this.pbSID.Name = "pbSID";
+            this.pbSID.Size = new System.Drawing.Size(22, 22);
+            this.pbSID.TabIndex = 42;
+            this.pbSID.TabStop = false;
+            this.pbSID.Click += new System.EventHandler(this.pbSID_Click);
+            // 
+            // lblSOD
+            // 
+            this.lblSOD.AutoSize = true;
+            this.lblSOD.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSOD.Location = new System.Drawing.Point(155, 2);
+            this.lblSOD.Name = "lblSOD";
+            this.lblSOD.Size = new System.Drawing.Size(33, 13);
+            this.lblSOD.TabIndex = 41;
+            this.lblSOD.Text = "SOD";
+            // 
+            // lblSID
+            // 
+            this.lblSID.AutoSize = true;
+            this.lblSID.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblSID.Location = new System.Drawing.Point(115, 2);
+            this.lblSID.Name = "lblSID";
+            this.lblSID.Size = new System.Drawing.Size(28, 13);
+            this.lblSID.TabIndex = 40;
+            this.lblSID.Text = "SID";
             // 
             // chkM75
             // 
@@ -2655,7 +2706,8 @@ namespace _8085
             this.lblInterrupts.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblInterrupts.Location = new System.Drawing.Point(7, 6);
             this.lblInterrupts.Name = "lblInterrupts";
-            this.lblInterrupts.Size = new System.Drawing.Size(87, 24);
+            this.lblInterrupts.Padding = new System.Windows.Forms.Padding(2);
+            this.lblInterrupts.Size = new System.Drawing.Size(91, 28);
             this.lblInterrupts.TabIndex = 0;
             this.lblInterrupts.Text = "Interrupts";
             // 
@@ -2728,6 +2780,8 @@ namespace _8085
             this.groupBoxUndocumentedInstructions.ResumeLayout(false);
             this.panelInterrupt.ResumeLayout(false);
             this.panelInterrupt.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSOD)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSID)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2948,6 +3002,10 @@ namespace _8085
         private System.Windows.Forms.Button btnViewSP;
         private System.Windows.Forms.Button btnViewPC;
         public System.Windows.Forms.CheckBox chkInsertMonitor;
+        private System.Windows.Forms.Label lblSID;
+        private System.Windows.Forms.PictureBox pbSID;
+        private System.Windows.Forms.Label lblSOD;
+        private System.Windows.Forms.PictureBox pbSOD;
     }
 }
 

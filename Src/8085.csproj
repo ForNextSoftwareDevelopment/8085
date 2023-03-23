@@ -155,12 +155,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="8085.ico" />
+    <Content Include="Resources\green.png" />
     <Content Include="Resources\help.png" />
     <None Include="Resources\sdk85.bin" />
     <None Include="Resources\stop.png" />
     <None Include="Resources\Manual.txt" />
     <None Include="Resources\pcb.png" />
     <Content Include="Resources\play.png" />
+    <Content Include="Resources\red.png" />
     <Content Include="Resources\save.png" />
     <Content Include="Resources\save_as.png" />
     <None Include="Resources\save_binary.png" />

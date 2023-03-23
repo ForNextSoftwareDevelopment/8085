@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualBasic;
+﻿using _8085.Properties;
+using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -430,6 +431,20 @@ namespace _8085
 
             // Set (update) breakpoint on screen
             UpdateBreakPoint(lineBreakPoint);
+        }
+
+        /// <summary>
+        /// Toggle SID line  
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void pbSID_Click(object sender, EventArgs e)
+        {
+            if (assembler85 != null)
+            {
+                assembler85.sid = !assembler85.sid;
+                UpdateInterrupts();
+            }
         }
 
         /// <summary>
@@ -894,6 +909,7 @@ namespace _8085
             UpdatePortPanel();
             UpdateRegisters();
             UpdateFlags();
+            UpdateInterrupts();
             ClearDisplay();
 
             toolStripButtonRun.Enabled = true;
@@ -1433,7 +1449,7 @@ namespace _8085
                             if (lbl.BackColor != Color.LightGreen) lbl.BackColor = SystemColors.Info;
                         }
 
-                        if ((row >= 0) && (col >= 0) && (row <= 16) && (col <= 16))
+                        if ((row >= 0) && (col >= 0) && (row < 16) && (col < 16))
                         {
                             if (memoryTableLabels[row, col].BackColor != Color.LightGreen) memoryTableLabels[row, col].BackColor = SystemColors.GradientInactiveCaption;
                         }
@@ -1562,7 +1578,7 @@ namespace _8085
         }
 
         /// <summary>
-        /// Update interrupt masks
+        /// Update interrupt masks and sid/sod
         /// </summary>
         private void UpdateInterrupts()
         {
@@ -1584,6 +1600,9 @@ namespace _8085
                 chkP55.Checked = assembler85.intrP55;
                 chkP65.Checked = assembler85.intrP65;
                 chkP75.Checked = assembler85.intrP75;
+
+                if (assembler85.sid) pbSID.Image = Resources.green; else pbSID.Image = Resources.red;
+                if (assembler85.sod) pbSOD.Image = Resources.green; else pbSOD.Image = Resources.red;
             } else
             {
                 chkM55.Checked = false;
@@ -1593,6 +1612,9 @@ namespace _8085
                 chkP55.Checked = false;
                 chkP65.Checked = false;
                 chkP75.Checked = false;
+
+                pbSID.Image = Resources.red;
+                pbSOD.Image = Resources.red;
             }
         }
 

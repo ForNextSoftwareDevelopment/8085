@@ -93,6 +93,10 @@ namespace _8085
         public bool intrP65 = false;
         public bool intrP75 = false;
 
+        // Serial Input/Output data (SID/SOD)
+        public bool sid = false;
+        public bool sod = false;
+
         // Write to display address
         public bool writeToDisplay = false;
 
@@ -860,7 +864,7 @@ namespace _8085
                                 }
 
                                 // ADD end of string
-                                line += "0";
+                                line += ", 0";
                             } else if (operands[i].Contains("\'"))
                             {
                                 // Single quotes
@@ -3425,6 +3429,7 @@ namespace _8085
                     registerA += intrP55 ? (byte)0x10 : (byte)0x00;
                     registerA += intrP65 ? (byte)0x20 : (byte)0x00;
                     registerA += intrP75 ? (byte)0x40 : (byte)0x00;
+                    registerA += sid ? (byte)0x80 : (byte)0x00;
                     registerPC++;
                 } else if (byteInstruction == 0x07)                                                                         // RLC
                 {
@@ -3625,10 +3630,16 @@ namespace _8085
                     RAM[address] = registerH;
                 } else if (byteInstruction == 0x30)                                                                         // SIM
                 {
-                    intrM55 = (registerA & 0x01) == 0x01 ? true : false;
-                    intrM65 = (registerA & 0x02) == 0x02 ? true : false;
-                    intrM75 = (registerA & 0x04) == 0x04 ? true : false;
-                    intrIE  = (registerA & 0x08) == 0x08 ? true : false;
+                    if ((registerA & 0x08) == 0x08)
+                    {
+                        intrM55 = (registerA & 0x01) == 0x01 ? true : false;
+                        intrM65 = (registerA & 0x02) == 0x02 ? true : false;
+                        intrM75 = (registerA & 0x04) == 0x04 ? true : false;
+                    }
+                    if ((registerA & 0x40) == 0x40)
+                    {
+                        sod = (registerA & 0x80) == 0x80 ? true : false;
+                    }
                     registerPC++;
                 } else if (byteInstruction == 0xF9)                                                                         // SPHL
                 {
