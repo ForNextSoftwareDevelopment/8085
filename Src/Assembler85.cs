@@ -3529,6 +3529,7 @@ namespace _8085
                     registerPC++;
                 } else if (byteInstruction == 0xC7)                                                                         // RST 0
                 {
+                    registerPC++;
                     Get2ByteFromInt(registerPC, out lo, out hi);
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(hi, 16);
@@ -3537,6 +3538,7 @@ namespace _8085
                     registerPC = 0x0000;
                 } else if (byteInstruction == 0xCF)                                                                         // RST 1
                 {
+                    registerPC++;
                     Get2ByteFromInt(registerPC, out lo, out hi);
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(hi, 16);
@@ -3545,6 +3547,7 @@ namespace _8085
                     registerPC = 0x0008;
                 } else if (byteInstruction == 0xD7)                                                                         // RST 2
                 {
+                    registerPC++;
                     Get2ByteFromInt(registerPC, out lo, out hi);
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(hi, 16);
@@ -3553,6 +3556,7 @@ namespace _8085
                     registerPC = 0x0010;
                 } else if (byteInstruction == 0xDF)                                                                         // RST 3
                 {
+                    registerPC++;
                     Get2ByteFromInt(registerPC, out lo, out hi);
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(hi, 16);
@@ -3561,6 +3565,7 @@ namespace _8085
                     registerPC = 0x0018;
                 } else if (byteInstruction == 0xE7)                                                                         // RST 4
                 {
+                    registerPC++;
                     Get2ByteFromInt(registerPC, out lo, out hi);
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(hi, 16);
@@ -3569,6 +3574,7 @@ namespace _8085
                     registerPC = 0x0020;
                 } else if (byteInstruction == 0xEF)                                                                         // RST 5
                 {
+                    registerPC++;
                     Get2ByteFromInt(registerPC, out lo, out hi);
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(hi, 16);
@@ -3577,6 +3583,7 @@ namespace _8085
                     registerPC = 0x0028;
                 } else if (byteInstruction == 0xF7)                                                                         // RST 6
                 {
+                    registerPC++;
                     Get2ByteFromInt(registerPC, out lo, out hi);
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(hi, 16);
@@ -3585,6 +3592,7 @@ namespace _8085
                     registerPC = 0x0030;
                 } else if (byteInstruction == 0xFF)                                                                         // RST 7
                 {
+                    registerPC++;
                     Get2ByteFromInt(registerPC, out lo, out hi);
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(hi, 16);
