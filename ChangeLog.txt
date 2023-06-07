@@ -75,3 +75,7 @@ https://github.com/ForNextSoftwareDevelopment/8085
 - A DB statement with a string (in between double quotes) wasn't counted correctly
 ### Updates
 - Added SID/SOD indicators, expanded sim/rim instructions to interact with these indicators 
+
+## [2.2] - 2023-06-07
+### Debug
+- RST instructions didn't give the correct return adress to the stack
