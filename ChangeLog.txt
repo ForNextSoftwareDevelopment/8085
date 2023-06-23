@@ -79,3 +79,7 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ## [2.2] - 2023-06-07
 ### Debug
 - RST instructions didn't give the correct return adress to the stack
+
+## [2.3] - 2023-06-23
+### Debug
+- A DW statement with multiple entries filled all entries with the first one defined
