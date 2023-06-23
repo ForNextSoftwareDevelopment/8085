@@ -1411,7 +1411,7 @@ namespace _8085
                             for (k = 0; k < operands.Length; k++)
                             {
                                 // Extract all DW operands
-                                calcShort = Get2Bytes(operands[0], out string resultDW);
+                                calcShort = Get2Bytes(operands[k], out string resultDW);
                                 if (resultDW == "OK")
                                 {
                                     str = calcShort.ToString("X4");
