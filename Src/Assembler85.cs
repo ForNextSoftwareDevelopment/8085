@@ -1341,6 +1341,11 @@ namespace _8085
 
                     opcode = programRun[lineNumber].Substring(0, end_of_opcode_pos).Trim();
 
+                    if (RAMprogramLine[locationCounter] != -1)
+                    {
+                        return ("Allready code at 0x" + locationCounter.ToString("X4") + " (from line " + (RAMprogramLine[locationCounter] +1).ToString() + ") for " + opcode + " at line " + (lineNumber + 1));
+                    }
+
                     // Split the line and store the strings formed in array
                     operands = programRun[lineNumber].Substring(end_of_opcode_pos).Trim().Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
@@ -2493,6 +2498,11 @@ namespace _8085
                     }
                 } catch (Exception exception)
                 {
+                    if (locationCounter > 0xFFFF)
+                    {
+                        return ("MEMORY OVERRUN AT LINE " + (lineNumber + 1));
+                    }
+
                     MessageBox.Show(exception.Message, "SECONDPASS", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return ("EXCEPTION ERROR AT LINE " + (lineNumber + 1));
                 }
@@ -2553,7 +2563,7 @@ namespace _8085
                     num = byteInstruction - 0xA0;
                     result = GetRegisterValue((byte)num, ref val);
                     if (!result) return ("Can't get the register value");
-                    Calculate(registerA, val, 0, OPERATOR.AND);
+                    registerA = Calculate(registerA, val, 0, OPERATOR.AND);
                     registerPC++;
                 } else if (byteInstruction == 0xE6)                                                                         // ANI
                 {
