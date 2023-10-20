@@ -3168,9 +3168,9 @@ namespace _8085
                 {
                     UInt16 address = 0;
                     registerPC++;
-                    address = RAM[registerPC];
+                    address += RAM[registerPC];
                     registerPC++;
-                    address = (UInt16)((0x0100 * address) + RAM[registerPC]);
+                    address += (UInt16)(0x0100 * RAM[registerPC]);
                     registerPC++;
                     registerL = RAM[address];
                     address++;
