@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;   
 using System.Windows.Forms; 
 
@@ -70,7 +71,6 @@ namespace _8085
         public byte registerE = 0x00;
         public byte registerH = 0x00;
         public byte registerL = 0x00;
-        public byte registerM = 0x00;
 
         public UInt16 registerPC = 0x0000;
         public UInt16 registerSP = 0x0000;
@@ -99,6 +99,9 @@ namespace _8085
 
         // Write to display address
         public bool writeToDisplay = false;
+
+        // Clock cycles executed
+        public UInt64 cycles = 0;
 
         #endregion
 
@@ -158,11 +161,7 @@ namespace _8085
                 case "L": return 5;
 
                 case "6":
-                case "M":
-                {
-                    registerM = RAM[registerH * 0x0100 + registerL];
-                    return 6;
-                }
+                case "M": return 6;
 
                 case "7":
                 case "A": return 7;
@@ -551,7 +550,7 @@ namespace _8085
                     val = registerL;
                     break;
                 case 0b0110:
-                    val = registerM;
+                    val = RAM[registerH * 0x0100 + registerL];
                     break;
                 case 0b0111:
                     val = registerA;
@@ -592,7 +591,7 @@ namespace _8085
                     registerL = val;
                     break;
                 case 0b0110:
-                    registerM = val;
+                    RAM[registerH * 0x0100 + registerL] = val;
                     break;
                 case 0b0111:
                     registerA = val;
@@ -1365,15 +1364,15 @@ namespace _8085
                     // Check instruction
                     switch (opcode)        
                     {
-                        case "ASEG":                                                                                     // ASEG
+                        case "ASEG":                                                                                    // ASEG
                             segment = SEGMENT.ASEG;
                             locationCounter = ASEG;
                             break;
-                        case "CSEG":                                                                                     // CSEG
+                        case "CSEG":                                                                                    // CSEG
                             segment = SEGMENT.CSEG;
                             locationCounter = CSEG;
                             break;
-                        case "DSEG":                                                                                     // DSEG
+                        case "DSEG":                                                                                    // DSEG
                             segment = SEGMENT.DSEG;
                             locationCounter = DSEG;
                             break;
@@ -2539,6 +2538,7 @@ namespace _8085
                     registerPC++;
                     registerA = Calculate(registerA, RAM[registerPC], (byte)(flagC ? 1 : 0), OPERATOR.ADD);
                     registerPC++;
+                    cycles += 2;
                 } else if ((byteInstruction >= 0x88) && (byteInstruction <= 0x8F))                                          // ADC
                 {
                     num = byteInstruction - 0x88;
@@ -2546,6 +2546,7 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     registerA = Calculate(registerA, val, (byte)(flagC ? 1 : 0), OPERATOR.ADD);
                     registerPC++;
+                    cycles += 1;
                 } else if ((byteInstruction >= 0x80) && (byteInstruction <= 0x87))                                          // ADD
                 {
                     num = byteInstruction - 0x80;
