@@ -87,3 +87,12 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ## [2.4] - 2023-07-19
 ### Debug
 - ANA instruction didn't save back the result to the accumulator
+
+## [2.5] - 2023-10-27
+### Debug
+- LHLD instruction took the wrong address to load the value from
+- ADC M took wrong value from memory
+### Updates
+- Added a 'Fast' button to run the code as fast as possible (no screen updates tho)
+- Added a Terminal screen to insert/extract data from the SID/SOD lines
+- Added a SID/SOD graphical signal screen
