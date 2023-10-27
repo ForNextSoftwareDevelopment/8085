@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace _8085
@@ -25,6 +26,7 @@ namespace _8085
                 Operand = operand;
                 Description = description;
             }
+
             public override string ToString() => Instruction + " " + Operand + "; " + Description;
         }
 
@@ -64,8 +66,30 @@ namespace _8085
         // Delay for running program
         private Timer timer = new Timer();
 
-        // SDk-85 interface
+        // SDK-85 interface
         private FormSDK_85 formSDK_85 = null;
+        private FormTerminal formTerminal = null;
+        private FormSerial formSerial = null;
+
+        // Terminal variables for characters to print
+        private Color fgColor = Color.Black;
+        private Color bgColor = Color.White;
+
+        // Parameters for sending from terminal to SID line
+        private bool activeSID = false;
+        private bool startBitSID = false;
+        private bool stopBitSID = false;
+        private UInt64 startCycleSID = 0;
+        private int currentBitSID = 0;
+
+        // Parameters for receiving from SID line to terminal
+        private bool activeSOD = false;
+        private bool startBitSOD = false;
+        private bool stopBitSOD = false;
+        private UInt64 startCycleSOD = 0;
+        private int currentBitSOD = 0;
+        private byte byteSOD;
+        private bool sampledSOD = false;
 
         #endregion
 
@@ -80,6 +104,7 @@ namespace _8085
 
             toolStripButtonRun.Enabled = false;
             toolStripButtonStep.Enabled = false;
+            toolStripButtonFast.Enabled = false;
 
             pbBreakPoint.Image = new Bitmap(pbBreakPoint.Height, pbBreakPoint.Width);
             Graphics g = pbBreakPoint.CreateGraphics();
@@ -247,6 +272,8 @@ namespace _8085
                 if (nextInstrAddress < startViewAddress) startViewAddress = (UInt16)(nextInstrAddress & 0xFFF0);
             }
 
+            tbCycles.Text = assembler85.cycles.ToString();
+
             UpdateMemoryPanel(startViewAddress, nextInstrAddress);
             UpdatePortPanel();
             UpdateRegisters();
@@ -254,6 +281,8 @@ namespace _8085
             UpdateInterrupts();
             UpdateDisplay();
             UpdateKeyboard();
+            UpdateSerial();
+            UpdateTerminal();
 
             if (error == "")
             {
@@ -281,6 +310,7 @@ namespace _8085
 
                     toolStripButtonRun.Enabled = true;
                     toolStripButtonStep.Enabled = true;
+                    toolStripButtonFast.Enabled = true;
                 }
             } else
             {
@@ -288,6 +318,7 @@ namespace _8085
 
                 toolStripButtonRun.Enabled = false;
                 toolStripButtonStep.Enabled = false;
+                toolStripButtonFast.Enabled = false;
 
                 // Enable event handler for updating row/column 
                 richTextBoxProgram.SelectionChanged += new EventHandler(richTextBoxProgram_SelectionChanged);
@@ -326,10 +357,86 @@ namespace _8085
 
                 formSDK_85 = new FormSDK_85(x, y);
                 formSDK_85.Show();
+
             } else
             {
                 formSDK_85.Close();
                 formSDK_85 = null;
+            }
+        }
+
+        private void chkTerminal_CheckedChanged(object sender, EventArgs e)
+        {
+            if (formSDK_85 != null)
+            {
+                if (formTerminal == null)
+                {
+                    int x = this.Location.X + this.Width + 10;
+                    int y = this.Location.Y;
+
+                    if (x > Screen.PrimaryScreen.WorkingArea.Width)
+                    {
+                        x = this.Width / 2;
+                        y = this.Height / 2;
+                    }
+
+                    formTerminal = new FormTerminal(x, y + formSDK_85.Height + 4);
+                    formTerminal.Show();
+
+                    if (assembler85 != null)
+                    {
+                        assembler85.sid = true;
+                        assembler85.sod = true;
+                        UpdateInterrupts();
+                    }
+                } else
+                {
+                    formTerminal.Close();
+                    formTerminal = null;
+
+                    if (assembler85 != null)
+                    {
+                        assembler85.sid = false;
+                        assembler85.sod = false;
+                        UpdateInterrupts();
+                    }
+                }
+            } else
+            {
+                chkTerminal.CheckedChanged -= chkTerminal_CheckedChanged;
+                chkTerminal.Checked = false;
+                chkTerminal.CheckedChanged += new EventHandler(chkTerminal_CheckedChanged);
+            }
+        }
+
+        private void chkSIDSOD_CheckedChanged(object sender, EventArgs e)
+        {
+            if (formSDK_85 != null)
+            {
+                if (formSerial == null)
+                {
+                    int x = this.Location.X + this.Width + 10;
+                    int y = this.Location.Y;
+
+                    if (x > Screen.PrimaryScreen.WorkingArea.Width)
+                    {
+                        x = this.Width / 2;
+                        y = this.Height / 2;
+                    }
+
+                    y += formTerminal != null ? formSDK_85.Height + formTerminal.Height + 4 : formSDK_85.Height + 4;
+                    formSerial = new FormSerial(x, y);
+                    formSerial.Show();
+                } else
+                {
+                    formSerial.Close();
+                    formSerial = null;
+                }
+            } else
+            {
+                chkSIDSOD.CheckedChanged -= chkSIDSOD_CheckedChanged;
+                chkSIDSOD.Checked = false;
+                chkSIDSOD.CheckedChanged += new EventHandler(chkSIDSOD_CheckedChanged);
             }
         }
 
@@ -395,7 +502,7 @@ namespace _8085
         /// <param name="e"></param>
         private void tbSetProgramCounter_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == Convert.ToChar(Keys.Enter))
+            if (e.KeyChar == Convert.ToChar(Keys.Enter) && (assembler85 != null))
             {
                 nextInstrAddress = Convert.ToUInt16(tbSetProgramCounter.Text, 16);
                 labelPCRegister.Text = tbSetProgramCounter.Text;
@@ -578,6 +685,23 @@ namespace _8085
             toolTip.Active = true;
         }
 
+        /// <summary>
+        /// Handle keys when running to send to the terminal
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MainForm_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((assembler85 != null) && (formTerminal != null))
+            {
+                if (toolStripButtonStop.Enabled)
+                {
+                    formTerminal.keyBuffer += e.KeyChar;
+                    e.Handled = true;
+                }
+            }
+        }
+
         #endregion
 
         #region EventHandlers (Menu)
@@ -743,6 +867,9 @@ namespace _8085
             UpdateFlags();
             UpdateInterrupts();
             ClearDisplay();
+            ResetSerial();
+
+            if (formSerial != null) formSerial.ClearValues();
 
             // Reset color
             richTextBoxProgram.SelectionStart = 0;
@@ -758,6 +885,7 @@ namespace _8085
 
             toolStripButtonRun.Enabled = false;
             toolStripButtonStep.Enabled = false;
+            toolStripButtonFast.Enabled = false;
 
             lineBreakPoint = -1;
 
@@ -787,6 +915,9 @@ namespace _8085
             UpdateFlags();
             UpdateInterrupts();
             ClearDisplay();
+            ResetSerial();
+
+            if (formSerial != null) formSerial.ClearValues();
 
             richTextBoxProgram.Clear();
             sourceFile = "";
@@ -800,6 +931,7 @@ namespace _8085
 
             toolStripButtonRun.Enabled = false;
             toolStripButtonStep.Enabled = false;
+            toolStripButtonFast.Enabled = false;
 
             lineBreakPoint = -1;
 
@@ -905,21 +1037,33 @@ namespace _8085
                 }
             }
 
+            if (formTerminal != null)
+            {
+                assembler85.sid = true;
+                assembler85.sod = true;
+            }
+
             UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
             UpdatePortPanel();
             UpdateRegisters();
             UpdateFlags();
             UpdateInterrupts();
             ClearDisplay();
+            ResetSerial();
+
+            if (formSerial != null) formSerial.ClearValues();
 
             toolStripButtonRun.Enabled = true;
             toolStripButtonStep.Enabled = true;
+            toolStripButtonFast.Enabled = true;
         }
 
         private void startRun_Click(object sender, EventArgs e)
         {
             toolStripButtonRun.Enabled = false;
             toolStripButtonStep.Enabled = false;
+            toolStripButtonFast.Enabled = false;
+            toolStripButtonStop.Enabled = true;
 
             // Disable event handler for updating row/column 
             richTextBoxProgram.SelectionChanged -= richTextBoxProgram_SelectionChanged;
@@ -935,6 +1079,8 @@ namespace _8085
 
             UInt16 startViewAddress = Convert.ToUInt16(memoryAddressLabels[0].Text, 16);
 
+            tbCycles.Text = assembler85.cycles.ToString();
+
             if (!chkLock.Checked)
             {
                 if (nextInstrAddress > startViewAddress + 0x100) startViewAddress = (UInt16)(nextInstrAddress & 0xFFF0);
@@ -948,6 +1094,8 @@ namespace _8085
             UpdateDisplay();
             UpdateKeyboard();
             UpdateInterrupts();
+            UpdateSerial();
+            UpdateTerminal();
 
             if (error == "")
             {
@@ -956,6 +1104,7 @@ namespace _8085
             {
                 toolStripButtonRun.Enabled = false;
                 toolStripButtonStep.Enabled = false;
+                toolStripButtonFast.Enabled = false;
 
                 ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], false);
                 MessageBox.Show(error, "SYSTEM HALTED", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -963,6 +1112,7 @@ namespace _8085
             {
                 toolStripButtonRun.Enabled = false;
                 toolStripButtonStep.Enabled = false;
+                toolStripButtonFast.Enabled = false;
 
                 ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], true);
                 MessageBox.Show(error, "RUNTIME ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -992,7 +1142,105 @@ namespace _8085
 
                 toolStripButtonRun.Enabled = true;
                 toolStripButtonStep.Enabled = true;
+                toolStripButtonFast.Enabled = true;
             }
+        }
+
+        /// <summary>
+        /// Fast run, no updates
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void startFast_Click(object sender, EventArgs e)
+        {
+            toolStripButtonRun.Enabled = false;
+            toolStripButtonFast.Enabled = false;
+            toolStripButtonStep.Enabled = false;
+            toolStripButtonStop.Enabled = true;
+
+            ClearColorRTBLine();
+
+            string error = "";
+            UInt16 currentInstrAddress = nextInstrAddress;
+
+            while (!toolStripButtonFast.Enabled && (error == ""))
+            {
+                currentInstrAddress = nextInstrAddress;
+                error = assembler85.RunInstruction(currentInstrAddress, ref nextInstrAddress);
+                if (error == "")
+                {
+                    UpdateDisplay();
+                    UpdateKeyboard();
+                    if ((assembler85.RAMprogramLine[nextInstrAddress] == lineBreakPoint) && (lineBreakPoint != -1))
+                    {
+                        toolStripButtonRun.Enabled = true;
+                        toolStripButtonFast.Enabled = true;
+                        toolStripButtonStep.Enabled = true;
+                        toolStripButtonStop.Enabled = false;
+                    }
+
+                    toolStripButtonStop.Enabled = true;
+                    Application.DoEvents();
+                }
+
+                tbCycles.Text = assembler85.cycles.ToString();
+                UpdateSerial();
+                UpdateTerminal();
+            }
+            UInt16 startViewAddress = Convert.ToUInt16(memoryAddressLabels[0].Text, 16);
+
+            if (!chkLock.Checked)
+            {
+                if (nextInstrAddress > startViewAddress + 0x100) startViewAddress = (UInt16)(nextInstrAddress & 0xFFF0);
+                if (nextInstrAddress < startViewAddress - 0x100) startViewAddress = (UInt16)(nextInstrAddress & 0xFFF0);
+            }
+
+            UpdateMemoryPanel(startViewAddress, nextInstrAddress);
+            UpdateDisplay();
+            UpdateKeyboard();
+            UpdatePortPanel();
+            UpdateRegisters();
+            UpdateFlags();
+            UpdateInterrupts();
+            UpdateSerial();
+            UpdateTerminal();
+
+            if (error == "")
+            {
+                ChangeColorRTBLine(assembler85.RAMprogramLine[nextInstrAddress], false);
+                toolStripButtonRun.Enabled = true;
+                toolStripButtonFast.Enabled = true;
+                toolStripButtonStep.Enabled = true;
+                toolStripButtonStop.Enabled = false;
+            } else if (error == "System Halted")
+            {
+                toolStripButtonRun.Enabled = false;
+                toolStripButtonFast.Enabled = false;
+                toolStripButtonStep.Enabled = false;
+                toolStripButtonStop.Enabled = false;
+
+                ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], false);
+                MessageBox.Show(error, "SYSTEM HALTED", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            } else
+            {
+                toolStripButtonRun.Enabled = false;
+                toolStripButtonFast.Enabled = false;
+                toolStripButtonStep.Enabled = false;
+                toolStripButtonStop.Enabled = false;
+
+                ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], true);
+                MessageBox.Show(error, "RUNTIME ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
+            // Get index of cursor in current program
+            int index = richTextBoxProgram.SelectionStart;
+
+            // Get line/column number
+            int line = richTextBoxProgram.GetLineFromCharIndex(index);
+            lblLine.Text = (line + 1).ToString();
+
+            int column = richTextBoxProgram.SelectionStart - richTextBoxProgram.GetFirstCharIndexFromLine(line);
+            lblColumn.Text = (column + 1).ToString();
         }
 
         private void viewHelp_Click(object sender, EventArgs e)
@@ -1076,13 +1324,9 @@ namespace _8085
                 command = Interaction.InputBox(commandDescription.Description, commandDescription.Instruction, commandDescription.Instruction + " " + commandDescription.Operand);
                 if (command != "")
                 {
-                    if (richTextBoxProgram.SelectionStart == 0)
-                    {
-                        richTextBoxProgram.AppendText(command);
-                    } else
-                    {
-                        richTextBoxProgram.AppendText(Environment.NewLine + command);
-                    }
+                    Clipboard.Clear();
+                    Clipboard.SetText(command + Environment.NewLine + Environment.NewLine);
+                    richTextBoxProgram.Paste();
                 }
             }
         }
@@ -1375,9 +1619,54 @@ namespace _8085
             g.Clear(Color.LightGray);
         }
 
+        /// <summary>
+        /// Reset cycles count
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void btnCyclesReset_Click(object sender, EventArgs e)
+        {
+            if (assembler85 != null)
+            {
+                assembler85.cycles = 0;
+                formSerial.ClearValues();
+                tbCycles.Text = "0";
+            }
+        }
+
         #endregion
 
         #region EventHandlers (RichTextBox)
+
+        /// <summary>
+        /// Handle keys when running to send to the terminal
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void richTextBoxProgram_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if ((assembler85 != null) && (formTerminal != null))
+            {
+                if (toolStripButtonStop.Enabled)
+                {
+                    formTerminal.keyBuffer += e.KeyChar;
+                    e.Handled = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Ignore keys when running
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void richTextBoxProgram_KeyDown(object sender, KeyEventArgs e)
+        {
+            if ((assembler85 != null) && (formTerminal != null))
+            {
+                if (toolStripButtonStop.Enabled) e.Handled = true;
+            }
+        }
 
         private void richTextBoxProgram_SelectionChanged(object sender, EventArgs e)
         {
@@ -1410,6 +1699,7 @@ namespace _8085
 
                 toolStripButtonRun.Enabled = false;
                 toolStripButtonStep.Enabled = false;
+                toolStripButtonFast.Enabled = false;
             }
 
             lineBreakPoint = -1;
@@ -1747,6 +2037,28 @@ namespace _8085
         }
 
         /// <summary>
+        /// Reset serial port (SID/SOD) parameters
+        /// </summary>
+        private void ResetSerial()
+        {
+            activeSID = false;
+            startBitSID = false;
+            stopBitSID = false;
+            startCycleSID = 0;
+            currentBitSID = 0;
+
+            activeSOD = false;
+            startBitSOD = false;
+            stopBitSOD = false;
+            startCycleSOD = 0;
+            currentBitSOD = 0;
+            byteSOD = 0;
+            sampledSOD = false;
+
+            if (formTerminal != null) formTerminal.Clear();
+        }
+
+        /// <summary>
         /// Update 7 segment display of SDK-85 (if active)
         /// </summary>
         private void UpdateDisplay()
@@ -1886,6 +2198,202 @@ namespace _8085
         }
 
         /// <summary>
+        /// Update serial signal (SID/SOD) (if active)
+        /// </summary>
+        private void UpdateSerial()
+        {
+            if ((assembler85 != null) && (formSerial != null))
+            {
+                // Update SID/SOD signal
+                formSerial.AddToSID(assembler85.sid, assembler85.cycles);
+                formSerial.AddToSOD(assembler85.sod, assembler85.cycles);
+                formSerial.DrawSID();
+                formSerial.DrawSOD();
+            }
+        }
+
+        /// <summary>
+        /// Update terminal (if active)
+        /// </summary>
+        private void UpdateTerminal()
+        {
+            if ((assembler85 != null) && (formTerminal != null))
+            {
+                // Update terminal display if data in buffer
+                formTerminal.UpdateBufferText();
+                UInt64 numCyclesBit = formTerminal.GetBitCycles();
+                if (formTerminal.keyBuffer.Length > 0)
+                {
+                    // SID
+                    if (activeSID)
+                    {
+                        if (startBitSID)
+                        {
+                            if (assembler85.cycles - startCycleSID < numCyclesBit)
+                            {
+                                assembler85.sid = false;
+                            } else
+                            {
+                                startBitSID = false;
+                                startCycleSID = assembler85.cycles;
+                            }
+                        } else if (stopBitSID)
+                        {
+                            // 12 stop bits (so 12 times numCyclesBit) because the sdk-85 needs this time before receiving another character
+                            if (assembler85.cycles - startCycleSID < (12 * numCyclesBit))
+                            {
+                                assembler85.sid = true;
+                            } else
+                            {
+                                stopBitSID = false;
+                                startCycleSID = assembler85.cycles;
+                                activeSID = false;
+
+                                // Shift buffer
+                                if (formTerminal.keyBuffer.Length > 0)
+                                {
+                                    formTerminal.keyBuffer = formTerminal.keyBuffer.Substring(1);
+                                } 
+                            }
+                        } else
+                        {
+                            if (assembler85.cycles - startCycleSID < numCyclesBit)
+                            {
+                                if ((formTerminal.keyBuffer[0] & (0b00000001 << currentBitSID)) == (0b00000001 << currentBitSID))
+                                {
+                                    assembler85.sid = true;
+                                } else
+                                {
+                                    assembler85.sid = false;
+                                }
+                            } else
+                            {
+                                currentBitSID++;
+                                startCycleSID = assembler85.cycles;
+                            }
+
+                            // All bits send, so send stopbit
+                            if (currentBitSID >= 8)
+                            {
+                                stopBitSID = true;
+                                startCycleSID = assembler85.cycles;
+                            }
+                        }
+                    } else
+                    {
+                        // start sending next byte in buffer
+                        activeSID = true;
+                        currentBitSID = 0;
+                        startBitSID = true;
+                        startCycleSID = assembler85.cycles;
+                    }
+                }
+
+                // SOD
+                if (activeSOD)
+                {
+                    if (startBitSOD)
+                    {
+                        if (assembler85.cycles - startCycleSOD >= numCyclesBit)
+                        {
+                            startBitSOD = false;
+                            currentBitSOD = 0;
+                            startCycleSOD = assembler85.cycles;
+                        }
+                    } else if (stopBitSOD)
+                    {
+                        if (assembler85.cycles - startCycleSOD >= numCyclesBit)
+                        {
+                            stopBitSOD = false;
+                            sampledSOD = false;
+                            activeSOD = false;
+                            currentBitSOD = 0;
+                            startCycleSOD = assembler85.cycles;
+
+                            // Put char send to terminal
+                            switch (byteSOD)
+                            {
+                                // BackSpace
+                                case 8:
+                                    formTerminal.tbTerminal.Text = formTerminal.tbTerminal.Text.Substring(0, formTerminal.tbTerminal.Text.Length - 1);
+                                    formTerminal.tbTerminal.Select(formTerminal.tbTerminal.TextLength, 0);
+                                    formTerminal.tbTerminal.SelectionStart = formTerminal.tbTerminal.TextLength;
+                                    formTerminal.tbTerminal.ScrollToCaret();
+                                    break;
+
+                                // Carriage Return 
+                                case (byte)'\r':
+                                    break;
+
+                                // Line Feed
+                                case (byte)'\n':
+                                    formTerminal.tbTerminal.AppendText("\n");
+                                    formTerminal.tbTerminal.Select(formTerminal.tbTerminal.TextLength, 0);
+                                    formTerminal.tbTerminal.SelectionStart = formTerminal.tbTerminal.TextLength;
+                                    formTerminal.tbTerminal.ScrollToCaret();
+                                    break;
+
+                                // FormFeed
+                                case 12:
+                                    formTerminal.tbTerminal.AppendText("\r\n");
+                                    formTerminal.tbTerminal.Select(formTerminal.tbTerminal.TextLength, 0);
+                                    formTerminal.tbTerminal.SelectionStart = formTerminal.tbTerminal.TextLength;
+                                    formTerminal.tbTerminal.ScrollToCaret();
+                                    break;
+
+                                default:
+                                    byte character = (byte)(byteSOD & 0x7F);
+                                    if ((character >= 32) && (character < 128))
+                                    {
+                                        formTerminal.tbTerminal.AppendText(Convert.ToChar(character).ToString());
+                                    } else
+                                    {
+                                        formTerminal.tbTerminal.AppendText("\r\n? (" + character.ToString() + ")\r\n");
+                                    }
+                                    break;
+                            }
+                        }
+                    } else
+                    {
+                        if (assembler85.cycles - startCycleSOD < numCyclesBit)
+                        { 
+                            if (!sampledSOD && ((assembler85.cycles - startCycleSOD) > (numCyclesBit / 2 - 20)) && (assembler85.cycles - startCycleSOD) < (numCyclesBit / 2 + 20))
+                            {
+                                sampledSOD = true;
+                                if (assembler85.sod)
+                                {
+                                    byteSOD += (byte)(0b00000001 << currentBitSOD);
+                                }
+                            }
+                        } else
+                        {
+                            currentBitSOD++;
+                            sampledSOD = false;
+                            startCycleSOD = assembler85.cycles;
+                        }
+
+                        // All bits received, so send stopbit
+                        if (currentBitSOD >= 8)
+                        {
+                            stopBitSOD = true;
+                            startCycleSOD = assembler85.cycles;
+                            currentBitSOD = 0;
+                        }
+                    }
+                } else if (!assembler85.sod)
+                {
+                    // Start receiving next byte in buffer
+                    activeSOD = true;
+                    startBitSOD = true;
+                    currentBitSOD = 0;
+                    byteSOD = 0;
+                    startCycleSOD = assembler85.cycles;
+                    sampledSOD = false;
+                }
+            }
+        }
+
+        /// <summary>
         /// get the memory start address from text box
         /// </summary>
         /// <returns></returns>
@@ -1963,7 +2471,43 @@ namespace _8085
         }
 
         /// <summary>
-        /// show tooltip with string binaryval when we hover mouse over a (register) label 
+        /// Clear colors rich text box
+        /// </summary>
+        private void ClearColorRTBLine()
+        {
+            // No layout events for now (postpone)
+            richTextBoxProgram.SuspendLayout();
+
+            // Disable certain event handlers completely
+            richTextBoxProgram.TextChanged -= richTextBoxProgram_TextChanged;
+            richTextBoxProgram.SelectionChanged -= richTextBoxProgram_SelectionChanged;
+
+            // No focus so we won't see flicker from selection changes
+            lblSetProgramCounter.Focus();
+
+            // Reset color
+            richTextBoxProgram.HideSelection = true;
+            richTextBoxProgram.SelectAll();
+            richTextBoxProgram.SelectionBackColor = System.Drawing.Color.White;
+            richTextBoxProgram.DeselectAll();
+            richTextBoxProgram.HideSelection = false;
+
+            // Set focus again
+            richTextBoxProgram.Focus();
+
+            // Update breakpoint indicator
+            UpdateBreakPoint(lineBreakPoint);
+
+            // Enable event handler
+            richTextBoxProgram.TextChanged += new EventHandler(richTextBoxProgram_TextChanged);
+            richTextBoxProgram.SelectionChanged += new EventHandler(richTextBoxProgram_SelectionChanged);
+
+            // Resume events 
+            richTextBoxProgram.ResumeLayout();
+        }
+
+        /// <summary>
+        /// Show tooltip with string binaryval when we hover mouse over a (register) label 
         /// </summary>
         /// <param name="l"></param>
         private void RegisterHoverBinary(Label l)

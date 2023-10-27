@@ -193,6 +193,7 @@ namespace _8085
             this.toolStripButtonStartDebug = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonRun = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonStep = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonFast = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonStop = new System.Windows.Forms.ToolStripButton();
             this.toolTipRegisterBinary = new System.Windows.Forms.ToolTip(this.components);
             this.lblLine = new System.Windows.Forms.Label();
@@ -249,6 +250,11 @@ namespace _8085
             this.lblP75 = new System.Windows.Forms.Label();
             this.lblInterrupts = new System.Windows.Forms.Label();
             this.chkInsertMonitor = new System.Windows.Forms.CheckBox();
+            this.lblCycles = new System.Windows.Forms.Label();
+            this.tbCycles = new System.Windows.Forms.TextBox();
+            this.btnCyclesReset = new System.Windows.Forms.Button();
+            this.chkTerminal = new System.Windows.Forms.CheckBox();
+            this.chkSIDSOD = new System.Windows.Forms.CheckBox();
             this.menuStrip.SuspendLayout();
             this.groupBoxInstructions.SuspendLayout();
             this.groupBoxFlags.SuspendLayout();
@@ -1984,10 +1990,11 @@ namespace _8085
             this.toolStripButtonStartDebug,
             this.toolStripButtonRun,
             this.toolStripButtonStep,
+            this.toolStripButtonFast,
             this.toolStripButtonStop});
             this.toolStrip.Location = new System.Drawing.Point(249, 9);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(222, 25);
+            this.toolStrip.Size = new System.Drawing.Size(245, 25);
             this.toolStrip.TabIndex = 18;
             this.toolStrip.Text = "toolStrip";
             // 
@@ -2081,6 +2088,16 @@ namespace _8085
             this.toolStripButtonStep.Text = "Step";
             this.toolStripButtonStep.Click += new System.EventHandler(this.startStep_Click);
             // 
+            // toolStripButtonFast
+            // 
+            this.toolStripButtonFast.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonFast.Image = global::_8085.Properties.Resources.fast;
+            this.toolStripButtonFast.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonFast.Name = "toolStripButtonFast";
+            this.toolStripButtonFast.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonFast.Text = "Fast";
+            this.toolStripButtonFast.Click += new System.EventHandler(this.startFast_Click);
+            // 
             // toolStripButtonStop
             // 
             this.toolStripButtonStop.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -2115,11 +2132,11 @@ namespace _8085
             // btnViewProgram
             // 
             this.btnViewProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnViewProgram.Location = new System.Drawing.Point(1040, 11);
+            this.btnViewProgram.Location = new System.Drawing.Point(1014, 11);
             this.btnViewProgram.Name = "btnViewProgram";
-            this.btnViewProgram.Size = new System.Drawing.Size(82, 23);
+            this.btnViewProgram.Size = new System.Drawing.Size(67, 23);
             this.btnViewProgram.TabIndex = 22;
-            this.btnViewProgram.Text = "View Program";
+            this.btnViewProgram.Text = " Program";
             this.btnViewProgram.UseVisualStyleBackColor = true;
             this.btnViewProgram.Click += new System.EventHandler(this.btnViewProgram_Click);
             // 
@@ -2128,9 +2145,9 @@ namespace _8085
             this.btnViewSymbolTable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnViewSymbolTable.Location = new System.Drawing.Point(926, 11);
             this.btnViewSymbolTable.Name = "btnViewSymbolTable";
-            this.btnViewSymbolTable.Size = new System.Drawing.Size(108, 23);
+            this.btnViewSymbolTable.Size = new System.Drawing.Size(82, 23);
             this.btnViewSymbolTable.TabIndex = 23;
-            this.btnViewSymbolTable.Text = "View Symbol Table";
+            this.btnViewSymbolTable.Text = "Symbol Table";
             this.btnViewSymbolTable.UseVisualStyleBackColor = true;
             this.btnViewSymbolTable.Click += new System.EventHandler(this.btnViewSymbolTable_Click);
             // 
@@ -2257,6 +2274,8 @@ namespace _8085
             this.richTextBoxProgram.SelectionChanged += new System.EventHandler(this.richTextBoxProgram_SelectionChanged);
             this.richTextBoxProgram.VScroll += new System.EventHandler(this.richTextBoxProgram_VScroll);
             this.richTextBoxProgram.TextChanged += new System.EventHandler(this.richTextBoxProgram_TextChanged);
+            this.richTextBoxProgram.KeyDown += new System.Windows.Forms.KeyEventHandler(this.richTextBoxProgram_KeyDown);
+            this.richTextBoxProgram.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.richTextBoxProgram_KeyPress);
             this.richTextBoxProgram.MouseDown += new System.Windows.Forms.MouseEventHandler(this.richTextBoxProgram_MouseDown);
             this.richTextBoxProgram.MouseEnter += new System.EventHandler(this.richTextBoxProgram_MouseEnter);
             this.richTextBoxProgram.MouseLeave += new System.EventHandler(this.richTextBoxProgram_MouseLeave);
@@ -2288,8 +2307,8 @@ namespace _8085
             // numericUpDownDelay
             // 
             this.numericUpDownDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.numericUpDownDelay.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.numericUpDownDelay.Location = new System.Drawing.Point(1307, 10);
+            this.numericUpDownDelay.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.numericUpDownDelay.Location = new System.Drawing.Point(1317, 17);
             this.numericUpDownDelay.Maximum = new decimal(new int[] {
             10000,
             0,
@@ -2301,7 +2320,7 @@ namespace _8085
             0,
             0});
             this.numericUpDownDelay.Name = "numericUpDownDelay";
-            this.numericUpDownDelay.Size = new System.Drawing.Size(65, 24);
+            this.numericUpDownDelay.Size = new System.Drawing.Size(55, 22);
             this.numericUpDownDelay.TabIndex = 29;
             this.numericUpDownDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.numericUpDownDelay.UseWaitCursor = true;
@@ -2316,16 +2335,16 @@ namespace _8085
             // 
             this.lblDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDelay.AutoSize = true;
-            this.lblDelay.Location = new System.Drawing.Point(1230, 18);
+            this.lblDelay.Location = new System.Drawing.Point(1314, 1);
             this.lblDelay.Name = "lblDelay";
-            this.lblDelay.Size = new System.Drawing.Size(71, 13);
+            this.lblDelay.Size = new System.Drawing.Size(59, 13);
             this.lblDelay.TabIndex = 30;
-            this.lblDelay.Text = "Delay (msec):";
+            this.lblDelay.Text = "Delay (ms):";
             // 
             // lblSetProgramCounter
             // 
             this.lblSetProgramCounter.AutoSize = true;
-            this.lblSetProgramCounter.Location = new System.Drawing.Point(474, 17);
+            this.lblSetProgramCounter.Location = new System.Drawing.Point(497, 17);
             this.lblSetProgramCounter.Name = "lblSetProgramCounter";
             this.lblSetProgramCounter.Size = new System.Drawing.Size(105, 13);
             this.lblSetProgramCounter.TabIndex = 31;
@@ -2333,7 +2352,8 @@ namespace _8085
             // 
             // tbSetProgramCounter
             // 
-            this.tbSetProgramCounter.Location = new System.Drawing.Point(585, 15);
+            this.tbSetProgramCounter.Location = new System.Drawing.Point(608, 14);
+            this.tbSetProgramCounter.MaxLength = 4;
             this.tbSetProgramCounter.Name = "tbSetProgramCounter";
             this.tbSetProgramCounter.Size = new System.Drawing.Size(42, 20);
             this.tbSetProgramCounter.TabIndex = 32;
@@ -2346,7 +2366,7 @@ namespace _8085
             // 
             this.chkSDK85.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkSDK85.AutoSize = true;
-            this.chkSDK85.Location = new System.Drawing.Point(1147, 15);
+            this.chkSDK85.Location = new System.Drawing.Point(1087, 18);
             this.chkSDK85.Name = "chkSDK85";
             this.chkSDK85.Size = new System.Drawing.Size(63, 17);
             this.chkSDK85.TabIndex = 33;
@@ -2717,18 +2737,80 @@ namespace _8085
             this.chkInsertMonitor.AutoSize = true;
             this.chkInsertMonitor.BackColor = System.Drawing.Color.Transparent;
             this.chkInsertMonitor.ForeColor = System.Drawing.Color.Black;
-            this.chkInsertMonitor.Location = new System.Drawing.Point(638, 17);
+            this.chkInsertMonitor.Location = new System.Drawing.Point(688, 17);
             this.chkInsertMonitor.Name = "chkInsertMonitor";
-            this.chkInsertMonitor.Size = new System.Drawing.Size(182, 17);
+            this.chkInsertMonitor.Size = new System.Drawing.Size(132, 17);
             this.chkInsertMonitor.TabIndex = 42;
-            this.chkInsertMonitor.Text = "Insert Monitor Program on Debug";
+            this.chkInsertMonitor.Text = "Insert Monitor Program";
             this.chkInsertMonitor.UseVisualStyleBackColor = false;
+            // 
+            // lblCycles
+            // 
+            this.lblCycles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lblCycles.AutoSize = true;
+            this.lblCycles.Location = new System.Drawing.Point(548, 945);
+            this.lblCycles.Name = "lblCycles";
+            this.lblCycles.Size = new System.Drawing.Size(85, 13);
+            this.lblCycles.TabIndex = 43;
+            this.lblCycles.Text = "Machine Cycles:";
+            // 
+            // tbCycles
+            // 
+            this.tbCycles.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbCycles.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+            this.tbCycles.Location = new System.Drawing.Point(639, 941);
+            this.tbCycles.Name = "tbCycles";
+            this.tbCycles.ReadOnly = true;
+            this.tbCycles.Size = new System.Drawing.Size(100, 20);
+            this.tbCycles.TabIndex = 44;
+            this.tbCycles.Text = "0";
+            this.tbCycles.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // btnCyclesReset
+            // 
+            this.btnCyclesReset.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnCyclesReset.Location = new System.Drawing.Point(745, 941);
+            this.btnCyclesReset.Name = "btnCyclesReset";
+            this.btnCyclesReset.Size = new System.Drawing.Size(75, 20);
+            this.btnCyclesReset.TabIndex = 45;
+            this.btnCyclesReset.Text = "Reset";
+            this.btnCyclesReset.UseVisualStyleBackColor = true;
+            this.btnCyclesReset.Click += new System.EventHandler(this.btnCyclesReset_Click);
+            // 
+            // chkTerminal
+            // 
+            this.chkTerminal.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkTerminal.AutoSize = true;
+            this.chkTerminal.Location = new System.Drawing.Point(1165, 16);
+            this.chkTerminal.Name = "chkTerminal";
+            this.chkTerminal.Size = new System.Drawing.Size(66, 17);
+            this.chkTerminal.TabIndex = 46;
+            this.chkTerminal.Text = "Terminal";
+            this.chkTerminal.UseVisualStyleBackColor = true;
+            this.chkTerminal.CheckedChanged += new System.EventHandler(this.chkTerminal_CheckedChanged);
+            // 
+            // chkSIDSOD
+            // 
+            this.chkSIDSOD.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkSIDSOD.AutoSize = true;
+            this.chkSIDSOD.Location = new System.Drawing.Point(1239, 16);
+            this.chkSIDSOD.Name = "chkSIDSOD";
+            this.chkSIDSOD.Size = new System.Drawing.Size(72, 17);
+            this.chkSIDSOD.TabIndex = 47;
+            this.chkSIDSOD.Text = "SID/SOD";
+            this.chkSIDSOD.UseVisualStyleBackColor = true;
+            this.chkSIDSOD.CheckedChanged += new System.EventHandler(this.chkSIDSOD_CheckedChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1384, 961);
+            this.Controls.Add(this.chkSIDSOD);
+            this.Controls.Add(this.chkTerminal);
+            this.Controls.Add(this.btnCyclesReset);
+            this.Controls.Add(this.tbCycles);
+            this.Controls.Add(this.lblCycles);
             this.Controls.Add(this.chkInsertMonitor);
             this.Controls.Add(this.panelInterrupt);
             this.Controls.Add(this.groupBoxUndocumentedInstructions);
@@ -2752,11 +2834,12 @@ namespace _8085
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(1200, 1000);
+            this.MinimumSize = new System.Drawing.Size(1400, 1000);
             this.Name = "MainForm";
             this.Text = "8085 Simulator";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.SizeChanged += new System.EventHandler(this.MainForm_SizeChanged);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.MainForm_KeyPress);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
             this.groupBoxInstructions.ResumeLayout(false);
@@ -3006,6 +3089,12 @@ namespace _8085
         private System.Windows.Forms.PictureBox pbSID;
         private System.Windows.Forms.Label lblSOD;
         private System.Windows.Forms.PictureBox pbSOD;
+        private System.Windows.Forms.ToolStripButton toolStripButtonFast;
+        private System.Windows.Forms.Label lblCycles;
+        private System.Windows.Forms.TextBox tbCycles;
+        private System.Windows.Forms.Button btnCyclesReset;
+        private System.Windows.Forms.CheckBox chkTerminal;
+        private System.Windows.Forms.CheckBox chkSIDSOD;
     }
 }
 

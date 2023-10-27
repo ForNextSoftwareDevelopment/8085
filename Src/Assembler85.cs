@@ -592,6 +592,7 @@ namespace _8085
                     break;
                 case 0b0110:
                     RAM[registerH * 0x0100 + registerL] = val;
+                    cycles += 1;
                     break;
                 case 0b0111:
                     registerA = val;
@@ -2538,7 +2539,7 @@ namespace _8085
                     registerPC++;
                     registerA = Calculate(registerA, RAM[registerPC], (byte)(flagC ? 1 : 0), OPERATOR.ADD);
                     registerPC++;
-                    cycles += 2;
+                    cycles += 7;
                 } else if ((byteInstruction >= 0x88) && (byteInstruction <= 0x8F))                                          // ADC
                 {
                     num = byteInstruction - 0x88;
@@ -2546,7 +2547,8 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     registerA = Calculate(registerA, val, (byte)(flagC ? 1 : 0), OPERATOR.ADD);
                     registerPC++;
-                    cycles += 1;
+                    cycles += 4;
+                    if (byteInstruction == 0x8E) cycles += 3;
                 } else if ((byteInstruction >= 0x80) && (byteInstruction <= 0x87))                                          // ADD
                 {
                     num = byteInstruction - 0x80;
@@ -2554,11 +2556,14 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     registerA = Calculate(registerA, val, 0, OPERATOR.ADD);
                     registerPC++;
+                    cycles += 4;
+                    if (byteInstruction == 0x86) cycles += 3;
                 } else if (byteInstruction == 0xC6)                                                                         // ADI
                 {
                     registerPC++;
                     registerA = Calculate(registerA, RAM[registerPC], 0, OPERATOR.ADD);
                     registerPC++;
+                    cycles += 7;
                 } else if ((byteInstruction >= 0xA0) && (byteInstruction <= 0xA7))                                          // ANA
                 {
                     num = byteInstruction - 0xA0;
@@ -2566,11 +2571,14 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     registerA = Calculate(registerA, val, 0, OPERATOR.AND);
                     registerPC++;
+                    cycles += 4;
+                    if (byteInstruction == 0xA6) cycles += 3;
                 } else if (byteInstruction == 0xE6)                                                                         // ANI
                 {
                     registerPC++;
                     registerA = Calculate(registerA, RAM[registerPC], 0, OPERATOR.AND);
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0xCD)                                                                         // CALL
                 {
                     UInt16 address = 0;
@@ -2585,6 +2593,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = address;
+                    cycles += 18;
                 } else if (byteInstruction == 0xDC)                                                                         // CC    
                 {
                     if (flagC)
@@ -2601,11 +2610,13 @@ namespace _8085
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(lo, 16);
                         registerPC = address;
+                        cycles += 18;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 17;
                     }
                 } else if (byteInstruction == 0xFC)                                                                         // CM
                 {
@@ -2623,11 +2634,13 @@ namespace _8085
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(lo, 16);
                         registerPC = address;
+                        cycles += 18;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 17;
                     }
                 } else if (byteInstruction == 0x2F)                                                                         // CMA
                 {
@@ -2637,6 +2650,7 @@ namespace _8085
                 {
                     flagC = !flagC;
                     registerPC++;
+                    cycles += 4;
                 } else if ((byteInstruction >= 0xB8) && (byteInstruction <= 0xBF))                                          // CMP  
                 {
                     num = byteInstruction - 0xB8;
@@ -2645,6 +2659,8 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     Calculate(registerA, compareValue, 0, OPERATOR.SUB);
                     registerPC++;
+                    cycles += 4;
+                    if (byteInstruction == 0xBE) cycles += 3;
                 } else if (byteInstruction == 0xD4)                                                                         // CNC 
                 {
                     if (flagC)
@@ -2652,6 +2668,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 17;
                     } else
                     {
                         UInt16 address = 0;
@@ -2666,6 +2683,7 @@ namespace _8085
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(lo, 16);
                         registerPC = address;
+                        cycles += 18;
                     }
                 } else if (byteInstruction == 0xC4)                                                                         // CNZ
                 {
@@ -2674,6 +2692,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 17;
                     } else
                     {
                         UInt16 address = 0;
@@ -2683,6 +2702,7 @@ namespace _8085
                         address += (UInt16)(0x0100 * RAM[registerPC++]);
                         registerPC++;
                         registerA = RAM[address];
+                        cycles += 18;
                     }
                 } else if (byteInstruction == 0xF4)                                                                         // CP
                 {
@@ -2691,6 +2711,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 17;
                     } else
                     {
                         UInt16 address = 0;
@@ -2705,6 +2726,7 @@ namespace _8085
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(lo, 16);
                         registerPC = address;
+                        cycles += 18;
                     }
                 } else if (byteInstruction == 0xEC)                                                                         // CPE
                 {
@@ -2722,17 +2744,20 @@ namespace _8085
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(lo, 16);
                         registerPC = address;
+                        cycles += 18;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 17;
                     }
                 } else if (byteInstruction == 0xFE)                                                                         // CPI  
                 {
                     registerPC++;
                     Calculate(registerA, RAM[registerPC], 0, OPERATOR.SUB);
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0xE4)                                                                         // CPO
                 {
                     if (flagC)
@@ -2740,6 +2765,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 17;
                     } else
                     {
                         UInt16 address = 0;
@@ -2754,6 +2780,7 @@ namespace _8085
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(lo, 16);
                         registerPC = address;
+                        cycles += 18;
                     }
                 } else if (byteInstruction == 0xCC)                                                                         // CZ
                 {
@@ -2762,6 +2789,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 17;
                     } else
                     {
                         UInt16 address = 0;
@@ -2771,6 +2799,7 @@ namespace _8085
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC++;
                         registerA = RAM[address];
+                        cycles += 18;
                     }
                 } else if (byteInstruction == 0x27)                                                                         // DAA 
                 {
@@ -2793,6 +2822,7 @@ namespace _8085
                     }
                     registerA = (byte)(high * 0x0100 + low);
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x09)                                                                         // DAD B
                 {
                     UInt16 value1 = (UInt16)(0x0100 * registerB + registerC);
@@ -2802,6 +2832,7 @@ namespace _8085
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x19)                                                                         // DAD D
                 {
                     UInt16 value1 = (UInt16)(0x0100 * registerD + registerE);
@@ -2811,6 +2842,7 @@ namespace _8085
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x29)                                                                         // DAD H
                 {
                     UInt16 value1 = (UInt16)(0x0100 * registerH + registerL);
@@ -2820,6 +2852,7 @@ namespace _8085
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x39)                                                                         // DAD SP
                 {
                     UInt16 value1 = registerSP;
@@ -2829,48 +2862,56 @@ namespace _8085
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x3D)                                                                         // DCR A
                 {
                     bool save_flag = flagC;
                     registerA = Calculate(registerA, 0x01, 0, OPERATOR.SUB);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x05)                                                                         // DCR B
                 {
                     bool save_flag = flagC;
                     registerB = Calculate(registerB, 0x01, 0, OPERATOR.SUB);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x0D)                                                                         // DCR C
                 {
                     bool save_flag = flagC;
                     registerC = Calculate(registerC, 0x01, 0, OPERATOR.SUB);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x15)                                                                         // DCR D
                 {
                     bool save_flag = flagC;
                     registerD = Calculate(registerD, 0x01, 0, OPERATOR.SUB);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x1D)                                                                         // DCR E
                 {
                     bool save_flag = flagC;
                     registerE = Calculate(registerE, 0x01, 0, OPERATOR.SUB);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x25)                                                                         // DCR H
                 {
                     bool save_flag = flagC;
                     registerH = Calculate(registerH, 0x01, 0, OPERATOR.SUB);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x2D)                                                                         // DCR L
                 {
                     bool save_flag = flagC;
                     registerL = Calculate(registerL, 0x01, 0, OPERATOR.SUB);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x35)                                                                         // DCR M
                 {
                     bool save_flag = flagC;
@@ -2878,6 +2919,7 @@ namespace _8085
                     RAM[address] = Calculate(RAM[address], 0x01, 0, OPERATOR.SUB);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x0B)                                                                         // DCX B
                 {
                     int value = (0x0100 * registerB + registerC);
@@ -2887,6 +2929,7 @@ namespace _8085
                     registerB = (byte)Convert.ToInt32(hi, 16);
                     registerC = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0x1B)                                                                         // DCX D
                 {
                     int value = (0x0100 * registerD + registerE);
@@ -2896,6 +2939,7 @@ namespace _8085
                     registerD = (byte)Convert.ToInt32(hi, 16);
                     registerE = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0x2B)                                                                         // DCX H
                 {
                     int value = (0x0100 * registerH + registerL);
@@ -2905,69 +2949,82 @@ namespace _8085
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0x3B)                                                                         // DCX SP
                 {
                     if (registerSP == 0x8000) flagK = true;
                     registerSP -= 0x01;
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0xF3)                                                                         // DI
                 {
                     intrIE = false; 
-                    registerPC++; 
+                    registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x76)                                                                         // HLT
                 {
+                    cycles += 5;
                     return ("System Halted");
                 } else if (byteInstruction == 0xFB)                                                                         // EI
                 {
                     intrIE = true;
-                    registerPC++; 
+                    registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0xDB)                                                                         // IN
                 {
                     registerPC++;
                     registerA = PORT[RAM[registerPC]];
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x3C)                                                                         // INR A
                 {
                     bool save_flag = flagC;
                     registerA = Calculate(registerA, 0x01, 0, OPERATOR.ADD);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x04)                                                                         // INR B
                 {
                     bool save_flag = flagC;
                     registerB = Calculate(registerB, 0x01, 0, OPERATOR.ADD);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x0C)                                                                         // INR C
                 {
                     bool save_flag = flagC;
                     registerC = Calculate(registerC, 0x01, 0, OPERATOR.ADD);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x14)                                                                         // INR D
                 {
                     bool save_flag = flagC;
                     registerD = Calculate(registerD, 0x01, 0, OPERATOR.ADD);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x1C)                                                                         // INR E
                 {
                     bool save_flag = flagC;
                     registerE = Calculate(registerE, 0x01, 0, OPERATOR.ADD);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x24)                                                                         // INR H
                 {
                     bool save_flag = flagC;
                     registerH = Calculate(registerH, 0x01, 0, OPERATOR.ADD);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x2C)                                                                         // INR L
                 {
                     bool save_flag = flagC;
                     registerL = Calculate(registerL, 0x01, 0, OPERATOR.ADD);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x34)                                                                         // INR M
                 {
                     bool save_flag = flagC;
@@ -2976,6 +3033,7 @@ namespace _8085
                     RAM[address] = Calculate(RAM[address], 0x01, 0, OPERATOR.ADD);
                     flagC = save_flag;
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x03)                                                                         // INX B
                 {
                     int value = (0x0100 * registerB + registerC);
@@ -2985,6 +3043,7 @@ namespace _8085
                     registerB = (byte)Convert.ToInt32(hi, 16);
                     registerC = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0x13)                                                                         // INX D
                 {
                     int value = (0x0100 * registerD + registerE);
@@ -2994,6 +3053,7 @@ namespace _8085
                     registerD = (byte)Convert.ToInt32(hi, 16);
                     registerE = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0x23)                                                                         // INX H
                 {
                     int value = (0x0100 * registerH + registerL);
@@ -3003,11 +3063,13 @@ namespace _8085
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0x33)                                                                         // INX SP
                 {
                     if (registerSP == 0x7FFF) flagK = true;
                     registerSP += 0x01;
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0xDA)                                                                         // JC
                 {
                     if (flagC)
@@ -3034,11 +3096,13 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     }
                 } else if (byteInstruction == 0xC3)                                                                         // JMP
                 {
@@ -3048,6 +3112,7 @@ namespace _8085
                     registerPC++;
                     address += (UInt16)(0x0100 * RAM[registerPC]);
                     registerPC = address;
+                    cycles += 10;
                 } else if (byteInstruction == 0xD2)                                                                         // JNC
                 {
                     if (flagC)
@@ -3055,6 +3120,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     } else
                     {
                         UInt16 address = 0;
@@ -3063,6 +3129,7 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     }
                 } else if (byteInstruction == 0xC2)                                                                         // JNZ
                 {
@@ -3071,6 +3138,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     } else
                     {
                         UInt16 address = 0;
@@ -3079,6 +3147,7 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     }
                 } else if (byteInstruction == 0xF2)                                                                         // JP
                 {
@@ -3087,6 +3156,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     } else
                     {
                         UInt16 address = 0;
@@ -3095,6 +3165,7 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     }
                 } else if (byteInstruction == 0xEA)                                                                         // JPE
                 {
@@ -3106,11 +3177,13 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     }
                 } else if (byteInstruction == 0xE2)                                                                         // JPO
                 {
@@ -3119,6 +3192,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     } else
                     {
                         UInt16 address = 0;
@@ -3127,6 +3201,7 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     }
                 } else if (byteInstruction == 0xCA)                                                                         // JZ
                 {
@@ -3138,11 +3213,13 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     }
                 } else if (byteInstruction == 0x3A)                                                                         // LDA
                 {
@@ -3153,6 +3230,7 @@ namespace _8085
                     address += (UInt16)(0x0100 * RAM[registerPC]);
                     registerPC++;
                     registerA = RAM[address];
+                    cycles += 13;
                 } else if ((byteInstruction == 0x0A) || (byteInstruction == 0x1A))                                          // LDAX
                 {
                     UInt16 address;
@@ -3165,6 +3243,8 @@ namespace _8085
                         address = (UInt16)(registerD * 0x0100 + registerE);
                         registerA = RAM[address];
                     }
+                    registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0x2A)                                                                         // LHLD
                 {
                     UInt16 address = 0;
@@ -3176,6 +3256,7 @@ namespace _8085
                     registerL = RAM[address];
                     address++;
                     registerH = RAM[address];
+                    cycles += 16;
                 } else if (byteInstruction == 0x01)                                                                         // LXI B
                 {
                     registerPC++;
@@ -3183,6 +3264,7 @@ namespace _8085
                     registerPC++;
                     registerB = RAM[registerPC];
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x11)                                                                         // LXI D
                 {
                     registerPC++;
@@ -3190,6 +3272,7 @@ namespace _8085
                     registerPC++;
                     registerD = RAM[registerPC];
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x21)                                                                         // LXI H
                 {
                     registerPC++;
@@ -3197,6 +3280,7 @@ namespace _8085
                     registerPC++;
                     registerH = RAM[registerPC];
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x31)                                                                         // LXI SP
                 {
                     byte b1, b2;
@@ -3206,6 +3290,7 @@ namespace _8085
                     b2 = RAM[registerPC];
                     registerPC++;
                     registerSP = (UInt16)(b1 + (0x0100 * b2));
+                    cycles += 10;
                 } else if ((byteInstruction >= 0x40) && (byteInstruction <= 0x7F) && (byteInstruction != 0x76))             // MOV
                 {
                     if ((byteInstruction == 0x46) ||
@@ -3222,6 +3307,7 @@ namespace _8085
                         result = SetRegisterValue((byte)((num >> 3) & 0x07), val);
                         if (!result) return ("Can't set the register value");
                         registerPC++;
+                        cycles += 7;
                     } else if ((byteInstruction >= 0x70) && (byteInstruction <= 0x77))
                     {
                         num = byteInstruction - 0x40;
@@ -3230,6 +3316,7 @@ namespace _8085
                         UInt16 address = (UInt16)(0x0100 * registerH + registerL);
                         RAM[address] = val;
                         registerPC++;
+                        cycles += 7;
                     } else
                     {
                         num = byteInstruction - 0x40;
@@ -3238,6 +3325,7 @@ namespace _8085
                         result = SetRegisterValue((byte)((num >> 3) & 0x07), val);
                         if (!result) return ("Can't set the register value");
                         registerPC++;
+                        cycles += 4;
                     }
                 } else if ((byteInstruction == 0x06) ||
                            (byteInstruction == 0x0E) ||
@@ -3256,6 +3344,7 @@ namespace _8085
                         val = RAM[registerPC];
                         RAM[address] = val;
                         registerPC++;
+                        cycles += 10;
                     } else
                     {
                         registerPC++;
@@ -3264,10 +3353,12 @@ namespace _8085
                         result = SetRegisterValue((byte)((num >> 3) & 0x07), val);
                         if (!result) return ("Can't set the register value");
                         registerPC++;
+                        cycles += 7;
                     }
                 } else if (byteInstruction == 0x00)                                                                         // NOP
                 {
                     registerPC++;
+                    cycles += 4;
                 } else if ((byteInstruction >= 0xB0) && (byteInstruction <= 0xB7))                                          // ORA
                 {
                     num = byteInstruction - 0xB0;
@@ -3275,20 +3366,25 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     registerA = Calculate(registerA, val, 0, OPERATOR.OR);
                     registerPC++;
+                    cycles += 4;
+                    if (byteInstruction == 0xB6) cycles += 3;
                 } else if (byteInstruction == 0xF6)                                                                         // ORI
                 {
                     registerPC++;
                     registerA = Calculate(registerA, RAM[registerPC], 0, OPERATOR.OR);
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0xD3)                                                                         // OUT
                 {
                     registerPC++;
                     PORT[RAM[registerPC]] = registerA;
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0xE9)                                                                         // PCHL
                 {
                     registerPC = registerL;
                     registerPC = (UInt16)(registerPC + (registerH * 0x0100));
+                    cycles += 6;
                 } else if (byteInstruction == 0xC1)                                                                         // POP B
                 {
                     registerC = RAM[registerSP];
@@ -3296,6 +3392,7 @@ namespace _8085
                     registerB = RAM[registerSP];
                     registerSP++;
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0xD1)                                                                         // POP D
                 {
                     registerE = RAM[registerSP];
@@ -3303,6 +3400,7 @@ namespace _8085
                     registerD = RAM[registerSP];
                     registerSP++;
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0xE1)                                                                         // POP H
                 {
                     registerL = RAM[registerSP];
@@ -3310,6 +3408,7 @@ namespace _8085
                     registerH = RAM[registerSP];
                     registerSP++;
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0xF1)                                                                         // POP PSW 
                 {
                     byte flags, b;
@@ -3328,6 +3427,7 @@ namespace _8085
                     b = (byte)(flags & 0x80);
                     if (b != 0) flagS = true; else flagS = false;
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0xC5)                                                                         // PUSH B
                 {
                     registerSP--;
@@ -3335,6 +3435,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = registerC;
                     registerPC++;
+                    cycles += 12;
                 } else if (byteInstruction == 0xD5)                                                                         // PUSH D
                 {
                     registerSP--;
@@ -3342,6 +3443,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = registerE;
                     registerPC++;
+                    cycles += 12;
                 } else if (byteInstruction == 0xE5)                                                                         // PUSH H
                 {
                     registerSP--;
@@ -3349,6 +3451,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = registerL;
                     registerPC++;
+                    cycles += 12;
                 } else if (byteInstruction == 0xF5)                                                                         // PUSH PSW 
                 {
                     byte aflag = 00;
@@ -3362,6 +3465,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = aflag;
                     registerPC++;
+                    cycles += 12;
                 } else if (byteInstruction == 0x17)                                                                         // RAL 
                 {
                     byte prevA;
@@ -3386,6 +3490,7 @@ namespace _8085
                     ac += saveC;
                     registerA = ac;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x1F)                                                                         // RAR   
                 {
                     byte ac = registerA;
@@ -3408,6 +3513,7 @@ namespace _8085
                     ac += (byte)(saveC * 0x80);
                     registerA = ac;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0xD8)                                                                         // RC
                 {
                     if (flagC)
@@ -3418,9 +3524,11 @@ namespace _8085
                         address += (UInt16)(RAM[registerSP] * 0x0100);
                         registerSP++;
                         registerPC = address;
+                        cycles += 12;
                     } else
                     {
                         registerPC++;
+                        cycles += 11;
                     }
                 } else if (byteInstruction == 0xC9)                                                                         // RET
                 {
@@ -3430,6 +3538,7 @@ namespace _8085
                     address += (UInt16)(RAM[registerSP] * 0x0100);
                     registerSP++;
                     registerPC = address;
+                    cycles += 10;
                 } else if (byteInstruction == 0x20)                                                                         // RIM
                 {
                     registerA = 0x00;
@@ -3442,12 +3551,14 @@ namespace _8085
                     registerA += intrP75 ? (byte)0x40 : (byte)0x00;
                     registerA += sid ? (byte)0x80 : (byte)0x00;
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x07)                                                                         // RLC
                 {
                     flagC = (registerA & 0x80) != 0 ? true : false;
                     registerA = (byte)(registerA << 1);
                     if (flagC) registerA = (byte)(registerA | 0x01);
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0xF8)                                                                         // RM
                 {
                     if (flagS)
@@ -3458,15 +3569,18 @@ namespace _8085
                         address += (UInt16)(RAM[registerSP] * 0x0100);
                         registerSP++;
                         registerPC = address;
+                        cycles += 12;
                     } else
                     {
                         registerPC++;
+                        cycles += 11;
                     }
                 } else if (byteInstruction == 0xD0)                                                                         // RNC
                 {
                     if (flagC)
                     {
                         registerPC++;
+                        cycles += 11;
                     } else
                     {
                         UInt16 address;
@@ -3475,12 +3589,14 @@ namespace _8085
                         address += (UInt16)(RAM[registerSP] * 0x0100);
                         registerSP++;
                         registerPC = address;
+                        cycles += 12;
                     }
                 } else if (byteInstruction == 0xC0)                                                                         // RNZ
                 {
                     if (flagZ)
                     {
                         registerPC++;
+                        cycles += 11;
                     } else
                     {
                         UInt16 address;
@@ -3489,12 +3605,14 @@ namespace _8085
                         address += (UInt16)(RAM[registerSP] * 0x0100);
                         registerSP++;
                         registerPC = address;
+                        cycles += 12;
                     }
                 } else if (byteInstruction == 0xF0)                                                                         // RP
                 {
                     if (flagS)
                     {
                         registerPC++;
+                        cycles += 11;
                     } else
                     {
                         UInt16 address;
@@ -3503,6 +3621,7 @@ namespace _8085
                         address += (UInt16)(RAM[registerSP] * 0x0100);
                         registerSP++;
                         registerPC = address;
+                        cycles += 12;
                     }
                 } else if (byteInstruction == 0xE8)                                                                         // RPE
                 {
@@ -3514,15 +3633,18 @@ namespace _8085
                         address += (UInt16)(RAM[registerSP] * 0x0100);
                         registerSP++;
                         registerPC = address;
+                        cycles += 12;
                     } else
                     {
                         registerPC++;
+                        cycles += 11;
                     }
                 } else if (byteInstruction == 0xE0)                                                                         // RPO
                 {
                     if (flagP)
                     {
                         registerPC++;
+                        cycles += 11;
                     } else
                     {
                         UInt16 address;
@@ -3531,6 +3653,7 @@ namespace _8085
                         address += (UInt16)(RAM[registerSP] * 0x0100);
                         registerSP++;
                         registerPC = address;
+                        cycles += 12;
                     }
                 } else if (byteInstruction == 0x0F)                                                                         // RRC
                 {
@@ -3538,6 +3661,7 @@ namespace _8085
                     registerA = (byte)(registerA >> 1);
                     if (flagC) registerA = (byte)(registerA | 0x80);
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0xC7)                                                                         // RST 0
                 {
                     registerPC++;
@@ -3547,6 +3671,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0000;
+                    cycles += 12;
                 } else if (byteInstruction == 0xCF)                                                                         // RST 1
                 {
                     registerPC++;
@@ -3556,6 +3681,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0008;
+                    cycles += 12;
                 } else if (byteInstruction == 0xD7)                                                                         // RST 2
                 {
                     registerPC++;
@@ -3565,6 +3691,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0010;
+                    cycles += 12;
                 } else if (byteInstruction == 0xDF)                                                                         // RST 3
                 {
                     registerPC++;
@@ -3574,6 +3701,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0018;
+                    cycles += 12;
                 } else if (byteInstruction == 0xE7)                                                                         // RST 4
                 {
                     registerPC++;
@@ -3583,6 +3711,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0020;
+                    cycles += 12;
                 } else if (byteInstruction == 0xEF)                                                                         // RST 5
                 {
                     registerPC++;
@@ -3592,6 +3721,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0028;
+                    cycles += 12;
                 } else if (byteInstruction == 0xF7)                                                                         // RST 6
                 {
                     registerPC++;
@@ -3601,6 +3731,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0030;
+                    cycles += 12;
                 } else if (byteInstruction == 0xFF)                                                                         // RST 7
                 {
                     registerPC++;
@@ -3610,6 +3741,7 @@ namespace _8085
                     registerSP--;
                     RAM[registerSP] = Convert.ToByte(lo, 16);
                     registerPC = 0x0038;
+                    cycles += 12;
                 } else if (byteInstruction == 0xC8)                                                                         // RZ
                 {
                     if (flagZ)
@@ -3620,9 +3752,11 @@ namespace _8085
                         address += (UInt16)(RAM[registerSP] * 0x0100);
                         registerSP++;
                         registerPC = address;
+                        cycles += 12;
                     } else
                     {
                         registerPC++;
+                        cycles += 11;
                     }
                 } else if ((byteInstruction >= 0x98) && (byteInstruction <= 0x9F))                                          // SBB
                 {
@@ -3631,11 +3765,14 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     registerA = Calculate(registerA, val, (byte)(flagC ? 1 : 0), OPERATOR.SUB);
                     registerPC++;
+                    cycles += 4;
+                    if (byteInstruction == 0x9E) cycles += 3;
                 } else if (byteInstruction == 0xDE)                                                                         // SBI
                 {
                     registerPC++;
                     registerA = Calculate(registerA, RAM[registerPC], (byte)(flagC ? 1 : 0), OPERATOR.SUB);
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0x22)                                                                         // SHLD
                 {
                     UInt16 address = 0;
@@ -3647,6 +3784,7 @@ namespace _8085
                     RAM[address] = registerL;
                     address++;
                     RAM[address] = registerH;
+                    cycles += 16;
                 } else if (byteInstruction == 0x30)                                                                         // SIM
                 {
                     if ((registerA & 0x08) == 0x08)
@@ -3660,11 +3798,13 @@ namespace _8085
                         sod = (registerA & 0x80) == 0x80 ? true : false;
                     }
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0xF9)                                                                         // SPHL
                 {
                     registerSP = registerL;
                     registerSP = (UInt16)(registerSP + (0x0100 * registerH));
                     registerPC++;
+                    cycles += 6;
                 } else if (byteInstruction == 0x32)                                                                         // STA
                 {
                     UInt16 address = 0;
@@ -3675,6 +3815,7 @@ namespace _8085
                     RAM[address] = registerA;
                     registerPC++;
                     if (address == 0x1800) writeToDisplay = true;
+                    cycles += 13;
                 } else if (byteInstruction == 0x02)                                                                         // STAX B
                 {
                     UInt16 address;
@@ -3682,6 +3823,7 @@ namespace _8085
                     address = (UInt16)(address + (0x0100 * registerB));
                     RAM[address] = registerA;
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0x12)                                                                         // STAX D
                 {
                     UInt16 address;
@@ -3689,10 +3831,12 @@ namespace _8085
                     address = (UInt16)(address + (0x0100 * registerD));
                     RAM[address] = registerA;
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0x37)                                                                         // STC
                 {
                     flagC = true;
                     registerPC++;
+                    cycles += 4;
                 } else if ((byteInstruction >= 0x90) && (byteInstruction <= 0x97))                                          // SUB
                 {
                     num = byteInstruction - 0x90;
@@ -3700,11 +3844,14 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     registerA = Calculate(registerA, val, 0, OPERATOR.SUB);
                     registerPC++;
+                    cycles += 4;
+                    if (byteInstruction == 0x96) cycles += 3;
                 } else if (byteInstruction == 0xD6)                                                                         // SUI
                 {
                     registerPC++;
                     registerA = Calculate(registerA, RAM[registerPC], 0, OPERATOR.SUB);
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0xEB)                                                                         // XCHG
                 {
                     byte temp;
@@ -3715,6 +3862,7 @@ namespace _8085
                     registerL = registerE;
                     registerE = temp;
                     registerPC++;
+                    cycles += 4;
                 } else if ((byteInstruction >= 0xA8) && (byteInstruction <= 0xAF))                                          // XRA
                 {
                     num = byteInstruction - 0xA8;
@@ -3722,11 +3870,14 @@ namespace _8085
                     if (!result) return ("Can't get the register value");
                     registerA = Calculate(registerA, val, 0, OPERATOR.XOR);
                     registerPC++;
+                    cycles += 4;
+                    if (byteInstruction == 0xAE) cycles += 3;
                 } else if (byteInstruction == 0xEE)                                                                         // XRI
                 {
                     registerPC++;
                     registerA = Calculate(registerA, RAM[registerPC], 0, OPERATOR.XOR);
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0xE3)                                                                         // XTHL
                 {
                     byte t1, t2;
@@ -3737,6 +3888,7 @@ namespace _8085
                     registerH = RAM[registerSP + 1];
                     RAM[registerSP + 1] = t2;
                     registerPC++;
+                    cycles += 16;
                 } else if (byteInstruction == 0x10)                                                                         // ARHL (UNDOCUMENTED)
                 {
                     byte h = registerH;
@@ -3763,6 +3915,7 @@ namespace _8085
                     registerH = h;
                     registerL = l;
                     registerPC++;
+                    cycles += 7;
                 } else if (byteInstruction == 0x08)                                                                         // DSUB (UNDOCUMENTED)
                 {
                     UInt16 value1 = (UInt16)(0x0100 * registerB + registerC);
@@ -3772,6 +3925,7 @@ namespace _8085
                     registerH = (byte)Convert.ToInt32(hi, 16);
                     registerL = (byte)Convert.ToInt32(lo, 16);
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0xFD)                                                                         // JK/JX5 (UNDOCUMENTED)
                 {
                     if (flagK)
@@ -3783,11 +3937,13 @@ namespace _8085
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC++;
                         registerPC = address;
+                        cycles += 10;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     }
                 } else if (byteInstruction == 0xDD)                                                                         // JNK/JNX5 (UNDOCUMENTED)
                 {
@@ -3796,6 +3952,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     } else
                     {
                         UInt16 address = 0;
@@ -3805,6 +3962,7 @@ namespace _8085
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC++;
                         registerPC = address;
+                        cycles += 10;
                     }
                 } else if (byteInstruction == 0x28)                                                                         // LDHI (UNDOCUMENTED)
                 {
@@ -3815,6 +3973,7 @@ namespace _8085
                     registerH = Convert.ToByte(hi, 16);
                     registerL = Convert.ToByte(lo, 16);
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x38)                                                                         // LDSI (UNDOCUMENTED)
                 {
                     num = registerSP;
@@ -3824,6 +3983,7 @@ namespace _8085
                     registerD = Convert.ToByte(hi, 16);
                     registerE = Convert.ToByte(lo, 16);
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0xED)                                                                         // LHLX (UNDOCUMENTED)
                 {
                     UInt16 address = 0;
@@ -3833,6 +3993,7 @@ namespace _8085
                     address++;
                     registerH = RAM[address];
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0x18)                                                                         // RDEL (UNDOCUMENTED)
                 {
                     byte d = registerD;
@@ -3858,6 +4019,7 @@ namespace _8085
                     registerD = d;
                     registerE = e;
                     registerPC++;
+                    cycles += 10;
                 } else if (byteInstruction == 0xCB)                                                                         // RSTV (UNDOCUMENTED)
                 {
                     if (flagV)
@@ -3868,9 +4030,11 @@ namespace _8085
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(lo, 16);
                         registerPC = 0x0040;
+                        cycles += 12;
                     } else
                     {
                         registerPC++;
+                        cycles += 6;
                     }
                 } else if (byteInstruction == 0xD9)                                                                         // SHLX (UNDOCUMENTED)
                 {
@@ -3881,6 +4045,7 @@ namespace _8085
                     address++;
                     RAM[address] = registerH;
                     registerPC++;
+                    cycles += 10;
                 } else
                 {
                     return ("Unknown instruction '" + byteInstruction.ToString("X2") + "'");
@@ -3894,6 +4059,8 @@ namespace _8085
             {
                 return("No valid instruction at address: 0x" + startAddress.ToString("X4"));
             }
+
+            if (cycles > (UInt64.MaxValue - 20)) cycles = 0;
 
             nextAddress = registerPC;
             return "";

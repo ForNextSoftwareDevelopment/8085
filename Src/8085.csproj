@@ -100,6 +100,18 @@
     <Compile Include="FormSDK-85.Designer.cs">
       <DependentUpon>FormSDK-85.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormSerial.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSerial.designer.cs">
+      <DependentUpon>FormSerial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormTerminal.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTerminal.designer.cs">
+      <DependentUpon>FormTerminal.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -122,6 +134,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormSDK-85.resx">
       <DependentUpon>FormSDK-85.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSerial.resx">
+      <DependentUpon>FormSerial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormTerminal.resx">
+      <DependentUpon>FormTerminal.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
@@ -155,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="8085.ico" />
+    <Content Include="Resources\fast.png" />
     <Content Include="Resources\green.png" />
     <Content Include="Resources\help.png" />
     <None Include="Resources\sdk85.bin" />
