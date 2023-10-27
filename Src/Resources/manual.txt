@@ -13,7 +13,7 @@ The first error it encounters will be highlighted in light red.
 Ajustments can be made in the main window (don't forget to save).
 If no errors were encountered, the simulator is ready to run (or step) through the program and the first instruction to be executed will be highlighted in light green.
 
-Running will be with a delay of 100 ms between instructions (this can be adjusted in the main screen).
+Running will be with a delay of 50 ms between instructions (this can be adjusted in the main screen).
 
 Setting the program counter to a specific address can be done by entering this address in the the 'set program counter' textbox and close with an enter. 
 
@@ -26,12 +26,19 @@ Also the flags (including the undocumented ones, K(X5) and V) are displayed.
 
 Above the memory window the interrupt register is shown.
 Also the IE bit in this register is shown as a green (Enabled) or red (Disabled) label.
- 
+
 With the checkbox 'SDK-85' a keyboard/display of a SDK-85 can be shown/hidden.
 This will simulate the SDK-85, the display will show what has been written to 0x1800 (remember to set the control address too: 0x1900).
 The keyboard will fill address 0x1800 with the key value pressed (the key turns red and stays that way until it is handled).
 Only the 'Reset' key and 'Vect Intr' key will act directly as an interrupt in the running program.
 
+The status of the SID en SOD lines of the 8085 processor are visible as red/green leds.
+Also a graphical representation is visible, timing is in micro seconds based on a 6.144 MHz crystal which makes a 3.072 MHz machine clock cycle.
+Toggling of the SOD line is posible by left clicking the led (if the assembler is active). 
+
+A terminal screen is available to code typed data onto the SID line and decode data from the SOD line.
+Remember that if the terminal screen is active on start of the monitor program the display/keyboard will be disabled (because the SID line is high, you could put it manually to low).
+ 
 The two versions of the monitor program of the SDK-85 have been provided in the folder 'Monitor'.
 Slight adjustments have been made to account for some of the directives used (e.g IF ENDIF and >>).
 
