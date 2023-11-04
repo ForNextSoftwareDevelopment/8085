@@ -227,7 +227,7 @@ TI2:    DCR     D           ;DECREMENT COUNTER EACH TIME ONE LEVEL IS READ
         CALL    BITIN 
         JC      TI2         ;REPEAT IF STILL AT ONE LEVEL 
         CALL    BITIN 
-        JNC     TI2 
+        JC      TI2 
 TI3:    INR     D           ;INCREMENT COUNTER EACH TIME ZERO IS READ 
         CALL    BITIN 
         JNC     TI3         ;REPEAT EACH TIME ZERO IS READ 
