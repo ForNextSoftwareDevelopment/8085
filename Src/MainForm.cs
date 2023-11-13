@@ -732,7 +732,7 @@ namespace _8085
         {
             if (sourceFile == "")
             {
-                OpenFileDialog fileDialog = new OpenFileDialog();
+                SaveFileDialog fileDialog = new SaveFileDialog();
                 fileDialog.Title = "Save File As";
                 fileDialog.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
                 fileDialog.FileName = "";
