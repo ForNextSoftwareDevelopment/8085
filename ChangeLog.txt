@@ -96,3 +96,7 @@ https://github.com/ForNextSoftwareDevelopment/8085
 - Added a 'Fast' button to run the code as fast as possible (no screen updates tho)
 - Added a Terminal screen to insert/extract data from the SID/SOD lines
 - Added a SID/SOD graphical signal screen
+
+## [2.6] - 2023-11-13
+### Updates
+- Import/Export to/from an audio file is possible (see AP-29 Application Note)
