@@ -173,6 +173,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="8085.ico" />
+    <Content Include="Resources\export.png" />
     <Content Include="Resources\fast.png" />
     <Content Include="Resources\green.png" />
     <Content Include="Resources\help.png" />
@@ -180,6 +181,7 @@
     <None Include="Resources\stop.png" />
     <None Include="Resources\Manual.txt" />
     <None Include="Resources\pcb.png" />
+    <Content Include="Resources\import.png" />
     <Content Include="Resources\play.png" />
     <Content Include="Resources\red.png" />
     <Content Include="Resources\save.png" />

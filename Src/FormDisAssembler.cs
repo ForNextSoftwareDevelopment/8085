@@ -128,7 +128,11 @@ namespace _8085
             int index = richTextBoxProgram.GetFirstCharIndexOfCurrentLine();
 
             // Get address
-            string str = richTextBoxProgram.Text.Substring(index, 4);
+            string str = "";
+            if (richTextBoxProgram.Text.Length > index + 4)
+            {
+                str = richTextBoxProgram.Text.Substring(index, 4);
+            }
 
             // If valid, put in textbox for adding exe addresses    
             try

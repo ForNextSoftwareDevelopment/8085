@@ -114,8 +114,6 @@ namespace _8085
                 default:
                     return 0;
             }
-
-            return 0;
         }
 
         #endregion

@@ -35,6 +35,8 @@ namespace _8085
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -255,6 +257,7 @@ namespace _8085
             this.btnCyclesReset = new System.Windows.Forms.Button();
             this.chkTerminal = new System.Windows.Forms.CheckBox();
             this.chkSIDSOD = new System.Windows.Forms.CheckBox();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip.SuspendLayout();
             this.groupBoxInstructions.SuspendLayout();
             this.groupBoxFlags.SuspendLayout();
@@ -295,6 +298,9 @@ namespace _8085
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newFileToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.toolStripSeparator3,
+            this.importToolStripMenuItem,
+            this.exportToolStripMenuItem,
             this.toolStripMenuItem2,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem,
@@ -322,6 +328,22 @@ namespace _8085
             this.openToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.open_Click);
+            // 
+            // importToolStripMenuItem
+            // 
+            this.importToolStripMenuItem.Image = global::_8085.Properties.Resources.import;
+            this.importToolStripMenuItem.Name = "importToolStripMenuItem";
+            this.importToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.importToolStripMenuItem.Text = "Import";
+            this.importToolStripMenuItem.Click += new System.EventHandler(this.importWav_Click);
+            // 
+            // exportToolStripMenuItem
+            // 
+            this.exportToolStripMenuItem.Image = global::_8085.Properties.Resources.export;
+            this.exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            this.exportToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.exportToolStripMenuItem.Text = "Export";
+            this.exportToolStripMenuItem.Click += new System.EventHandler(this.exportWav_Click);
             // 
             // toolStripMenuItem2
             // 
@@ -2801,6 +2823,11 @@ namespace _8085
             this.chkSIDSOD.UseVisualStyleBackColor = true;
             this.chkSIDSOD.CheckedChanged += new System.EventHandler(this.chkSIDSOD_CheckedChanged);
             // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(204, 6);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3095,6 +3122,9 @@ namespace _8085
         private System.Windows.Forms.Button btnCyclesReset;
         private System.Windows.Forms.CheckBox chkTerminal;
         private System.Windows.Forms.CheckBox chkSIDSOD;
+        private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

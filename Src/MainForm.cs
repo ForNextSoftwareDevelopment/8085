@@ -2,9 +2,13 @@
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace _8085
@@ -842,6 +846,470 @@ namespace _8085
                 {
                     richTextBoxProgram.Text = disAssemblerForm.program;
                 }
+            }
+        }
+
+        private void importWav_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult;
+            bool OnErrorResumeNext = false;
+
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Title = "Select Audio (wav) File";
+            fileDialog.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            fileDialog.FileName = "";
+            fileDialog.Filter = "Audio wav|*.wav|All Files|*.*";
+
+            FileStream fs = null;
+            if (fileDialog.ShowDialog() != DialogResult.Cancel)
+            {
+                fs = File.Open(fileDialog.FileName, FileMode.Open);
+
+                Int16[] L = null;
+                Int16[] R = null;
+
+                BinaryReader reader = new BinaryReader(fs);
+
+                // Chunk 0
+                int chunkID = reader.ReadInt32();
+                int fileSize = reader.ReadInt32();
+                int riffType = reader.ReadInt32();
+
+                // Chunk 1
+                int fmtID = reader.ReadInt32();
+                int fmtSize = reader.ReadInt32(); // bytes for this chunk (expect 16 or 18)
+
+                // 16 bytes coming...
+                int fmtCode = reader.ReadInt16();
+                int channels = reader.ReadInt16();
+                int sampleRate = reader.ReadInt32();
+                int byteRate = reader.ReadInt32();
+                int fmtBlockAlign = reader.ReadInt16();
+                int bitDepth = reader.ReadInt16();
+
+                if (bitDepth != 16)
+                {
+                    MessageBox.Show("Audio file has an invalid bit depth: " + bitDepth.ToString() + "\r\nOnly 16 bits wav files are supported", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (fmtSize == 18)
+                {
+                    // Read any extra values
+                    int fmtExtraSize = reader.ReadInt16();
+                    reader.ReadBytes(fmtExtraSize);
+                }
+
+                // Chunk 2
+                int dataID = reader.ReadInt32();
+                int bytes = reader.ReadInt32();
+
+                // Data
+                byte[] byteArray = reader.ReadBytes(bytes);
+
+                // Close file
+                fs.Close();
+
+                int bytesForSamp = bitDepth / 8;
+                int nValues = bytes / bytesForSamp;
+
+                Int16[] data = new Int16[nValues];
+                Buffer.BlockCopy(byteArray, 0, data, 0, bytes);
+
+                Int16 maxL = 0;
+                Int16 minL = 0;
+                Int16 meanL = 0;
+
+                Int16 maxR = 0;
+                Int16 minR = 0;
+                Int16 meanR = 0;
+
+                Int64 totL = 0;
+                Int64 totR = 0;
+
+                switch (channels)
+                {
+                    case 1:
+                        L = data;
+                        R = null;
+                        for (int v = 0; v < nValues; v++)
+                        {
+                            totL += data[v];
+                            if (data[v] > maxL) maxL = data[v];
+                            if (data[v] < minL) minL = data[v];
+                        }
+                        meanL = (Int16)(totL / nValues);
+                        break;
+                    case 2:
+                        // de-interleave
+                        int nSamps = nValues / 2;
+                        L = new Int16[nSamps];
+                        R = new Int16[nSamps];
+                        for (int s=0, v=0; s<nSamps; s++)
+                        {
+                            totL += data[v];
+                            if (data[v] > maxL) maxL = data[v];
+                            if (data[v] < minL) minL = data[v];
+                            L[s] = data[v++];
+
+                            totR += data[v];
+                            if (data[v] > maxR) maxR = data[v];
+                            if (data[v] < minR) minR = data[v];
+                            R[s] = data[v++];
+                        }
+                        meanL = (Int16)(totL / nSamps);
+                        meanR = (Int16)(totR / nSamps);
+                        break;
+                    default:
+                        MessageBox.Show("Audio file has an invalid number of channels: " + channels.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                }
+
+                // Create form for parameters
+                Form importForm = new Form();
+                importForm.Name = "FormImport";
+                importForm.Text = "Import";
+                importForm.ShowIcon = false;
+                importForm.Size = new Size(400, 200);
+                importForm.MinimumSize = new Size(400, 300);
+                importForm.MaximumSize = new Size(400, 300);
+                importForm.MaximizeBox = false;
+                importForm.MinimizeBox = false;
+                importForm.StartPosition = FormStartPosition.CenterScreen;
+
+                Font font = new Font(FontFamily.GenericSansSerif, 10.25F);
+
+                // Add controls to form
+                TextBox tbTreshold = new TextBox();
+                tbTreshold.ReadOnly = true;
+                tbTreshold.Multiline = true;
+                tbTreshold.BorderStyle = BorderStyle.None;
+                tbTreshold.ForeColor = Color.Black;
+                tbTreshold.Size = new Size(364, 44);
+                tbTreshold.Text = "Minimum (treshold) level for reading a signal as a percentage of the maximum level";
+                tbTreshold.Font = font;
+                tbTreshold.Location = new Point(10, 10);
+
+                NumericUpDown numTreshold = new NumericUpDown();
+                numTreshold.Location = new Point(10, 56);
+                numTreshold.Minimum = 10;
+                numTreshold.Maximum = 90;
+                numTreshold.Value = 30;
+
+                TextBox tbFrequency = new TextBox();
+                tbFrequency.ReadOnly = true;
+                tbFrequency.Multiline = true;
+                tbFrequency.BorderStyle = BorderStyle.None;
+                tbFrequency.ForeColor = Color.Black;
+                tbFrequency.Size = new Size(300, 22);
+                tbFrequency.Text = "Base frequency of the signal";
+                tbFrequency.Font = font;
+                tbFrequency.Location = new Point(10, 100);
+
+                NumericUpDown numFrequency = new NumericUpDown();
+                numFrequency.Location = new Point(10, 124);
+                numFrequency.Minimum = 1000;
+                numFrequency.Maximum = 10000;
+                numFrequency.Value = 3000;
+
+                // Create button for closing (dialog)form
+                Button btnOk = new Button();
+                btnOk.Text = "OK";
+                btnOk.Location = new Point(304, 230);
+                btnOk.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+                btnOk.Visible = true;
+                btnOk.DialogResult = DialogResult.OK;
+
+                importForm.Controls.Add(tbTreshold);
+                importForm.Controls.Add(numTreshold);
+                importForm.Controls.Add(tbFrequency);
+                importForm.Controls.Add(numFrequency);
+                importForm.Controls.Add(btnOk);
+
+                // Show form
+                importForm.ShowDialog();
+
+                // Program data
+                List<byte> program = new List<byte>();
+
+                int level = Convert.ToInt32(numTreshold.Value);
+                int samples = Convert.ToInt32(numFrequency.Value / 100);
+
+                // Take batches of a number of samples and determine from that if there is a signal of not
+                List<bool> result = new List<bool>();
+                for (int i = 0; i < L.Length; i += samples)
+                {
+                    int total = 0;
+                    for (int j = 0; j < samples; j++)
+                    {
+                        if (i + j < L.Length)
+                        {
+                            if (L[i + j] > 0) total += L[i + j];
+                            if (L[i + j] < 0) total -= L[i + j];
+                        }
+                    }
+
+                    short mean = Convert.ToInt16(total / samples);
+                    if (mean > (meanL + (maxL * level / 100))) result.Add(true); else result.Add(false);
+                }
+
+                int index = 0;
+                int bit = 0;
+                byte programByte = 0;
+
+                bool leaderFound = false;
+                int numOnes = 0;
+                while ((index < result.Count) && !leaderFound)
+                {
+                    // Skip to start of leader
+                    while ((index < result.Count) && (result[index] == false))
+                    {
+                        index++;
+                        numOnes = 0;
+                    }
+
+                    while ((index < result.Count) && (result[index] == true) && !leaderFound)
+                    {
+                        index++;
+                        numOnes++;
+                        if (numOnes >= 50) leaderFound = true;
+                    }
+                }
+
+                // Skip rest of leader
+                while ((index < result.Count) && (result[index] == true)) index++;
+
+                // Skip start 0    
+                while ((index < result.Count) && (result[index] == false)) index++;
+                index++;
+
+                while (index < result.Count)
+                {
+                    int trueTime = 1;
+                    int falseTime = 0;
+
+                    while ((index < result.Count) && (result[index] == true))
+                    {
+                        trueTime++;
+                        index++;
+                    }
+
+                    while ((index < result.Count) && (result[index] == false))
+                    {
+                        falseTime++;
+                        index++;
+                    }
+
+                    if (trueTime > falseTime) programByte |= (byte)(1 << bit);
+                    bit++;
+                    if (bit >= 8)
+                    {
+                        program.Add(programByte);
+                        programByte = 0;
+                        bit = 0;
+
+                        // Skip trailing bit
+                        trueTime = 0;
+                        falseTime = 0;
+                        while ((index < result.Count) && (result[index] == true))
+                        {
+                            trueTime++;
+                            index++;
+                        }
+
+                        while ((index < result.Count) && (result[index] == false))
+                        {
+                            falseTime++;
+                            index++;
+                        }
+
+                        if (trueTime > falseTime)
+                        {
+                            if (!OnErrorResumeNext)
+                            {
+                                dialogResult = MessageBox.Show("Error reading import file, trailing zero not found at the end of byte: " + program.Count + "\r\nDo you want to continue reading ?", "WARNING", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                                if (dialogResult != DialogResult.Yes) return;
+                                OnErrorResumeNext = true;
+                            }
+                        }
+                    }
+
+                    index++;
+                }
+
+                FormAddresses formAddresses = new FormAddresses();
+                formAddresses.ShowDialog();
+
+                FormDisAssembler disAssemblerForm = new FormDisAssembler(program.ToArray(), formAddresses.loadAddress, formAddresses.startAddress, formAddresses.useLabels);
+                dialogResult = disAssemblerForm.ShowDialog();
+                if (dialogResult == DialogResult.OK)
+                {
+                    richTextBoxProgram.Text = disAssemblerForm.program;
+                }
+            }
+        }
+
+        private void exportWav_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog fileDialog = new SaveFileDialog();
+            fileDialog.Title = "Save Audio (wav) File As";
+            fileDialog.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            fileDialog.FileName = "";
+            fileDialog.Filter = "Audio wav|*.wav|All Files|*.*";
+
+            FileStream fs = null;
+            if (fileDialog.ShowDialog() != DialogResult.Cancel)
+            {
+                // Create form for parameters
+                Form exportForm = new Form();
+                exportForm.Name = "FormExport";
+                exportForm.Text = "Export";
+                exportForm.ShowIcon = false;
+                exportForm.Size = new Size(300, 200);
+                exportForm.MinimumSize = new Size(300, 200);
+                exportForm.MaximumSize = new Size(300, 200);
+                exportForm.MaximizeBox = false;
+                exportForm.MinimizeBox = false;
+                exportForm.StartPosition = FormStartPosition.CenterScreen;
+
+                // Create button for closing (dialog)form
+                Button btnOk = new Button();
+                btnOk.Text = "OK";
+                btnOk.Location = new Point(204, 130);
+                btnOk.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+                btnOk.Visible = true;
+                btnOk.DialogResult = DialogResult.OK;
+
+                Font font = new Font(FontFamily.GenericSansSerif, 10.25F);
+
+                // Add controls to form
+                Label label = new Label();
+                label.ForeColor = Color.Black;
+                label.Size = new Size(260, 22);
+                label.Text = "Saving 256 bytes, set start address (hexadecimal):";
+                label.Font = font;
+                label.Location = new Point(10, 10);
+
+                // Add controls to form
+                TextBox tbStart = new TextBox();
+                tbStart.ReadOnly = false;
+                tbStart.Multiline = false;
+                tbStart.BorderStyle = BorderStyle.FixedSingle;
+                tbStart.ForeColor = Color.Black;
+                tbStart.Size = new Size(60, 22);
+                tbStart.Font = font;
+                tbStart.Location = new Point(10, 40);
+                tbStart.Text = "2800";
+
+                exportForm.Controls.Add(label);
+                exportForm.Controls.Add(tbStart);
+                exportForm.Controls.Add(btnOk);
+
+                // Show form
+                exportForm.ShowDialog();
+
+                int start;
+                try
+                {
+                    start = UInt16.Parse(tbStart.Text, System.Globalization.NumberStyles.HexNumber);
+                } catch (Exception)
+                {
+                    MessageBox.Show("Not a valid number as start address", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                ushort numBytes = 256;
+                uint numSamples = (uint)(44100 + 100 + numBytes * (8 + 1) * 300);   // Leader + pauze + bytes * (8 bits + stopbit) * samples_per_bit
+                ushort numChannels = 1;
+                ushort bitsPerSample = 16;
+                ushort sampleLength = (ushort)(bitsPerSample / 8);                  // 2 bytes per sample
+                uint sampleRate = 44100;
+                UInt32 byteRate = sampleRate * numChannels * sampleLength;          // Bytes per second
+
+                // Open file(writer)
+                fs = File.Open(fileDialog.FileName, FileMode.Create);
+                BinaryWriter writer = new BinaryWriter(fs);
+
+                writer.Write(Encoding.ASCII.GetBytes("RIFF"));
+                writer.Write(44 + numSamples * sampleLength);
+                writer.Write(Encoding.ASCII.GetBytes("WAVE"));
+                writer.Write(Encoding.ASCII.GetBytes("fmt "));
+                writer.Write(16);                                                   // PCM
+                writer.Write((short)1);                                             // Encoding
+                writer.Write((short)numChannels);
+                writer.Write((int)(sampleRate));                                    // Sample rate
+                writer.Write((int)(byteRate));                                      // Average bytes per second
+                writer.Write((short)(sampleLength * numChannels));                  // Block align
+                writer.Write((short)(bitsPerSample));                               // Bits per sample
+                writer.Write(Encoding.ASCII.GetBytes("data"));
+                writer.Write(numSamples * sampleLength);                            // Data size
+
+                // Write leader (1 sec)
+                for (int index = 0; index < 44100; index++)
+                {
+                    writer.Write((short)(Int16.MaxValue * Math.Sin(2 * 3.14 * index * 3000 / 44100)));
+                }
+
+                // Short pauze
+                for (int i = 0; i < 100; i++)
+                {
+                    writer.Write((short)0);
+                }
+
+                // Write data
+                for (int index = 0; index < numBytes; index++)
+                {
+                    byte bit = 0;
+                    while (bit < 8)
+                    {
+                        // Start signal
+                        for (int i = 0; i < 100; i++)
+                        {
+                            writer.Write((short)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / 10)));
+                        }
+
+                        // Bitvalue
+                        if ((assembler85.RAM[start + index] & (1 << bit)) == (1 << bit))
+                        {
+                            for (int i = 0; i < 100; i++)
+                            {
+                                writer.Write((short)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / 10)));
+                            }
+                        } else
+                        {
+                            for (int i = 0; i < 100; i++)
+                            {
+                                writer.Write((short)0);
+                            }
+                        }
+
+                        // End signal
+                        for (int i = 0; i < 100; i++)
+                        {
+                            writer.Write((short)0);
+                        }
+
+                        bit++;
+                    }
+
+                    // Trailing zero
+                    for (int i = 0; i < 100; i++)
+                    {
+                        writer.Write((short)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / 10)));
+                    }
+
+                    for (int i = 0; i < 200; i++)
+                    {
+                        writer.Write((short)0);
+                    }
+                }
+
+                // Close file
+                writer.Flush();
+                writer.Close();
+                fs.Close();
+
+                MessageBox.Show("Saved as '" + fileDialog.FileName + "'", "INFO", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
