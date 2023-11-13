@@ -38,9 +38,16 @@ Toggling of the SOD line is posible by left clicking the led (if the assembler i
 
 A terminal screen is available to code typed data onto the SID line and decode data from the SOD line.
 Remember that if the terminal screen is active on start of the monitor program the display/keyboard will be disabled (because the SID line is high, you could put it manually to low).
+
+A program can be exported to a (cassette tape) audio file (wav) with File->Export.
+This will be according to the 'AP-29 Application Note', using a 3 kHz signal.
  
+A program can be imported from an audio file (wav) with File->Import.
+This will be according to the 'AP-29 Application Note', with an arbitrary signal frequency.
+
 The two versions of the monitor program of the SDK-85 have been provided in the folder 'Monitor'.
 Slight adjustments have been made to account for some of the directives used (e.g IF ENDIF and >>).
+Also the source code of the 'AP-29 Application Note' has been provided.
 
 Tweak: the monitor program will overwrite address 0x0000 at address 0x000F (PUSH PSW) because the stack pointer wasn't initialized.
 This isn't a problem with the SDK-85 because you can't write at a ROM address.
@@ -109,6 +116,14 @@ Delete source file and reset simulator
 `File->Open` 
 
 Load a new source file
+
+`File->Import` 
+
+Import an audio file with a format according to the 'AP-29 Application Note'
+
+`File->Export` 
+
+Export to an audio file with a format according to the 'AP-29 Application Note'
 
 `File->Save` 
 
