@@ -1190,7 +1190,6 @@ namespace _8085
                 label.Font = font;
                 label.Location = new Point(10, 10);
 
-                // Add controls to form
                 TextBox tbStart = new TextBox();
                 tbStart.ReadOnly = false;
                 tbStart.Multiline = false;
@@ -1201,8 +1200,26 @@ namespace _8085
                 tbStart.Location = new Point(10, 40);
                 tbStart.Text = "2800";
 
+                TextBox tbFrequency = new TextBox();
+                tbFrequency.ReadOnly = true;
+                tbFrequency.Multiline = true;
+                tbFrequency.BorderStyle = BorderStyle.None;
+                tbFrequency.ForeColor = Color.Black;
+                tbFrequency.Size = new Size(300, 22);
+                tbFrequency.Text = "Base frequency of the signal";
+                tbFrequency.Font = font;
+                tbFrequency.Location = new Point(10, 70);
+
+                NumericUpDown numFrequency = new NumericUpDown();
+                numFrequency.Location = new Point(10, 100);
+                numFrequency.Minimum = 1000;
+                numFrequency.Maximum = 10000;
+                numFrequency.Value = 3000;
+
                 exportForm.Controls.Add(label);
                 exportForm.Controls.Add(tbStart);
+                exportForm.Controls.Add(tbFrequency);
+                exportForm.Controls.Add(numFrequency);
                 exportForm.Controls.Add(btnOk);
 
                 // Show form
@@ -1218,13 +1235,17 @@ namespace _8085
                     return;
                 }
 
-                ushort numBytes = 256;
-                uint numSamples = (uint)(44100 + 100 + numBytes * (8 + 1) * 300);   // Leader + pauze + bytes * (8 bits + stopbit) * samples_per_bit
-                ushort numChannels = 1;
-                ushort bitsPerSample = 16;
-                ushort sampleLength = (ushort)(bitsPerSample / 8);                  // 2 bytes per sample
-                uint sampleRate = 44100;
-                UInt32 byteRate = sampleRate * numChannels * sampleLength;          // Bytes per second
+                // Frequency used for signal (sinus)
+                UInt32 frequency = Convert.ToUInt32(numFrequency.Value);
+
+                UInt16 numBytes = 256;
+                UInt32 numSamples = (UInt32)(44100 + 100 + numBytes * (8 + 1) * 300);   // Leader + pauze + bytes * (8 bits + stopbit) * samples_per_bit
+                UInt16 numChannels = 1;
+                UInt16 bitsPerSample = 16;
+                UInt16 sampleLength = (UInt16)(bitsPerSample / 8);                      // 2 bytes per sample
+                UInt32 sampleRate = 44100;
+                UInt32 byteRate = sampleRate * numChannels * sampleLength;              // Bytes per second
+                UInt32 divider = sampleRate / frequency;
 
                 // Open file(writer)
                 fs = File.Open(fileDialog.FileName, FileMode.Create);
@@ -1234,26 +1255,26 @@ namespace _8085
                 writer.Write(44 + numSamples * sampleLength);
                 writer.Write(Encoding.ASCII.GetBytes("WAVE"));
                 writer.Write(Encoding.ASCII.GetBytes("fmt "));
-                writer.Write(16);                                                   // PCM
-                writer.Write((short)1);                                             // Encoding
-                writer.Write((short)numChannels);
-                writer.Write((int)(sampleRate));                                    // Sample rate
-                writer.Write((int)(byteRate));                                      // Average bytes per second
-                writer.Write((short)(sampleLength * numChannels));                  // Block align
-                writer.Write((short)(bitsPerSample));                               // Bits per sample
+                writer.Write(16);                                                       // PCM
+                writer.Write((Int16)1);                                                 // Encoding
+                writer.Write((Int16)numChannels);
+                writer.Write((Int32)(sampleRate));                                      // Sample rate
+                writer.Write((Int32)(byteRate));                                        // Average bytes per second
+                writer.Write((Int16)(sampleLength * numChannels));                      // Block align
+                writer.Write((Int16)(bitsPerSample));                                   // Bits per sample
                 writer.Write(Encoding.ASCII.GetBytes("data"));
-                writer.Write(numSamples * sampleLength);                            // Data size
+                writer.Write(numSamples * sampleLength);                                // Data size
 
                 // Write leader (1 sec)
-                for (int index = 0; index < 44100; index++)
+                for (int i = 0; i < 44100; i++)
                 {
-                    writer.Write((short)(Int16.MaxValue * Math.Sin(2 * 3.14 * index * 3000 / 44100)));
+                    writer.Write((Int16)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / divider)));
                 }
 
                 // Short pauze
                 for (int i = 0; i < 100; i++)
                 {
-                    writer.Write((short)0);
+                    writer.Write((Int16)0);
                 }
 
                 // Write data
@@ -1265,7 +1286,7 @@ namespace _8085
                         // Start signal
                         for (int i = 0; i < 100; i++)
                         {
-                            writer.Write((short)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / 10)));
+                            writer.Write((Int16)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / divider)));
                         }
 
                         // Bitvalue
@@ -1273,20 +1294,20 @@ namespace _8085
                         {
                             for (int i = 0; i < 100; i++)
                             {
-                                writer.Write((short)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / 10)));
+                                writer.Write((Int16)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / divider)));
                             }
                         } else
                         {
                             for (int i = 0; i < 100; i++)
                             {
-                                writer.Write((short)0);
+                                writer.Write((Int16)0);
                             }
                         }
 
                         // End signal
                         for (int i = 0; i < 100; i++)
                         {
-                            writer.Write((short)0);
+                            writer.Write((Int16)0);
                         }
 
                         bit++;
@@ -1295,12 +1316,12 @@ namespace _8085
                     // Trailing zero
                     for (int i = 0; i < 100; i++)
                     {
-                        writer.Write((short)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / 10)));
+                        writer.Write((Int16)(Int16.MaxValue * Math.Sin(2 * 3.14 * i / divider)));
                     }
 
                     for (int i = 0; i < 200; i++)
                     {
-                        writer.Write((short)0);
+                        writer.Write((Int16)0);
                     }
                 }
 
