@@ -473,7 +473,9 @@ namespace _8085
         private UInt16 Get2Bytes(string arg, out string result)
         {
             // Replace $ with location counter
-            arg = arg.Replace("$", locationCounter.ToString());
+            arg = arg.Replace("$ ", locationCounter.ToString() + " ");
+            arg = arg.Replace("$+", locationCounter.ToString() + "+");
+            arg = arg.Replace("$-", locationCounter.ToString() + "-");
 
             /// Split arguments
             string[] args = arg.Split(new char[] { ' ', '(', ')', '+', '-', '*', '/' });
