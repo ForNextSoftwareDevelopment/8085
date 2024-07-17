@@ -100,3 +100,7 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ## [2.6] - 2023-11-13
 ### Updates
 - Import/Export to/from an audio file is possible (see AP-29 Application Note)
+
+## [2.7] - 2024-07-17
+### Debug
+- Internal monitor had a little snag so the GO command started at the wrong address
