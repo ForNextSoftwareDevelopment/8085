@@ -104,3 +104,8 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ## [2.7] - 2024-07-17
 ### Debug
 - Internal monitor had a little snag so the GO command started at the wrong address
+
+## [2.8] - 2024-12-18
+### Updates
+- Improved single quote character recognition in arguments
+- Improved location counter symbol recognition ($) in arguments
