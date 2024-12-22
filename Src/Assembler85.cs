@@ -401,6 +401,12 @@ namespace _8085
 
         private byte GetByte(string arg, out string result)
         {
+            // Replace $ with location counter
+            if (arg.Length == 1) arg = arg.Replace("$", locationCounter.ToString());
+            arg = arg.Replace("$ ", locationCounter.ToString() + " ");
+            arg = arg.Replace("$+", locationCounter.ToString() + "+");
+            arg = arg.Replace("$-", locationCounter.ToString() + "-");
+
             /// Split arguments
             string[] args = arg.Split(new char[] { ' ', '(', ')', '+', '-', '*', '/' });
 
@@ -473,6 +479,7 @@ namespace _8085
         private UInt16 Get2Bytes(string arg, out string result)
         {
             // Replace $ with location counter
+            if (arg.Length == 1) arg = arg.Replace("$", locationCounter.ToString());
             arg = arg.Replace("$ ", locationCounter.ToString() + " ");
             arg = arg.Replace("$+", locationCounter.ToString() + "+");
             arg = arg.Replace("$-", locationCounter.ToString() + "-");
@@ -690,30 +697,28 @@ namespace _8085
                     }
 
                     // Replace single characters (in between single quotes) with HEX value
-                    int startQuote = line.IndexOf('\'');
-                    int endQuote = 0;
-                    if (startQuote < line.Length - 2) endQuote = line.IndexOf('\'', startQuote + 1);
-                    if ((startQuote != -1) && (endQuote == startQuote + 2))
+                    bool found;
+                    do
                     {
-                        char ch = line[startQuote + 1];
-                        line = line.Replace("'" + ch + "'", ((int)ch).ToString("X2") + "H");
-                    }
+                        found = false;
+                        int startQuote = line.IndexOf('\'');
+                        int endQuote = 0;
+                        if (startQuote < line.Length - 2) endQuote = line.IndexOf('\'', startQuote + 1);
+                        if ((startQuote != -1) && (endQuote == startQuote + 2))
+                        {
+                            found = true;
+                            char ch = line[startQuote + 1];
+                            line = line.Replace("'" + ch + "'", ((int)ch).ToString("X2") + "H");
+                        } 
+                    } while (found);
                 } catch (Exception exception)
                 {
                     MessageBox.Show(exception.Message, "FirstPass:Quotes", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return ("EXCEPTION ERROR AT LINE " + (lineNumber + 1));
                 }
 
-                // Check for $ directive
-                int equ_pos = line.Trim().IndexOf("$");
-                if (equ_pos == 0)
-                {
-                    // Next line
-                    continue;
-                }
-
                 // Check for EQU directive 
-                equ_pos = line.IndexOf("EQU");
+                int equ_pos = line.IndexOf("EQU");
                 if (equ_pos >= 0)
                 {
                     string label = line.Split(new char[] { ' ' })[0].TrimEnd(':');
@@ -730,7 +735,7 @@ namespace _8085
                         int calc = Get2Bytes(val, out string result);
                         if (result != "OK")
                         {
-                            return ("Invalid operand for " + opcode + "(" + result + ") at line " + (lineNumber + 1));
+                            return ("Invalid operand for EQU at line " + (lineNumber + 1));
                         }
 
                         // ADD the label/value
@@ -2273,7 +2278,8 @@ namespace _8085
                             break;
                         case "RST":                                                                                     // RST
                             k = 0xC7;
-                            if (int.TryParse(operands[0], out temp))
+                            temp = GetByte(operands[0], out string resultRST);
+                            if (resultRST == "OK")
                             {
                                 k = k + temp * 0x08;
                                 str = k.ToString("X2");
