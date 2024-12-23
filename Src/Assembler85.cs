@@ -1366,13 +1366,13 @@ namespace _8085
                             } else 
                             {
                                 // If valid address then store in locationCounter
-                                calcShort = Get2Bytes(operands[0], out string resultOrg);
-                                if (resultOrg == "OK")
+                                calcShort = Get2Bytes(operands[0], out string result);
+                                if (result == "OK")
                                 {
                                     locationCounter = calcShort;
                                 } else
                                 {
-                                    return ("Invalid operand for " + opcode + ": " + resultOrg + " at line " + (lineNumber + 1));
+                                    return ("Invalid operand for " + opcode + ": " + result + " at line " + (lineNumber + 1));
                                 }
                             }
                             break;
@@ -1429,10 +1429,11 @@ namespace _8085
                             break;
                         case "ACI":                                                                                     // ACI
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("CE", 16);
+                            RAM[locationCounter] = Convert.ToByte("CE", 16);
                             calcByte = GetByte(operands[0], out string resultACI);
                             if (resultACI == "OK")
                             {
+                                locationCounter++;
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
                             } else
@@ -1505,10 +1506,11 @@ namespace _8085
                             break;
                         case "CALL":                                                                                    // CALL
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("CD", 16);
+                            RAM[locationCounter] = Convert.ToByte("CD", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCALL);
                             if (resultCALL == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1521,10 +1523,11 @@ namespace _8085
                             break;
                         case "CC":                                                                                      // CC
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("DC", 16);
+                            RAM[locationCounter] = Convert.ToByte("DC", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCC);
                             if (resultCC == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1537,10 +1540,11 @@ namespace _8085
                             break;
                         case "CM":                                                                                      // CM
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("FC", 16);
+                            RAM[locationCounter] = Convert.ToByte("FC", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCM);
                             if (resultCM == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1572,10 +1576,11 @@ namespace _8085
                             break;
                         case "CNC":                                                                                     // CNC
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("D4", 16);
+                            RAM[locationCounter] = Convert.ToByte("D4", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCNC);
                             if (resultCNC == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1588,10 +1593,11 @@ namespace _8085
                             break;
                         case "CNZ":                                                                                     // CNZ
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("C4", 16);
+                            RAM[locationCounter] = Convert.ToByte("C4", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCNZ);
                             if (resultCNZ == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1604,10 +1610,11 @@ namespace _8085
                             break;
                         case "CP":                                                                                      // CP
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("F4", 16);
+                            RAM[locationCounter] = Convert.ToByte("F4", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCP);
                             if (resultCP == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1620,10 +1627,11 @@ namespace _8085
                             break;
                         case "CPE":                                                                                     // CPE
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("EC", 16);
+                            RAM[locationCounter] = Convert.ToByte("EC", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCPE);
                             if (resultCPE == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1649,10 +1657,11 @@ namespace _8085
                             break;
                         case "CPO":                                                                                     // CPO
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("E4", 16);
+                            RAM[locationCounter] = Convert.ToByte("E4", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCPO);
                             if (resultCPO == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1665,10 +1674,11 @@ namespace _8085
                             break;
                         case "CZ":                                                                                      // CZ
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("CC", 16);
+                            RAM[locationCounter] = Convert.ToByte("CC", 16);
                             calcShort = Get2Bytes(operands[0], out string resultCZ);
                             if (resultCZ == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1793,10 +1803,11 @@ namespace _8085
                             break;
                         case "JC":                                                                                      // JC
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("DA", 16);
+                            RAM[locationCounter] = Convert.ToByte("DA", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJC);
                             if (resultJC == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1810,10 +1821,11 @@ namespace _8085
                         case "JK":                                                                                      // JK
                         case "JX5":                                                                                     // JX5
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("FD", 16);
+                            RAM[locationCounter] = Convert.ToByte("FD", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJK);
                             if (resultJK == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1826,10 +1838,11 @@ namespace _8085
                             break;
                         case "JM":                                                                                      // JM
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("FA", 16);
+                            RAM[locationCounter] = Convert.ToByte("FA", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJM);
                             if (resultJM == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1842,10 +1855,11 @@ namespace _8085
                             break;
                         case "JMP":                                                                                     // JMP
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("C3", 16);
+                            RAM[locationCounter] = Convert.ToByte("C3", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJMP);
                             if (resultJMP == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1858,10 +1872,11 @@ namespace _8085
                             break;
                         case "JNC":                                                                                     // JNC
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("D2", 16);
+                            RAM[locationCounter] = Convert.ToByte("D2", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJNC);
                             if (resultJNC == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1875,10 +1890,11 @@ namespace _8085
                         case "JNK":                                                                                     // JNK
                         case "JNX5":                                                                                    // JNX5
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("DD", 16);
+                            RAM[locationCounter] = Convert.ToByte("DD", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJNK);
                             if (resultJNK == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1891,10 +1907,11 @@ namespace _8085
                             break;
                         case "JNZ":                                                                                     // JNZ
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("C2", 16);
+                            RAM[locationCounter] = Convert.ToByte("C2", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJNZ);
                             if (resultJNZ == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1907,10 +1924,11 @@ namespace _8085
                             break;
                         case "JP":                                                                                      // JP
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("F2", 16);
+                            RAM[locationCounter] = Convert.ToByte("F2", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJP);
                             if (resultJP == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1923,10 +1941,11 @@ namespace _8085
                             break;
                         case "JPE":                                                                                     // JPE
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("EA", 16);
+                            RAM[locationCounter] = Convert.ToByte("EA", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJPE);
                             if (resultJPE == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1939,10 +1958,11 @@ namespace _8085
                             break;
                         case "JPO":                                                                                     // JPO
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("E2", 16);
+                            RAM[locationCounter] = Convert.ToByte("E2", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJPO);
                             if (resultJPO == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1955,10 +1975,11 @@ namespace _8085
                             break;
                         case "JZ":                                                                                      // JZ
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("CA", 16);
+                            RAM[locationCounter] = Convert.ToByte("CA", 16);
                             calcShort = Get2Bytes(operands[0], out string resultJZ);
                             if (resultJZ == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -1971,10 +1992,11 @@ namespace _8085
                             break;
                         case "LDA":                                                                                     // LDA
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("3A", 16);
+                            RAM[locationCounter] = Convert.ToByte("3A", 16);
                             calcShort = Get2Bytes(operands[0], out string resultLDA);
                             if (resultLDA == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -2002,10 +2024,11 @@ namespace _8085
                             break;
                         case "LDHI":                                                                                    // LDHI
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("28", 16);
+                            RAM[locationCounter] = Convert.ToByte("28", 16);
                             calcByte = GetByte(operands[0], out string resultLDHI);
                             if (resultLDHI == "OK")
                             {
+                                locationCounter++;
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
                             } else
@@ -2015,10 +2038,11 @@ namespace _8085
                             break;
                         case "LDSI":                                                                                    // LDSI
                             RAMprogramLine[locationCounter] = lineNumber;
-                            RAM[locationCounter++] = Convert.ToByte("38", 16);
+                            RAM[locationCounter] = Convert.ToByte("38", 16);
                             calcByte = GetByte(operands[0], out string resultLDSI);
                             if (resultLDSI == "OK")
                             {
+                                locationCounter++;
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
                             } else
@@ -2028,10 +2052,11 @@ namespace _8085
                             break;
                         case "LHLD":                                                                                    // LHLD
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("2A", 16);
+                            RAM[locationCounter] = Convert.ToByte("2A", 16);
                             calcShort = Get2Bytes(operands[0], out string resultLHLD);
                             if (resultLHLD == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -2063,10 +2088,11 @@ namespace _8085
                             }
                             str = k.ToString("X2");
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte(str, 16);
+                            RAM[locationCounter] = Convert.ToByte(str, 16);
                             calcShort = Get2Bytes(operands[1], out string resultLXI);
                             if (resultLXI == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -2099,10 +2125,11 @@ namespace _8085
                             k += RegisterIndex(operands[0])*0x08;
                             str = k.ToString("X2");
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte(str, 16);
+                            RAM[locationCounter] = Convert.ToByte(str, 16);
                             calcByte = GetByte(operands[1], out string resultMVI);
                             if (resultMVI == "OK")
                             {
+                                locationCounter++;
                                 str = calcByte.ToString("X2");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
@@ -2128,10 +2155,11 @@ namespace _8085
                             break;
                         case "ORI":                                                                                     // ORI
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("F6", 16);
+                            RAM[locationCounter] = Convert.ToByte("F6", 16);
                             calcByte = GetByte(operands[0], out string resultORI);
                             if (resultORI == "OK")
                             {
+                                locationCounter++;
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
                             } else
@@ -2141,10 +2169,11 @@ namespace _8085
                             break;
                         case "OUT":                                                                                     // OUT
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("D3", 16);
+                            RAM[locationCounter] = Convert.ToByte("D3", 16);
                             calcByte = GetByte(operands[0], out string resultOUT);
                             if (resultOUT == "OK")
                             {
+                                locationCounter++;
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
                             } else
@@ -2285,24 +2314,26 @@ namespace _8085
                             break;
                         case "SBI":                                                                                     // SBI
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("DE", 16);
-                            calcByte = GetByte(operands[0], out string resultDE);
-                            if (resultDE == "OK")
+                            RAM[locationCounter] = Convert.ToByte("DE", 16);
+                            calcByte = GetByte(operands[0], out string resultSBI);
+                            if (resultSBI == "OK")
                             {
+                                locationCounter++;
                                 str = calcByte.ToString("X2");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
                             } else
                             {
-                                return ("Invalid operand for " + opcode + ": " + resultDE + " at line " + (lineNumber + 1));
+                                return ("Invalid operand for " + opcode + ": " + resultSBI + " at line " + (lineNumber + 1));
                             }
                             break;
                         case "SHLD":                                                                                    // SHLD
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("22", 16);
+                            RAM[locationCounter] = Convert.ToByte("22", 16);
                             calcShort = Get2Bytes(operands[0], out string resultSHLD);
                             if (resultSHLD == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -2329,10 +2360,11 @@ namespace _8085
                             break;
                         case "STA":                                                                                     // STA
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("32", 16);
+                            RAM[locationCounter] = Convert.ToByte("32", 16);
                             calcShort = Get2Bytes(operands[0], out string resultSTA);
                             if (resultSTA == "OK")
                             {
+                                locationCounter++;
                                 str = calcShort.ToString("X4");
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = Convert.ToByte(str.Substring(2, 2), 16);
@@ -2375,10 +2407,11 @@ namespace _8085
                             break;
                         case "SUI":                                                                                     // SUI
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("D6", 16);
+                            RAM[locationCounter] = Convert.ToByte("D6", 16);
                             calcByte = GetByte(operands[0], out string resultSUI);
                             if (resultSUI == "OK")
                             {
+                                locationCounter++;
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
                             } else
@@ -2403,10 +2436,11 @@ namespace _8085
                             break;
                         case "XRI":                                                                                     // XRI
                             RAMprogramLine[locationCounter] = lineNumber; 
-                            RAM[locationCounter++] = Convert.ToByte("EE", 16);
+                            RAM[locationCounter] = Convert.ToByte("EE", 16);
                             calcByte = GetByte(operands[0], out string resultXRI);
                             if (resultXRI == "OK")
                             {
+                                locationCounter++;
                                 RAMprogramLine[locationCounter] = lineNumber;
                                 RAM[locationCounter++] = calcByte;
                             } else
@@ -2438,8 +2472,8 @@ namespace _8085
                     // Show ascii if MVI
                     if ((opcode == "MVI") && (operands.Length > 1))
                     {
-                        calcByte = GetByte(operands[1], out string resultDB);
-                        if (resultDB == "OK")
+                        calcByte = GetByte(operands[1], out string resultMVI);
+                        if (resultMVI == "OK")
                         {
                             if ((calcByte >= 32) && (calcByte < 127))
                             {
@@ -2451,8 +2485,8 @@ namespace _8085
                     // Show ascii if CPI
                     if ((opcode == "CPI") && (operands.Length > 0))
                     {
-                        calcByte = GetByte(operands[0], out string resultDB);
-                        if (resultDB == "OK")
+                        calcByte = GetByte(operands[0], out string resultCPI);
+                        if (resultCPI == "OK")
                         {
                             if ((calcByte >= 32) && (calcByte < 127))
                             {
