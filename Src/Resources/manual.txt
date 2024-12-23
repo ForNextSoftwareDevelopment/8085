@@ -6,12 +6,14 @@ It can also simulate an Intel SDK-85 developers board (keyboard/display).
 <Operations>
 
 After loading a source file into the main window you can debug (assemble) it with the debugger button.
-If the checkbox 'Insert Monitor Program on Debug' is checked it will also insert the monitor program version 2.1 (after assembly of the user program) at 0x0000 to 0x0800.
+If the checkbox 'Insert Monitor' is checked it will also insert the monitor program version 2.1 (after assembly of the user program) at 0x0000 to 0x0800.
 
 If the code doesn't start with an ORG directive the startaddress is set to 0000H.
 The first error it encounters will be highlighted in light red.
 Ajustments can be made in the main window (don't forget to save).
 If no errors were encountered, the simulator is ready to run (or step) through the program and the first instruction to be executed will be highlighted in light green.
+This focus line (in green) can be adjusted with the numeric entry at the top of the window.
+This will set the number of lines displayed above the line to run (in green) if you step through the code.
 
 Running will be with a delay of 50 ms between instructions (this can be adjusted in the main screen).
 
@@ -41,6 +43,9 @@ Toggling of the SOD line is posible by left clicking the led (if the assembler i
 
 A terminal screen is available to code typed data onto the SID line and decode data from the SOD line.
 Remember that if the terminal screen is active on start of the monitor program the display/keyboard will be disabled (because the SID line is high, you could put it manually to low).
+
+For timing of the SID and SOD line the number of cycles executed is available at the bottom of the screen.
+You can reset the number of cycles with the button next to it.
 
 A program can be exported to a (cassette tape) audio file (wav) with File->Export.
 This will be according to the 'AP-29 Application Note', using a 3 kHz signal.
