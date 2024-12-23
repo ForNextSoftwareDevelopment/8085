@@ -674,10 +674,6 @@ namespace _8085
                     // Replace all tabs with spaces
                     line = line.Replace('\t', ' ');
 
-                    // Make all chars uppercase, remove leading or trailing spaces
-                    line = line.ToUpper().Trim();
-                    if (line == "") continue;
-
                     // if a comment is found, remove
                     int start_of_comment_pos = line.IndexOf(';');
                     if (start_of_comment_pos != -1)            
@@ -696,21 +692,54 @@ namespace _8085
                         }
                     }
 
-                    // Replace single characters (in between single quotes) with HEX value
-                    bool found;
-                    do
+                    // Single or double quotes for strings
+                    string temp = line;
+                    line = "";
+                    int index = 0;
+                    while (index < temp.Length)
                     {
-                        found = false;
-                        int startQuote = line.IndexOf('\'');
-                        int endQuote = 0;
-                        if (startQuote < line.Length - 2) endQuote = line.IndexOf('\'', startQuote + 1);
-                        if ((startQuote != -1) && (endQuote == startQuote + 2))
+                        if ((temp[index] == '\"') || (temp[index] == '\''))
                         {
-                            found = true;
-                            char ch = line[startQuote + 1];
-                            line = line.Replace("'" + ch + "'", ((int)ch).ToString("X2") + "H");
-                        } 
-                    } while (found);
+                            bool first = true;
+
+                            // Char or string found
+                            char endChar = temp[index];
+
+                            if (index < temp.Length - 1) index++;
+                            char processChar = temp[index];
+
+                            // Replace until end of string found
+                            while ((index < temp.Length) && (processChar != endChar))
+                            {
+                                processChar = temp[index];
+                                if ((processChar != endChar))
+                                {
+                                    if (!first)
+                                    {
+                                        line += ",";
+                                    }
+
+                                    line += ((int)processChar).ToString("X2") + "H";
+                                    first = false;
+                                }
+                                index++;
+                            }
+
+                            if (processChar != endChar)
+                            {
+                                return ("Unclosed string at line " + (lineNumber + 1));
+                            }
+                        } else
+                        {
+                            // Just copy the character
+                            line += temp[index++];
+                        }
+                    }
+
+                    // Make all chars uppercase, remove leading or trailing spaces
+                    line = line.ToUpper().Trim();
+                    if (line == "") continue;
+
                 } catch (Exception exception)
                 {
                     MessageBox.Show(exception.Message, "FirstPass:Quotes", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -844,62 +873,7 @@ namespace _8085
                         for (int i=0; i < operands.Length; i++)
                         {
                             if (i != 0) line += ", ";
-
-                            if (operands[i].Contains("\""))
-                            {
-                                // Double quotes
-                                int start = operands[i].IndexOf("\"") + 1;
-                                int end = 0;
-                                if (start < operands[i].Length - 2)
-                                {
-                                    end = operands[i].IndexOf("\"", start + 1);
-                                } else
-                                {
-                                    return ("DB directive has an unclosed string at line " + (lineNumber + 1));
-                                }
-
-                                if (end <= 0)
-                                {
-                                    return ("DB directive has an unclosed string at line " + (lineNumber + 1));
-                                }
-
-                                string str = operands[i].Substring(start, end - start);
-                                for (int j=0; j<str.Length; j++)
-                                {
-                                    if (j != 0) line += ", ";
-                                    line += ((int)str[j]).ToString("X2") + "H";
-                                }
-
-                                // ADD end of string
-                                line += ", 0";
-                            } else if (operands[i].Contains("\'"))
-                            {
-                                // Single quotes
-                                int start = operands[i].IndexOf("\'") + 1;
-                                int end = 0;
-                                if (start < operands[i].Length - 2)
-                                {
-                                    end = operands[i].IndexOf("\'", start + 1);
-                                } else
-                                {
-                                    return ("DB directive has an unclosed string at line " + (lineNumber + 1));
-                                }
-
-                                if (end <= 0)
-                                {
-                                    return ("DB directive has an unclosed string at line " + (lineNumber + 1));
-                                }
-
-                                string str = operands[i].Substring(start, end - start);
-                                for (int j = 0; j < str.Length; j++)
-                                {
-                                    if (j != 0) line += ", ";
-                                    line += ((int)str[j]).ToString("X2") + "H";
-                                }
-                            } else
-                            {
-                                line += operands[i];
-                            }
+                            line += operands[i];
                         }
                     }
                 } catch (Exception exception)
