@@ -315,6 +315,9 @@ namespace _8085
                     toolStripButtonRun.Enabled = true;
                     toolStripButtonStep.Enabled = true;
                     toolStripButtonFast.Enabled = true;
+                    toolStripButtonReset.Enabled = true;
+                    resetSimulatorToolStripMenuItem.Enabled = true;
+                    toolStripButtonDebug.Enabled = true;
                 }
             } else
             {
@@ -323,6 +326,9 @@ namespace _8085
                 toolStripButtonRun.Enabled = false;
                 toolStripButtonStep.Enabled = false;
                 toolStripButtonFast.Enabled = false;
+                toolStripButtonReset.Enabled = true;
+                resetSimulatorToolStripMenuItem.Enabled = true;
+                toolStripButtonDebug.Enabled = true;
 
                 // Enable event handler for updating row/column 
                 richTextBoxProgram.SelectionChanged += new EventHandler(richTextBoxProgram_SelectionChanged);
@@ -775,7 +781,7 @@ namespace _8085
 
         private void saveBinary_Click(object sender, EventArgs e)
         {
-            if (assembler85.programRun == null)
+            if ((assembler85 == null) || (assembler85.programRun == null))
             {
                 MessageBox.Show("Nothing yet to save", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -1364,6 +1370,7 @@ namespace _8085
             richTextBoxProgram.SelectionStart = 0;
             richTextBoxProgram.SelectionLength = richTextBoxProgram.Text.Length;
             richTextBoxProgram.SelectionBackColor = System.Drawing.Color.White;
+            richTextBoxProgram.SelectionLength = 0;
 
             tbSetProgramCounter.Text = "0000";
             tbMemoryStartAddress.Text = "0000";
@@ -1371,10 +1378,12 @@ namespace _8085
             numMemoryAddress.Value = 0000;
             numPort.Value = 0;
             tbPortUpdateByte.Text = "00";
+            tbCycles.Text = "0";
 
             toolStripButtonRun.Enabled = false;
             toolStripButtonStep.Enabled = false;
             toolStripButtonFast.Enabled = false;
+            toolStripButtonStop.Enabled = false;
 
             lineBreakPoint = -1;
 
@@ -1417,10 +1426,15 @@ namespace _8085
             numMemoryAddress.Value = 0000;
             numPort.Value = 0;
             tbPortUpdateByte.Text = "00";
+            tbCycles.Text = "0";
 
             toolStripButtonRun.Enabled = false;
             toolStripButtonStep.Enabled = false;
             toolStripButtonFast.Enabled = false;
+            toolStripButtonStop.Enabled = false;
+            toolStripButtonReset.Enabled = true;
+            toolStripButtonNew.Enabled = true;
+            resetSimulatorToolStripMenuItem.Enabled = true;
 
             lineBreakPoint = -1;
 
@@ -1545,6 +1559,10 @@ namespace _8085
             toolStripButtonRun.Enabled = true;
             toolStripButtonStep.Enabled = true;
             toolStripButtonFast.Enabled = true;
+            toolStripButtonNew.Enabled = true;
+            toolStripButtonReset.Enabled = true;
+            resetSimulatorToolStripMenuItem.Enabled = true;
+            toolStripButtonStop.Enabled = false;
         }
 
         private void startRun_Click(object sender, EventArgs e)
@@ -1552,6 +1570,10 @@ namespace _8085
             toolStripButtonRun.Enabled = false;
             toolStripButtonStep.Enabled = false;
             toolStripButtonFast.Enabled = false;
+            toolStripButtonNew.Enabled = false;
+            toolStripButtonReset.Enabled = false;
+            toolStripButtonDebug.Enabled = false;
+            resetSimulatorToolStripMenuItem.Enabled = false;
             toolStripButtonStop.Enabled = true;
 
             // Disable event handler for updating row/column 
@@ -1629,9 +1651,14 @@ namespace _8085
 
                 ChangeColorRTBLine(assembler85.RAMprogramLine[nextInstrAddress], false);
 
+                toolStripButtonStop.Enabled = false;
                 toolStripButtonRun.Enabled = true;
                 toolStripButtonStep.Enabled = true;
                 toolStripButtonFast.Enabled = true;
+                toolStripButtonNew.Enabled = true;
+                toolStripButtonReset.Enabled = true;
+                resetSimulatorToolStripMenuItem.Enabled = true;
+                toolStripButtonDebug.Enabled = true;
             }
         }
 
@@ -1642,10 +1669,14 @@ namespace _8085
         /// <param name="e"></param>
         private void startFast_Click(object sender, EventArgs e)
         {
+            toolStripButtonStop.Enabled = true;
             toolStripButtonRun.Enabled = false;
+            toolStripButtonDebug.Enabled = false;
             toolStripButtonFast.Enabled = false;
             toolStripButtonStep.Enabled = false;
-            toolStripButtonStop.Enabled = true;
+            toolStripButtonNew.Enabled = false;
+            toolStripButtonReset.Enabled = false;
+            resetSimulatorToolStripMenuItem.Enabled = false;
 
             ClearColorRTBLine();
 
@@ -1662,10 +1693,14 @@ namespace _8085
                     UpdateKeyboard();
                     if ((assembler85.RAMprogramLine[nextInstrAddress] == lineBreakPoint) && (lineBreakPoint != -1))
                     {
+                        toolStripButtonStop.Enabled = false;
+                        toolStripButtonNew.Enabled = true;
+                        toolStripButtonDebug.Enabled = true;
                         toolStripButtonRun.Enabled = true;
                         toolStripButtonFast.Enabled = true;
                         toolStripButtonStep.Enabled = true;
-                        toolStripButtonStop.Enabled = false;
+                        toolStripButtonReset.Enabled = true;
+                        resetSimulatorToolStripMenuItem.Enabled = true;
                     }
 
                     toolStripButtonStop.Enabled = true;
@@ -1701,12 +1736,20 @@ namespace _8085
                 toolStripButtonFast.Enabled = true;
                 toolStripButtonStep.Enabled = true;
                 toolStripButtonStop.Enabled = false;
+                toolStripButtonNew.Enabled = true;
+                toolStripButtonReset.Enabled = true;
+                resetSimulatorToolStripMenuItem.Enabled = true;
+                toolStripButtonDebug.Enabled = true;
             } else if (error == "System Halted")
             {
                 toolStripButtonRun.Enabled = false;
                 toolStripButtonFast.Enabled = false;
                 toolStripButtonStep.Enabled = false;
                 toolStripButtonStop.Enabled = false;
+                toolStripButtonNew.Enabled = true;
+                toolStripButtonReset.Enabled = true;
+                resetSimulatorToolStripMenuItem.Enabled = true;
+                toolStripButtonDebug.Enabled = true;
 
                 ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], false);
                 MessageBox.Show(error, "SYSTEM HALTED", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1716,6 +1759,10 @@ namespace _8085
                 toolStripButtonFast.Enabled = false;
                 toolStripButtonStep.Enabled = false;
                 toolStripButtonStop.Enabled = false;
+                toolStripButtonNew.Enabled = true;
+                toolStripButtonReset.Enabled = true;
+                resetSimulatorToolStripMenuItem.Enabled = true;
+                toolStripButtonDebug.Enabled = true;
 
                 ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], true);
                 MessageBox.Show(error, "RUNTIME ERROR", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -2118,7 +2165,7 @@ namespace _8085
             if (assembler85 != null)
             {
                 assembler85.cycles = 0;
-                formSerial.ClearValues();
+                if (formSerial != null) formSerial.ClearValues();
                 tbCycles.Text = "0";
             }
         }
@@ -2189,6 +2236,10 @@ namespace _8085
                 toolStripButtonRun.Enabled = false;
                 toolStripButtonStep.Enabled = false;
                 toolStripButtonFast.Enabled = false;
+                toolStripButtonStop.Enabled = false;
+                toolStripButtonNew.Enabled = true;
+                toolStripButtonReset.Enabled = true;
+                resetSimulatorToolStripMenuItem.Enabled = true;
             }
 
             lineBreakPoint = -1;
@@ -2936,7 +2987,9 @@ namespace _8085
                 // Scroll to line (show 1 line before selected line if available)
                 if (line_number != 0)
                 {
-                    firstcharindex = richTextBoxProgram.GetFirstCharIndexFromLine(line_number - 1);
+                    int focus_line = line_number - Convert.ToInt32(numFocusLine.Value) + 1;
+                    if (focus_line < 1) focus_line = 1;
+                    firstcharindex = richTextBoxProgram.GetFirstCharIndexFromLine(focus_line);
                     richTextBoxProgram.SelectionStart = firstcharindex;
                 }
 

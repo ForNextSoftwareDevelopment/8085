@@ -35,6 +35,7 @@ namespace _8085
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.importToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
@@ -190,9 +191,9 @@ namespace _8085
             this.toolStripButtonSave = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonSaveAs = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButtonRestartSimulator = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonReset = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.toolStripButtonStartDebug = new System.Windows.Forms.ToolStripButton();
+            this.toolStripButtonDebug = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonRun = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonStep = new System.Windows.Forms.ToolStripButton();
             this.toolStripButtonFast = new System.Windows.Forms.ToolStripButton();
@@ -257,7 +258,8 @@ namespace _8085
             this.btnCyclesReset = new System.Windows.Forms.Button();
             this.chkTerminal = new System.Windows.Forms.CheckBox();
             this.chkSIDSOD = new System.Windows.Forms.CheckBox();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.numFocusLine = new System.Windows.Forms.NumericUpDown();
+            this.lblFocusLine = new System.Windows.Forms.Label();
             this.menuStrip.SuspendLayout();
             this.groupBoxInstructions.SuspendLayout();
             this.groupBoxFlags.SuspendLayout();
@@ -275,6 +277,7 @@ namespace _8085
             this.panelInterrupt.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSOD)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSID)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numFocusLine)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -328,6 +331,11 @@ namespace _8085
             this.openToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.open_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(204, 6);
             // 
             // importToolStripMenuItem
             // 
@@ -2007,9 +2015,9 @@ namespace _8085
             this.toolStripButtonSave,
             this.toolStripButtonSaveAs,
             this.toolStripSeparator1,
-            this.toolStripButtonRestartSimulator,
+            this.toolStripButtonReset,
             this.toolStripSeparator2,
-            this.toolStripButtonStartDebug,
+            this.toolStripButtonDebug,
             this.toolStripButtonRun,
             this.toolStripButtonStep,
             this.toolStripButtonFast,
@@ -2065,30 +2073,30 @@ namespace _8085
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripButtonRestartSimulator
+            // toolStripButtonReset
             // 
-            this.toolStripButtonRestartSimulator.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonRestartSimulator.Image = global::_8085.Properties.Resources.reset;
-            this.toolStripButtonRestartSimulator.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonRestartSimulator.Name = "toolStripButtonRestartSimulator";
-            this.toolStripButtonRestartSimulator.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButtonRestartSimulator.Text = "Reset Simulator";
-            this.toolStripButtonRestartSimulator.Click += new System.EventHandler(this.resetSimulator_Click);
+            this.toolStripButtonReset.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonReset.Image = global::_8085.Properties.Resources.reset;
+            this.toolStripButtonReset.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonReset.Name = "toolStripButtonReset";
+            this.toolStripButtonReset.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonReset.Text = "Reset Simulator";
+            this.toolStripButtonReset.Click += new System.EventHandler(this.resetSimulator_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
-            // toolStripButtonStartDebug
+            // toolStripButtonDebug
             // 
-            this.toolStripButtonStartDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.toolStripButtonStartDebug.Image = global::_8085.Properties.Resources.debug;
-            this.toolStripButtonStartDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButtonStartDebug.Name = "toolStripButtonStartDebug";
-            this.toolStripButtonStartDebug.Size = new System.Drawing.Size(23, 22);
-            this.toolStripButtonStartDebug.Text = "Start Debugging";
-            this.toolStripButtonStartDebug.Click += new System.EventHandler(this.startDebug_Click);
+            this.toolStripButtonDebug.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.toolStripButtonDebug.Image = global::_8085.Properties.Resources.debug;
+            this.toolStripButtonDebug.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButtonDebug.Name = "toolStripButtonDebug";
+            this.toolStripButtonDebug.Size = new System.Drawing.Size(23, 22);
+            this.toolStripButtonDebug.Text = "Start Debugging";
+            this.toolStripButtonDebug.Click += new System.EventHandler(this.startDebug_Click);
             // 
             // toolStripButtonRun
             // 
@@ -2329,6 +2337,7 @@ namespace _8085
             // numericUpDownDelay
             // 
             this.numericUpDownDelay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.numericUpDownDelay.Cursor = System.Windows.Forms.Cursors.Default;
             this.numericUpDownDelay.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.numericUpDownDelay.Location = new System.Drawing.Point(1317, 17);
             this.numericUpDownDelay.Maximum = new decimal(new int[] {
@@ -2345,7 +2354,6 @@ namespace _8085
             this.numericUpDownDelay.Size = new System.Drawing.Size(55, 22);
             this.numericUpDownDelay.TabIndex = 29;
             this.numericUpDownDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.numericUpDownDelay.UseWaitCursor = true;
             this.numericUpDownDelay.Value = new decimal(new int[] {
             50,
             0,
@@ -2368,13 +2376,13 @@ namespace _8085
             this.lblSetProgramCounter.AutoSize = true;
             this.lblSetProgramCounter.Location = new System.Drawing.Point(497, 17);
             this.lblSetProgramCounter.Name = "lblSetProgramCounter";
-            this.lblSetProgramCounter.Size = new System.Drawing.Size(105, 13);
+            this.lblSetProgramCounter.Size = new System.Drawing.Size(40, 13);
             this.lblSetProgramCounter.TabIndex = 31;
-            this.lblSetProgramCounter.Text = "Set Program Counter";
+            this.lblSetProgramCounter.Text = "Set PC";
             // 
             // tbSetProgramCounter
             // 
-            this.tbSetProgramCounter.Location = new System.Drawing.Point(608, 14);
+            this.tbSetProgramCounter.Location = new System.Drawing.Point(543, 14);
             this.tbSetProgramCounter.MaxLength = 4;
             this.tbSetProgramCounter.Name = "tbSetProgramCounter";
             this.tbSetProgramCounter.Size = new System.Drawing.Size(42, 20);
@@ -2388,7 +2396,7 @@ namespace _8085
             // 
             this.chkSDK85.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.chkSDK85.AutoSize = true;
-            this.chkSDK85.Location = new System.Drawing.Point(1087, 18);
+            this.chkSDK85.Location = new System.Drawing.Point(1088, 16);
             this.chkSDK85.Name = "chkSDK85";
             this.chkSDK85.Size = new System.Drawing.Size(63, 17);
             this.chkSDK85.TabIndex = 33;
@@ -2759,11 +2767,11 @@ namespace _8085
             this.chkInsertMonitor.AutoSize = true;
             this.chkInsertMonitor.BackColor = System.Drawing.Color.Transparent;
             this.chkInsertMonitor.ForeColor = System.Drawing.Color.Black;
-            this.chkInsertMonitor.Location = new System.Drawing.Point(688, 17);
+            this.chkInsertMonitor.Location = new System.Drawing.Point(730, 17);
             this.chkInsertMonitor.Name = "chkInsertMonitor";
-            this.chkInsertMonitor.Size = new System.Drawing.Size(132, 17);
+            this.chkInsertMonitor.Size = new System.Drawing.Size(90, 17);
             this.chkInsertMonitor.TabIndex = 42;
-            this.chkInsertMonitor.Text = "Insert Monitor Program";
+            this.chkInsertMonitor.Text = "Insert Monitor";
             this.chkInsertMonitor.UseVisualStyleBackColor = false;
             // 
             // lblCycles
@@ -2823,16 +2831,40 @@ namespace _8085
             this.chkSIDSOD.UseVisualStyleBackColor = true;
             this.chkSIDSOD.CheckedChanged += new System.EventHandler(this.chkSIDSOD_CheckedChanged);
             // 
-            // toolStripSeparator3
+            // numFocusLine
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(204, 6);
+            this.numFocusLine.Location = new System.Drawing.Point(653, 14);
+            this.numFocusLine.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numFocusLine.Name = "numFocusLine";
+            this.numFocusLine.Size = new System.Drawing.Size(52, 20);
+            this.numFocusLine.TabIndex = 48;
+            this.numFocusLine.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.numFocusLine.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            // 
+            // lblFocusLine
+            // 
+            this.lblFocusLine.AutoSize = true;
+            this.lblFocusLine.Location = new System.Drawing.Point(591, 17);
+            this.lblFocusLine.Name = "lblFocusLine";
+            this.lblFocusLine.Size = new System.Drawing.Size(56, 13);
+            this.lblFocusLine.TabIndex = 49;
+            this.lblFocusLine.Text = "FocusLine";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1384, 961);
+            this.Controls.Add(this.lblFocusLine);
+            this.Controls.Add(this.numFocusLine);
             this.Controls.Add(this.chkSIDSOD);
             this.Controls.Add(this.chkTerminal);
             this.Controls.Add(this.btnCyclesReset);
@@ -2892,6 +2924,7 @@ namespace _8085
             this.panelInterrupt.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbSOD)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbSID)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numFocusLine)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2958,9 +2991,9 @@ namespace _8085
         private System.Windows.Forms.ToolStripButton toolStripButtonSave;
         private System.Windows.Forms.ToolStripButton toolStripButtonSaveAs;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-        private System.Windows.Forms.ToolStripButton toolStripButtonRestartSimulator;
+        private System.Windows.Forms.ToolStripButton toolStripButtonReset;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripButton toolStripButtonStartDebug;
+        private System.Windows.Forms.ToolStripButton toolStripButtonDebug;
         private System.Windows.Forms.ToolStripButton toolStripButtonStep;
         private System.Windows.Forms.GroupBox groupBoxInstructions;
         private System.Windows.Forms.Button btnIN;
@@ -3125,6 +3158,8 @@ namespace _8085
         private System.Windows.Forms.ToolStripMenuItem importToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exportToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.NumericUpDown numFocusLine;
+        private System.Windows.Forms.Label lblFocusLine;
     }
 }
 
