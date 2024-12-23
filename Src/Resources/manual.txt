@@ -15,6 +15,9 @@ If no errors were encountered, the simulator is ready to run (or step) through t
 
 Running will be with a delay of 50 ms between instructions (this can be adjusted in the main screen).
 
+A breakpoint can be set by clicking with the mouse on the grey bar just left of the codewindow.
+Only one breakpoint is supported, so by clicking this bar, the previous breakpoint will be deleted.
+
 Setting the program counter to a specific address can be done by entering this address in the the 'set program counter' textbox and close with an enter. 
 
 At any time the memory and ports can be viewed in the right windows.
