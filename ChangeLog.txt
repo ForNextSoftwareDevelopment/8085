@@ -109,3 +109,14 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ### Updates
 - Improved single quote character recognition in arguments
 - Improved location counter symbol recognition ($) in arguments
+
+## [2.9] - 2024-12-23
+### Debug
+- Program crashed when pressing reset while fast running
+- Program crashed when saving a binary while non existed yet
+- Busy cursor was on in the delay up/down
+- Several minor glitches
+### Updates
+- Help updated with info for the breakpoint
+- Focus line is now selectable
+
