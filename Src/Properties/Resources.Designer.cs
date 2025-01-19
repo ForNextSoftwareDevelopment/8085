@@ -61,6 +61,16 @@ namespace _8085.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon _8085 {
+            get {
+                object obj = ResourceManager.GetObject("_8085", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap _new {
@@ -139,9 +149,9 @@ namespace _8085.Properties {
         ///&lt;Operations&gt;
         ///
         ///After loading a source file into the main window you can debug (assemble) it with the debugger button.
-        ///If the checkbox &apos;Insert Monitor Program on Debug&apos; is checked it will also insert the monitor program version 2.1 (after assembly of the user program) at 0x0000 to 0x0800.
+        ///If the checkbox &apos;Insert Monitor&apos; is checked it will also insert the monitor program version 2.1 (after assembly of the user program) at 0x0000 to 0x0800.
         ///
-        ///If the code doesn&apos;t start with an ORG directive the s [rest of string was truncated]&quot;;.
+        ///If the code doesn&apos;t start with an ORG directive the startaddress is se [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string manual {
             get {
