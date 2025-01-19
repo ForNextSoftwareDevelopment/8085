@@ -12,7 +12,7 @@ namespace _8085
         #region Members
 
         // Type of the decoded instruction: (un)conditional jump/call/restart or none
-        private enum TYPE
+        public enum TYPE
         {
             NONE, 
             CONDITIONALJUMP, 
@@ -54,6 +54,13 @@ namespace _8085
         #endregion
 
         #region Constructor
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public DisAssembler85()
+        {
+        }
 
         /// <summary>
         /// Constructor
@@ -483,7 +490,7 @@ namespace _8085
         /// <param name="count"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        private string Decode(byte hexcode, out uint count, out TYPE type)
+        public string Decode(byte hexcode, out uint count, out TYPE type)
         {
             string opcode = "";
             count = 0;

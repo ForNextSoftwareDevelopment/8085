@@ -4071,11 +4071,6 @@ namespace _8085
                 return ("Exception at memory location: " + registerPC.ToString("X") + ":\r\n" + exception.Message);
             }
 
-            if (RAMprogramLine[startAddress] == -1)
-            {
-                return("No valid instruction at address: 0x" + startAddress.ToString("X4"));
-            }
-
             if (cycles > (UInt64.MaxValue - 20)) cycles = 0;
 
             nextAddress = registerPC;

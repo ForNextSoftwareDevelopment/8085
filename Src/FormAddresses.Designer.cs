@@ -121,6 +121,6 @@
         private System.Windows.Forms.TextBox textBoxLoadAddress;
         private System.Windows.Forms.TextBox textBoxStartAddress;
         private System.Windows.Forms.Label labelStartAddress;
-        private System.Windows.Forms.CheckBox chkLabels;
+        public System.Windows.Forms.CheckBox chkLabels;
     }
 }

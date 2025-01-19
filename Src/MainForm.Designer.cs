@@ -260,6 +260,7 @@ namespace _8085
             this.chkSIDSOD = new System.Windows.Forms.CheckBox();
             this.numFocusLine = new System.Windows.Forms.NumericUpDown();
             this.lblFocusLine = new System.Windows.Forms.Label();
+            this.loadBinaryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip.SuspendLayout();
             this.groupBoxInstructions.SuspendLayout();
             this.groupBoxFlags.SuspendLayout();
@@ -292,7 +293,7 @@ namespace _8085
             this.menuStrip.Location = new System.Drawing.Point(9, 8);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip.Size = new System.Drawing.Size(227, 24);
+            this.menuStrip.Size = new System.Drawing.Size(347, 24);
             this.menuStrip.TabIndex = 13;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -301,6 +302,7 @@ namespace _8085
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.newFileToolStripMenuItem,
             this.openToolStripMenuItem,
+            this.loadBinaryToolStripMenuItem,
             this.toolStripSeparator3,
             this.importToolStripMenuItem,
             this.exportToolStripMenuItem,
@@ -2858,6 +2860,13 @@ namespace _8085
             this.lblFocusLine.TabIndex = 49;
             this.lblFocusLine.Text = "FocusLine";
             // 
+            // loadBinaryToolStripMenuItem
+            // 
+            this.loadBinaryToolStripMenuItem.Name = "loadBinaryToolStripMenuItem";
+            this.loadBinaryToolStripMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.loadBinaryToolStripMenuItem.Text = "Load Binary";
+            this.loadBinaryToolStripMenuItem.Click += new System.EventHandler(this.loadBinary_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -3160,6 +3169,7 @@ namespace _8085
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.NumericUpDown numFocusLine;
         private System.Windows.Forms.Label lblFocusLine;
+        private System.Windows.Forms.ToolStripMenuItem loadBinaryToolStripMenuItem;
     }
 }
 

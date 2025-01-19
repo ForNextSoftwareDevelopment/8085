@@ -36,7 +36,10 @@ namespace _8085
 
         // Assembler object
         private Assembler85 assembler85;
-        
+
+        // DisAssembler object
+        private DisAssembler85 disAssembler85;
+
         // Rows of memory panel   
         private Label[] memoryAddressLabels = new Label[0x10];
 
@@ -75,6 +78,9 @@ namespace _8085
         private FormTerminal formTerminal = null;
         private FormSerial formSerial = null;
 
+        // Form to show code without source, so disassemble on the spot
+        public Form formProgram = null;
+
         // Terminal variables for characters to print
         private Color fgColor = Color.Black;
         private Color bgColor = Color.White;
@@ -105,6 +111,9 @@ namespace _8085
         public MainForm()
         {
             InitializeComponent();
+
+            // Create a disassembler object for showing disassmbled binary code
+            disAssembler85 = new DisAssembler85();
 
             toolStripButtonRun.Enabled = false;
             toolStripButtonStep.Enabled = false;
@@ -288,11 +297,14 @@ namespace _8085
             UpdateSerial();
             UpdateTerminal();
 
+            // If no source available for next instruction, show disassembled code
+            UpdateProgram(currentInstrAddress);
+
             if (error == "")
             {
                 ChangeColorRTBLine(assembler85.RAMprogramLine[currentInstrAddress], false);
 
-                if (assembler85.RAMprogramLine[nextInstrAddress] == lineBreakPoint)
+                if ((assembler85.RAMprogramLine[nextInstrAddress] == lineBreakPoint) && (lineBreakPoint != -1))
                 {
                     timer.Enabled = false;
 
@@ -546,6 +558,18 @@ namespace _8085
             // Get line number
             lineBreakPoint = richTextBoxProgram.GetLineFromCharIndex(index);
 
+            // Check if breakpoint is valid
+            if (assembler85 != null)
+            {
+                bool found = false;
+                for (int i = 0; i < assembler85.RAMprogramLine.Length; i++)
+                {
+                    if (assembler85.RAMprogramLine[i] == lineBreakPoint) found = true;
+                }
+
+                if (!found) MessageBox.Show("No code found for this line.\r\nIt's possible the breakpoint will not hit.", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             // Set (update) breakpoint on screen
             UpdateBreakPoint(lineBreakPoint);
         }
@@ -779,6 +803,73 @@ namespace _8085
             }
         }
 
+        private void loadBinary_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            fileDialog.Title = "Select Binary File";
+            fileDialog.InitialDirectory = System.Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+            fileDialog.FileName = "";
+            fileDialog.Filter = "Binary|*.bin|All Files|*.*";
+
+            if (fileDialog.ShowDialog() != DialogResult.Cancel)
+            {
+                sourceFile = fileDialog.FileName;
+                byte[] bytes = File.ReadAllBytes(sourceFile);
+
+                FormAddresses formAddresses = new FormAddresses();
+                formAddresses.chkLabels.Visible = false;
+                formAddresses.ShowDialog();
+
+                if (formAddresses.loadAddress + bytes.Length > 0x10000)
+                {
+                    MessageBox.Show("Program is to large (for this start address):\r\nthe end address is 0x" + (formAddresses.loadAddress + bytes.Length).ToString("X"), "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Create assembler object if needed
+                if (assembler85 == null)
+                {
+                    assembler85 = new Assembler85(new string[] { "" });
+                }
+
+                // Copy bytes
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    assembler85.RAM[formAddresses.loadAddress + i] = bytes[i];
+                }
+
+                // Set startadres of program execution
+                assembler85.startLocation = formAddresses.startAddress;
+                tbMemoryStartAddress.Text = assembler85.startLocation.ToString("X4");
+                tbSetProgramCounter.Text = assembler85.startLocation.ToString("X4");
+
+                // Show Updated memory
+                UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
+                nextInstrAddress = Convert.ToUInt16(tbSetProgramCounter.Text, 16);
+
+                UpdatePortPanel();
+                UpdateRegisters();
+                UpdateFlags();
+                UpdateInterrupts();
+                ClearDisplay();
+
+                tbSetProgramCounter.Text = "0000";
+                tbMemoryStartAddress.Text = "0000";
+                tbMemoryUpdateByte.Text = "00";
+                numMemoryAddress.Value = 0000;
+                numPort.Value = 0;
+                tbPortUpdateByte.Text = "00";
+
+                Graphics g = pbBreakPoint.CreateGraphics();
+                g.Clear(Color.LightGray);
+
+                toolStripButtonRun.Enabled = true;
+                toolStripButtonFast.Enabled = true;
+                toolStripButtonStep.Enabled = true;
+                toolStripButtonStop.Enabled = false;
+            }
+        }
+
         private void saveBinary_Click(object sender, EventArgs e)
         {
             if ((assembler85 == null) || (assembler85.programRun == null))
@@ -824,7 +915,14 @@ namespace _8085
                 }
 
                 // Save binary file
-                File.WriteAllBytes(fileDialog.FileName, bytes);
+                try
+                {
+                    File.WriteAllBytes(fileDialog.FileName, bytes);
+                } catch (Exception)
+                {
+                    MessageBox.Show("Unable to save, probably the file is open in another program", "WARNING", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 MessageBox.Show("Binary file saved as\r\n" + fileDialog.FileName, "SAVED", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1366,6 +1464,8 @@ namespace _8085
 
             if (formSerial != null) formSerial.ClearValues();
 
+            if (formProgram != null) formProgram.Close();
+
             // Reset color
             richTextBoxProgram.SelectionStart = 0;
             richTextBoxProgram.SelectionLength = richTextBoxProgram.Text.Length;
@@ -1416,6 +1516,8 @@ namespace _8085
             ResetSerial();
 
             if (formSerial != null) formSerial.ClearValues();
+
+            if (formProgram != null) formProgram.Close();
 
             richTextBoxProgram.Clear();
             sourceFile = "";
@@ -1533,8 +1635,8 @@ namespace _8085
                 {
                     assembler85.RAM[index] = bt;
 
-                    // Indicate this is not a regular program line but also not an invalid one (-1)
-                    assembler85.RAMprogramLine[index] = -2;
+                    // Indicate this is not a regular (assembled) program line
+                    assembler85.RAMprogramLine[index] = -1;
 
                     index++;
                 }
@@ -1545,6 +1647,8 @@ namespace _8085
                 assembler85.sid = true;
                 assembler85.sod = true;
             }
+
+            if (formProgram != null) formProgram.Close();
 
             UpdateMemoryPanel(GetTextBoxMemoryStartAddress(), nextInstrAddress);
             UpdatePortPanel();
@@ -1607,6 +1711,9 @@ namespace _8085
             UpdateInterrupts();
             UpdateSerial();
             UpdateTerminal();
+
+            // If no source available for next instruction, show disassembled code
+            UpdateProgram(currentInstrAddress);
 
             if (error == "")
             {
@@ -1691,6 +1798,10 @@ namespace _8085
                 {
                     UpdateDisplay();
                     UpdateKeyboard();
+
+                    // If no source available for next instruction, show disassembled code
+                    UpdateProgram(currentInstrAddress);
+
                     if ((assembler85.RAMprogramLine[nextInstrAddress] == lineBreakPoint) && (lineBreakPoint != -1))
                     {
                         toolStripButtonStop.Enabled = false;
@@ -3390,6 +3501,171 @@ namespace _8085
                 }
 
                 control.Tag = commandDescription;
+            }
+        }
+
+        /// <summary>
+        /// Update disassembled program (from code without source)
+        /// </summary>
+        /// <param name="startAddress"></param>
+        private void UpdateProgram(UInt16 startAddress)
+        {
+            if (assembler85 != null)
+            {
+                // Check if the next code has a source line to go with it
+                if ((assembler85.RAMprogramLine[assembler85.registerPC] == -1) || (assembler85.RAMprogramLine[assembler85.registerPC] == -2))
+                {
+                    // No source line so show code to be executed and disassemble
+                    if ((formProgram == null) || formProgram.IsDisposed)
+                    {
+                        // Create form for display of results                
+                        formProgram = new Form();
+                        formProgram.Name = "FormProgram";
+                        formProgram.Text = "Program";
+                        formProgram.Icon = Properties.Resources._8085;
+                        formProgram.Size = new Size(340, 400);
+                        formProgram.MinimumSize = new Size(300, 400);
+                        formProgram.MaximizeBox = false;
+                        formProgram.MinimizeBox = false;
+                        formProgram.StartPosition = FormStartPosition.Manual;
+                        formProgram.Location = new Point(Screen.PrimaryScreen.Bounds.Width - 360, Screen.PrimaryScreen.Bounds.Height - 440);
+
+                        // Create button for closing (dialog)form
+                        Button btnOk = new Button();
+                        btnOk.Text = "Close";
+                        btnOk.Location = new Point(226, 330);
+                        btnOk.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
+                        btnOk.Visible = true;
+                        btnOk.Click += new EventHandler((object o, EventArgs a) =>
+                        {
+                            formProgram.Close();
+                            formProgram = null;
+                        });
+
+                        Font font = new Font(FontFamily.GenericMonospace, 10.25F);
+
+                        // Add controls to form
+                        TextBox textBox = new TextBox();
+                        textBox.Name = "program";
+                        textBox.Multiline = true;
+                        textBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                        textBox.WordWrap = false;
+                        textBox.ScrollBars = ScrollBars.Vertical;
+                        textBox.ReadOnly = true;
+                        textBox.BackColor = Color.LightYellow;
+                        textBox.Size = new Size(300, 310);
+                        textBox.Text = "";
+                        textBox.Font = font;
+                        textBox.BorderStyle = BorderStyle.None;
+                        textBox.Location = new Point(10, 10);
+                        textBox.Select(0, 0);
+
+                        formProgram.Controls.Add(textBox);
+                        formProgram.Controls.Add(btnOk);
+
+                        // Show form
+                        formProgram.Show();
+                    }
+
+                    // Get textbox control from form
+                    TextBox tb = null;
+                    foreach (Control control in formProgram.Controls)
+                    {
+                        if (control.Name == "program") tb = (TextBox)control;
+                    }
+
+                    // Build line to add to textbox
+                    string line = "";
+
+                    // If from source code then indicate from where 
+                    if (assembler85.RAMprogramLine[startAddress] != -1)
+                    {
+                        line += "From address: " + startAddress.ToString("X4") + " (line = " + (assembler85.RAMprogramLine[startAddress] + 1).ToString() + ")\r\n";
+                        tb.Text += line;
+                        line = "";
+                    }
+
+                    // Address of instruction
+                    line += assembler85.registerPC.ToString("X4") + "   ";
+
+                    // Get opcode
+                    int opcode = assembler85.RAM[assembler85.registerPC];
+                    line += opcode.ToString("X2") + " ";
+
+                    string instruction = "UNKNOWN";
+                    uint size = 0;
+                    DisAssembler85.TYPE type = DisAssembler85.TYPE.NONE;
+
+                    instruction = disAssembler85.Decode((byte)opcode, out size, out type);
+
+                    if (instruction != "UNKNOWN")
+                    {
+                        // No operands, only the opcode
+                        if (size == 0)
+                        {
+                            while (line.Length < 20) line += " ";
+                            line += instruction;
+                        }
+
+                        // 1 operand
+                        if (size == 1)
+                        {
+                            line += assembler85.RAM[assembler85.registerPC + 1].ToString("X2") + " ";
+
+                            string operand = assembler85.RAM[assembler85.registerPC + 1].ToString("X2");
+
+                            instruction += " " + operand;
+                            while (line.Length < 20) line += " ";
+                            line += instruction;
+                        }
+
+                        // 2 operands (address)
+                        if (size == 2)
+                        {
+                            line += assembler85.RAM[assembler85.registerPC + 1].ToString("X2") + " ";
+                            line += assembler85.RAM[assembler85.registerPC + 2].ToString("X2") + " ";
+
+                            byte firstByte = assembler85.RAM[assembler85.registerPC + 1];
+                            byte secondByte = assembler85.RAM[assembler85.registerPC + 2];
+
+                            string first = firstByte.ToString("X2");
+                            string second = secondByte.ToString("X2");
+
+                            // Inverted (low byte first, high byte second)
+                            string operand = second + first;
+
+                            instruction += " " + operand;
+                            while (line.Length < 20) line += " ";
+                            line += instruction;
+                        }
+                    } else
+                    {
+                        line += instruction;
+                    }
+
+                    // Show disassembled code on form
+                    if ((formProgram != null) && (tb != null))
+                    {
+                        tb.Text += line + "\r\n";
+                        tb.Select(0, 0);
+                        tb.SelectionStart = tb.TextLength - 1;
+                        tb.ScrollToCaret();
+                        Application.DoEvents();
+                    }
+                } else if (formProgram != null)
+                {
+                    // Get textbox control from form
+                    TextBox tb = null;
+                    foreach (Control control in formProgram.Controls)
+                    {
+                        if (control.Name == "program") tb = (TextBox)control;
+                    }
+
+                    if ((tb != null) && !tb.Text.EndsWith("-\r\n"))
+                    {
+                        tb.Text += "--- END ---\r\n";
+                    }
+                }
             }
         }
 
