@@ -63,6 +63,9 @@ namespace _8085
         // Current location of the program (during firstpass and secondpass)
         public int locationCounter;
 
+        // Last address used
+        public int lastAddress;
+
         // Register values
         public byte registerA = 0x00;
         public byte registerB = 0x00;
@@ -2524,6 +2527,7 @@ namespace _8085
                 }
             }
 
+            lastAddress = locationCounter -1;
             return ("OK");
         }
 

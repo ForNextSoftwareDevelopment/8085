@@ -907,6 +907,8 @@ namespace _8085
                     return;
                 }
 
+                if (assembler85.lastAddress > end) end = assembler85.lastAddress;
+
                 // New byte array with only used code 
                 byte[] bytes = new byte[end - start + 1];
                 for (int i = 0; i < end - start + 1; i++)
