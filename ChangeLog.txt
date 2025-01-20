@@ -123,6 +123,7 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ## [3.0] - 2025-01-18
 ### Debug
 - Error when trying to save a locked binary file (opened in another program) 
+- Better determination of the program end address when saving the binary
 ### Updates
 - Breakpoint will check for code present at that line (only when assembly has been done)
 - Removed the need for assembled code when running so all code in memory (not associated with a line number) can run
