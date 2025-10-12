@@ -2818,7 +2818,12 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC++;
-                        registerA = RAM[address];
+                        Get2ByteFromInt(registerPC, out lo, out hi);
+                        registerSP--;
+                        RAM[registerSP] = Convert.ToByte(hi, 16);
+                        registerSP--;
+                        RAM[registerSP] = Convert.ToByte(lo, 16);
+                        registerPC = address;
                         cycles += 18;
                     }
                 } else if (byteInstruction == 0x27)                                                                         // DAA 
