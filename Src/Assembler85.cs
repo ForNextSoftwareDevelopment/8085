@@ -2780,7 +2780,7 @@ namespace _8085
                     cycles += 7;
                 } else if (byteInstruction == 0xE4)                                                                         // CPO
                 {
-                    if (flagC)
+                    if (flagP)
                     {
                         registerPC++;
                         registerPC++;
@@ -4089,3 +4089,4 @@ namespace _8085
         #endregion
     }
 }
+
