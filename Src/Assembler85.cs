@@ -240,7 +240,7 @@ namespace _8085
                     b1 = (byte)(arg1 & 0x0F);  // Masking upper 4 bits
                     b2 = (byte)(arg2 & 0x0F);  // Masking upper 4 bits
 
-                    if (b1 - b2 - carry < 0x00)
+                    if (b1 - b2 - carry >= 0x00)
                     {
                         flagAC = true;
                     } else
