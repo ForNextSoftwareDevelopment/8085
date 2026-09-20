@@ -3430,6 +3430,8 @@ namespace _8085
                 {
                     byte flags, b;
                     flags = RAM[registerSP];
+                    flagV = (flags & 0x02) != 0;
+                    flagK = (flags & 0x20) != 0;
                     registerSP++;
                     registerA = RAM[registerSP];
                     registerSP++;
@@ -3472,6 +3474,8 @@ namespace _8085
                 } else if (byteInstruction == 0xF5)                                                                         // PUSH PSW 
                 {
                     byte aflag = 00;
+                    if (flagV) aflag |= 0x02;
+                    if (flagK) aflag |= 0x20;
                     if (flagS) aflag += 0x80;
                     if (flagZ) aflag += 0x40;
                     if (flagAC) aflag += 0x10;
