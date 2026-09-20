@@ -2636,7 +2636,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
-                        cycles += 17;
+                        cycles += 9;
                     }
                 } else if (byteInstruction == 0xFC)                                                                         // CM
                 {
@@ -2660,12 +2660,13 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
-                        cycles += 17;
+                        cycles += 9;
                     }
                 } else if (byteInstruction == 0x2F)                                                                         // CMA
                 {
                     registerA = (byte)(0xFF - registerA);
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x3F)                                                                         // CMC
                 {
                     flagC = !flagC;
@@ -2688,7 +2689,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
-                        cycles += 17;
+                        cycles += 9;
                     } else
                     {
                         UInt16 address = 0;
@@ -2712,16 +2713,18 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
-                        cycles += 17;
+                        cycles += 9;
                     } else
                     {
                         UInt16 address = 0;
                         registerPC++;
                         address += RAM[registerPC];
                         registerPC++;
-                        address += (UInt16)(0x0100 * RAM[registerPC++]);
+                        address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC++;
-                        registerA = RAM[address];
+                        RAM[--registerSP] = (byte)(registerPC >> 8);
+                        RAM[--registerSP] = (byte)registerPC;
+                        registerPC = address;
                         cycles += 18;
                     }
                 } else if (byteInstruction == 0xF4)                                                                         // CP
@@ -2731,7 +2734,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
-                        cycles += 17;
+                        cycles += 9;
                     } else
                     {
                         UInt16 address = 0;
@@ -2770,7 +2773,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
-                        cycles += 17;
+                        cycles += 9;
                     }
                 } else if (byteInstruction == 0xFE)                                                                         // CPI  
                 {
@@ -2785,7 +2788,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
-                        cycles += 17;
+                        cycles += 9;
                     } else
                     {
                         UInt16 address = 0;
@@ -2809,7 +2812,7 @@ namespace _8085
                         registerPC++;
                         registerPC++;
                         registerPC++;
-                        cycles += 17;
+                        cycles += 9;
                     } else
                     {
                         UInt16 address = 0;
@@ -2828,24 +2831,11 @@ namespace _8085
                     }
                 } else if (byteInstruction == 0x27)                                                                         // DAA 
                 {
-                    byte low = (byte)(registerA & 0x0F);
-                    byte high = (byte)(registerA & 0xF0);
-                    if ((low > 0x09) || flagAC)
-                    {
-                        low += 0x06;
-                        if (low > 0x0F)
-                        {
-                            if (high == 0xF0) flagC = true;
-                            high += 0x10;
-                            low = (byte)(low & 0x0F);
-                        }
-                    }
-                    if ((high > 0x90) || flagC)
-                    {
-                        flagC = true;
-                        high += 0x60;
-                    }
-                    registerA = (byte)(high * 0x0100 + low);
+                    bool decimalCarry = flagC || registerA > 0x99;
+                    byte correction = (byte)(((registerA & 0x0F) > 9 || flagAC ? 6 : 0) |
+                        (decimalCarry ? 0x60 : 0));
+                    registerA = Calculate(registerA, correction, 0, OPERATOR.ADD);
+                    flagC = decimalCarry;
                     registerPC++;
                     cycles += 4;
                 } else if (byteInstruction == 0x09)                                                                         // DAD B
@@ -3553,7 +3543,7 @@ namespace _8085
                     } else
                     {
                         registerPC++;
-                        cycles += 11;
+                        cycles += 6;
                     }
                 } else if (byteInstruction == 0xC9)                                                                         // RET
                 {
@@ -3598,14 +3588,14 @@ namespace _8085
                     } else
                     {
                         registerPC++;
-                        cycles += 11;
+                        cycles += 6;
                     }
                 } else if (byteInstruction == 0xD0)                                                                         // RNC
                 {
                     if (flagC)
                     {
                         registerPC++;
-                        cycles += 11;
+                        cycles += 6;
                     } else
                     {
                         UInt16 address;
@@ -3621,7 +3611,7 @@ namespace _8085
                     if (flagZ)
                     {
                         registerPC++;
-                        cycles += 11;
+                        cycles += 6;
                     } else
                     {
                         UInt16 address;
@@ -3637,7 +3627,7 @@ namespace _8085
                     if (flagS)
                     {
                         registerPC++;
-                        cycles += 11;
+                        cycles += 6;
                     } else
                     {
                         UInt16 address;
@@ -3662,14 +3652,14 @@ namespace _8085
                     } else
                     {
                         registerPC++;
-                        cycles += 11;
+                        cycles += 6;
                     }
                 } else if (byteInstruction == 0xE0)                                                                         // RPO
                 {
                     if (flagP)
                     {
                         registerPC++;
-                        cycles += 11;
+                        cycles += 6;
                     } else
                     {
                         UInt16 address;
@@ -3781,7 +3771,7 @@ namespace _8085
                     } else
                     {
                         registerPC++;
-                        cycles += 11;
+                        cycles += 6;
                     }
                 } else if ((byteInstruction >= 0x98) && (byteInstruction <= 0x9F))                                          // SBB
                 {
@@ -3812,6 +3802,7 @@ namespace _8085
                     cycles += 16;
                 } else if (byteInstruction == 0x30)                                                                         // SIM
                 {
+                    if ((registerA & 0x10) != 0) intrP75 = false;
                     if ((registerA & 0x08) == 0x08)
                     {
                         intrM55 = (registerA & 0x01) == 0x01 ? true : false;

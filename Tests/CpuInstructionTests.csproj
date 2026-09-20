@@ -1,0 +1,16 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType><TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <AssemblyName>CpuInstructionTests</AssemblyName><OutputPath>bin\</OutputPath>
+    <LangVersion>latest</LangVersion>
+    <CpuSource Condition="'$(CpuSource)' == ''">..\Src\Assembler85.cs</CpuSource>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System"/><Reference Include="System.Core"/>
+    <Reference Include="System.Windows.Forms"/>
+    <Compile Include="$(CpuSource)" Link="Assembler85.cs"/>
+    <Compile Include="..\Src\Calculator.cs" Link="Calculator.cs"/>
+    <Compile Include="CpuInstructionTests.cs"/>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+</Project>
