@@ -3986,10 +3986,10 @@ namespace _8085
                 {
                     registerPC++;
                     num = RAM[registerPC];
-                    num += registerD * 0x100 + registerE;
+                    num += registerH * 0x100 + registerL;
                     Get2ByteFromInt(num, out lo, out hi);
-                    registerH = Convert.ToByte(hi, 16);
-                    registerL = Convert.ToByte(lo, 16);
+                    registerD = Convert.ToByte(hi, 16);
+                    registerE = Convert.ToByte(lo, 16);
                     registerPC++;
                     cycles += 10;
                 } else if (byteInstruction == 0x38)                                                                         // LDSI (UNDOCUMENTED)
