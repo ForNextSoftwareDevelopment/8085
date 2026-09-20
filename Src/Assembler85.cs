@@ -3929,7 +3929,7 @@ namespace _8085
                     l /= 2;
                     if ((h & 0x01) == 0x01) l += 0x80;
                     h /= 2;
-                    h += (byte)(saveC * 0x80);
+                    h |= (byte)(registerH & 0x80);
                     registerH = h;
                     registerL = l;
                     registerPC++;
