@@ -2978,6 +2978,8 @@ namespace _8085
                     cycles += 4;
                 } else if (byteInstruction == 0x76)                                                                         // HLT
                 {
+                    registerPC++;
+                    nextAddress = registerPC;
                     cycles += 5;
                     return ("System Halted");
                 } else if (byteInstruction == 0xFB)                                                                         // EI
