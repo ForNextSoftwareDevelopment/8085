@@ -3095,11 +3095,13 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     }
                 } else if (byteInstruction == 0xFA)                                                                         // JM
                 {
