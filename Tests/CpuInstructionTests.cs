@@ -15,8 +15,9 @@ static class CpuInstructionTests
         if (error != "") throw new Exception(error);
     }
     static byte Bcd(int value) { return (byte)((value / 10 << 4) | value % 10); }
-    static int Main()
+    static int Main(string[] args)
     {
+        if (args.Length > 0 && args[0] == "--audit") return OpcodeAudit.Run(args);
         for (int condition = 0; condition < 8; condition++)
         for (int flags = 0; flags < 16; flags++)
         {
