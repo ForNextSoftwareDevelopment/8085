@@ -4026,6 +4026,7 @@ namespace _8085
                 {
                     if (flagV)
                     {
+                        registerPC++;
                         Get2ByteFromInt(registerPC, out lo, out hi);
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(hi, 16);
