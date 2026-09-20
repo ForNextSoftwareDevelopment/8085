@@ -4012,30 +4012,14 @@ namespace _8085
                     registerH = RAM[address];
                     registerPC++;
                     cycles += 10;
-                } else if (byteInstruction == 0x18)                                                                         // RDEL (UNDOCUMENTED)
+                } else if (byteInstruction == 0x18) // RDEL (UNDOCUMENTED)
                 {
-                    byte d = registerD;
-                    byte e = registerE;
-                    byte saveC;
-                    if (flagC)
-                    {
-                        saveC = 1;
-                    } else
-                    {
-                        saveC = 0;
-                    }
-                    if ((d & 0x08) == 0x08)
-                    {
-                        flagC = true;
-                    } else
-                    {
-                        flagC = false;
-                    }
-                    d /= 2;
-                    e /= 2;
-                    e += (byte)(saveC * 0x01);
-                    registerD = d;
-                    registerE = e;
+                    int before = (registerD << 8) | registerE;
+                    int rotated = ((before << 1) | (flagC ? 1 : 0)) & 0xFFFF;
+                    flagC = (before & 0x8000) != 0;
+                    flagV = ((before ^ rotated) & 0x8000) != 0;
+                    registerD = (byte)(rotated >> 8);
+                    registerE = (byte)rotated;
                     registerPC++;
                     cycles += 10;
                 } else if (byteInstruction == 0xCB)                                                                         // RSTV (UNDOCUMENTED)
