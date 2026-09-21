@@ -3513,6 +3513,7 @@ namespace _8085
                         flagC = false;
                     }
                     ac += saveC;
+                    flagV = ((registerA ^ ac) & 0x80) != 0;
                     registerA = ac;
                     registerPC++;
                     cycles += 4;
@@ -3536,6 +3537,7 @@ namespace _8085
                     }
                     ac /= 2;
                     ac += (byte)(saveC * 0x80);
+                    flagV = false;
                     registerA = ac;
                     registerPC++;
                     cycles += 4;
@@ -3579,6 +3581,7 @@ namespace _8085
                     cycles += 4;
                 } else if (byteInstruction == 0x07)                                                                         // RLC
                 {
+                    flagV = ((registerA ^ (registerA << 1)) & 0x80) != 0;
                     flagC = (registerA & 0x80) != 0 ? true : false;
                     registerA = (byte)(registerA << 1);
                     if (flagC) registerA = (byte)(registerA | 0x01);
@@ -3682,6 +3685,7 @@ namespace _8085
                     }
                 } else if (byteInstruction == 0x0F)                                                                         // RRC
                 {
+                    flagV = false;
                     flagC = (registerA & 0x01) != 0 ? true : false;
                     registerA = (byte)(registerA >> 1);
                     if (flagC) registerA = (byte)(registerA | 0x80);
