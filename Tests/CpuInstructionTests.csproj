@@ -12,6 +12,7 @@
     <Compile Include="..\Src\Calculator.cs" Link="Calculator.cs"/>
     <Compile Include="CpuInstructionTests.cs"/>
     <Compile Include="OpcodeAudit.cs"/>
+    <Compile Include="FlagAudit.cs"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
 </Project>

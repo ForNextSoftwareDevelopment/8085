@@ -18,6 +18,7 @@ static class CpuInstructionTests
     static int Main(string[] args)
     {
         if (args.Length > 0 && args[0] == "--audit") return OpcodeAudit.Run(args);
+        if (args.Length > 0 && args[0] == "--flags") return FlagAudit.Run(args);
         for (int condition = 0; condition < 8; condition++)
         for (int flags = 0; flags < 16; flags++)
         {
