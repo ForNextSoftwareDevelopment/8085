@@ -1,5 +1,23 @@
 # CPU instruction regressions
 
+**Update 2026-09-21:** The complete opcode audit and additional fixes are documented
+in [CPU-AUDIT.md](CPU-AUDIT.md). Run all three suites:
+
+```powershell
+MSBuild Tests/CpuInstructionTests.csproj /t:Rebuild
+& ./Tests/bin/CpuInstructionTests.exe
+& ./Tests/bin/CpuInstructionTests.exe --audit
+& ./Tests/bin/CpuInstructionTests.exe --flags
+MSBuild Src/8085.sln /t:Build /p:Configuration=Release
+```
+
+Targeted runs: `--audit DA E3`, `--flags alu`, `--flags ei dsub`.
+All commands return nonzero on failure. EI tests require the new
+`CanAcceptMaskableInterrupt` API. DSUB AC/P remain explicitly unverified.
+The SDK interrupt acceptance checks now use that API; no PKW code is included.
+
+## Initial test package (historical, 2026-09-20)
+
 This branch is based on upstream `c46000a` (2025-10-16). Upstream already fixes CZ
 and CPO. This change adds the remaining instruction corrections without PKW hardware,
 UI, serial, realtime, memory-mapping or interrupt-delivery changes:
