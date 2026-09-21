@@ -2774,7 +2774,7 @@ namespace _8085
                     chkP55.Checked = true;
 
                     // Check for interrupt enable flag and interrupt mask 5.5 not set
-                    if ((assembler85.intrIE) && (!assembler85.intrM55))
+                    if ((assembler85.CanAcceptMaskableInterrupt) && (!assembler85.intrM55))
                     {
                         // Save current program counter to stack
                         assembler85.registerSP--;
@@ -2821,7 +2821,7 @@ namespace _8085
                     chkP75.Checked = true;
 
                     // Check for interrupt enable flag and interrupt mask 7.5 not set
-                    if ((assembler85.intrIE) && (!assembler85.intrM75))
+                    if ((assembler85.CanAcceptMaskableInterrupt) && (!assembler85.intrM75))
                     {
                         // Save current program counter to stack
                         assembler85.registerSP--;

@@ -92,6 +92,9 @@ namespace _8085
         public bool intrM65 = false;
         public bool intrM75 = false;
         public bool intrIE = false;
+        private int interruptEnableDelay;
+        // EI is visible to RIM immediately, but interrupts wait for the next instruction.
+        public bool CanAcceptMaskableInterrupt { get { return intrIE && interruptEnableDelay == 0; } }
         public bool intrP55 = false;
         public bool intrP65 = false;
         public bool intrP75 = false;
@@ -2975,7 +2978,8 @@ namespace _8085
                     cycles += 6;
                 } else if (byteInstruction == 0xF3)                                                                         // DI
                 {
-                    intrIE = false; 
+                    intrIE = false;
+                    interruptEnableDelay = 0;
                     registerPC++;
                     cycles += 4;
                 } else if (byteInstruction == 0x76)                                                                         // HLT
@@ -2983,10 +2987,12 @@ namespace _8085
                     registerPC++;
                     nextAddress = registerPC;
                     cycles += 5;
+                    if (interruptEnableDelay > 0) interruptEnableDelay--;
                     return ("System Halted");
                 } else if (byteInstruction == 0xFB)                                                                         // EI
                 {
                     intrIE = true;
+                    interruptEnableDelay = 2;
                     registerPC++;
                     cycles += 4;
                 } else if (byteInstruction == 0xDB)                                                                         // IN
@@ -4071,6 +4077,7 @@ namespace _8085
             }
 
             if (cycles > (UInt64.MaxValue - 20)) cycles = 0;
+            if (interruptEnableDelay > 0) interruptEnableDelay--;
 
             nextAddress = registerPC;
             return "";

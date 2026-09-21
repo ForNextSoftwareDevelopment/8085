@@ -64,9 +64,14 @@ static class FlagAudit
                 Check(c.registerA==a&&F(c)==0xf7,"RIM "+a);
             }
             if(name=="ei"){
-                c.intrIE=false;Step(c,0xfb);Check(!c.intrIE,"EI must defer enabling until the following instruction completes");
-                Step(c,0);Check(c.intrIE,"EI NOP enables");Step(c,0xf3);Check(!c.intrIE,"DI disables");
+                c.intrIE=false;Step(c,0xfb);Check(c.intrIE&&!c.CanAcceptMaskableInterrupt,"EI exposes IE but defers interrupt acceptance");
+                Step(c,0x20);Check((c.registerA&8)!=0&&c.CanAcceptMaskableInterrupt,"EI RIM reports IE and finishes delay");
+                Step(c,0xf3);Check(!c.intrIE&&!c.CanAcceptMaskableInterrupt,"DI disables");
                 Step(c,0xfb);Step(c,0xf3);Step(c,0);Check(!c.intrIE,"DI cancels pending EI");
+                Step(c,0xfb);Step(c,0xfb);Check(!c.CanAcceptMaskableInterrupt,"Repeated EI restarts delay");
+                Step(c,0);Check(c.CanAcceptMaskableInterrupt,"EI NOP enables");
+                Step(c,0xfb);c.RAM[0x2001]=0x76;ushort next=0x2001;
+                Check(c.RunInstruction(next,ref next)=="System Halted"&&next==0x2002&&c.CanAcceptMaskableInterrupt,"EI HLT completes delay");
             }
             Console.WriteLine(name+": "+(bad-start)+" failures");
         }
