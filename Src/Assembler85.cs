@@ -333,12 +333,13 @@ namespace _8085
             UInt16 result = (UInt16)0x0000;
 
             flagV = false;
-            flagK = false;
+            // DAD preserves K; its high-byte addition updates V only.
 
             switch (type)
             {
                 case OPERATOR.ADD:
                     result = (UInt16)(arg1 + arg2 + carry);
+                    flagV = ((~(arg1 ^ arg2) & (arg1 ^ result)) & 0x8000) != 0;
 
                     // Carry flag
                     if (arg1 + arg2 + carry > 0xFFFF)
