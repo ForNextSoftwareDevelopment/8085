@@ -13,10 +13,24 @@ static class FlagAudit
     static void Check(bool ok,string info){cases++;if(!ok){if(bad++==0)Console.WriteLine("FAIL "+group+" "+info);}}
     public static int Run(string[] args)
     {
-        foreach(string name in new[]{"alu","inr-dcr","daa","dsub","inx-dcx","dad","rotates","psw","rim-sim","ei"})
+        foreach(string name in new[]{"alu","inr-dcr","daa","dsub","wide-shifts","offsets","inx-dcx","dad","rotates","psw","rim-sim","ei"})
         {
             if(args.Length>1&&!args.Skip(1).Contains(name))continue;
             group=name;int start=bad;var c=new Assembler85(new string[0]);
+            if(name=="wide-shifts")for(int n=0;n<65536;n++)foreach(int f in new[]{0,0xf7})
+            {
+                c.registerH=(byte)(n>>8);c.registerL=(byte)n;Set(c,f);Step(c,0x10);
+                Check(((c.registerH<<8)|c.registerL)==((n>>1)|(n&32768))&&F(c)==((f&~1)|(n&1)),"ARHL "+n);
+                c.registerD=(byte)(n>>8);c.registerE=(byte)n;Set(c,f);Step(c,0x18);
+                int q=((n<<1)|(f&1))&65535;int ef=(f&~3)|(n>>15)|(((n^q)&32768)!=0?2:0);
+                Check(((c.registerD<<8)|c.registerE)==q&&F(c)==ef,"RDEL "+n);
+            }
+            if(name=="offsets")foreach(int n in new[]{0,1,255,256,0x7fff,0xff00,0xfffe,0xffff})for(int offset=0;offset<256;offset++)foreach(int op in new[]{0x28,0x38})
+            {
+                c.registerH=(byte)(n>>8);c.registerL=(byte)n;c.registerSP=(ushort)(op==0x38?n:0x1234);
+                c.registerD=0x56;c.registerE=0x78;c.RAM[0x2001]=(byte)offset;Set(c,0xf7);Step(c,op);
+                Check(((c.registerD<<8)|c.registerE)==((n+offset)&65535)&&((c.registerH<<8)|c.registerL)==n&&c.registerSP==(op==0x38?n:0x1234)&&F(c)==0xf7,"offset op="+op+" base="+n+" offset="+offset);
+            }
             if(name=="inr-dcr")for(int reg=0;reg<8;reg++)for(int a=0;a<256;a++)for(int cy=0;cy<2;cy++)foreach(bool dec in new[]{false,true})
             {
                 c.registerA=c.registerB=c.registerC=c.registerD=c.registerE=c.registerH=c.registerL=(byte)a;
