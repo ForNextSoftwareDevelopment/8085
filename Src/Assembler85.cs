@@ -2939,7 +2939,7 @@ namespace _8085
                 } else if (byteInstruction == 0x0B)                                                                         // DCX B
                 {
                     int value = (0x0100 * registerB + registerC);
-                    if (value == 0x8000) flagK = true;
+                    flagK = value == 0;
                     value -= 0x01;
                     Get2ByteFromInt(value, out lo, out hi);
                     registerB = (byte)Convert.ToInt32(hi, 16);
@@ -2949,7 +2949,7 @@ namespace _8085
                 } else if (byteInstruction == 0x1B)                                                                         // DCX D
                 {
                     int value = (0x0100 * registerD + registerE);
-                    if (value == 0x8000) flagK = true;
+                    flagK = value == 0;
                     value -= 0x01;
                     Get2ByteFromInt(value, out lo, out hi);
                     registerD = (byte)Convert.ToInt32(hi, 16);
@@ -2959,7 +2959,7 @@ namespace _8085
                 } else if (byteInstruction == 0x2B)                                                                         // DCX H
                 {
                     int value = (0x0100 * registerH + registerL);
-                    if (value == 0x8000) flagK = true;
+                    flagK = value == 0;
                     value -= 0x01;
                     Get2ByteFromInt(value, out lo, out hi);
                     registerH = (byte)Convert.ToInt32(hi, 16);
@@ -2968,7 +2968,7 @@ namespace _8085
                     cycles += 6;
                 } else if (byteInstruction == 0x3B)                                                                         // DCX SP
                 {
-                    if (registerSP == 0x8000) flagK = true;
+                    flagK = registerSP == 0;
                     registerSP -= 0x01;
                     registerPC++;
                     cycles += 6;
@@ -3055,7 +3055,7 @@ namespace _8085
                 } else if (byteInstruction == 0x03)                                                                         // INX B
                 {
                     int value = (0x0100 * registerB + registerC);
-                    if (value == 0x7FFF) flagK = true;
+                    flagK = value == 0xFFFF;
                     value += 0x01;
                     Get2ByteFromInt(value, out lo, out hi);
                     registerB = (byte)Convert.ToInt32(hi, 16);
@@ -3065,7 +3065,7 @@ namespace _8085
                 } else if (byteInstruction == 0x13)                                                                         // INX D
                 {
                     int value = (0x0100 * registerD + registerE);
-                    if (value == 0x7FFF) flagK = true;
+                    flagK = value == 0xFFFF;
                     value += 0x01;
                     Get2ByteFromInt(value, out lo, out hi);
                     registerD = (byte)Convert.ToInt32(hi, 16);
@@ -3075,7 +3075,7 @@ namespace _8085
                 } else if (byteInstruction == 0x23)                                                                         // INX H
                 {
                     int value = (0x0100 * registerH + registerL);
-                    if (value == 0x7FFF) flagK = true;
+                    flagK = value == 0xFFFF;
                     value += 0x01;
                     Get2ByteFromInt(value, out lo, out hi);
                     registerH = (byte)Convert.ToInt32(hi, 16);
@@ -3084,7 +3084,7 @@ namespace _8085
                     cycles += 6;
                 } else if (byteInstruction == 0x33)                                                                         // INX SP
                 {
-                    if (registerSP == 0x7FFF) flagK = true;
+                    flagK = registerSP == 0xFFFF;
                     registerSP += 0x01;
                     registerPC++;
                     cycles += 6;
