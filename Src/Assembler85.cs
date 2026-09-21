@@ -357,6 +357,8 @@ namespace _8085
 
                 case OPERATOR.SUB:
                     result = (UInt16)(arg1 - arg2 - carry);
+                    flagV = (((arg1 ^ arg2) & (arg1 ^ result)) & 0x8000) != 0;
+                    flagK = ((result & 0x8000) != 0) ^ flagV;
                     string strResult = Convert.ToString(Convert.ToInt32(result.ToString("X4"), 16), 2).PadLeft(16, '0');
 
                     // Carry flag

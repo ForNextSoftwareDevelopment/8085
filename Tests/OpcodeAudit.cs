@@ -112,14 +112,16 @@ static class OpcodeAudit
         c.RAM[c.registerPC]=(byte)op;
         if(seed%8==0){c.RAM[(ushort)(c.registerPC+1)]=255;c.RAM[(ushort)(c.registerPC+2)]=255;}
         var e=new Expected{r=Registers(c),pc=c.registerPC,sp=c.registerSP,f=Flags(c),ram=(byte[])c.RAM.Clone(),ie=c.intrIE};
+        byte[] expectedPorts=(byte[])c.PORT.Clone();
         e.Execute(op,c);ushort next=c.registerPC;string error=c.RunInstruction(next,ref next);
-        // DSUB's undocumented AC/P are evaluated by the dedicated silicon-profile tests.
+        // DSUB AC/P remain unverified; see CPU-AUDIT.md. Do not count them as passed.
         int flagMask=op==8?0xc1:0xd5;
         bool ok=error==e.error&&c.registerPC==e.pc&&next==e.pc&&c.registerSP==e.sp&&c.cycles==(ulong)e.t&&
             Registers(c).SequenceEqual(e.r)&&((Flags(c)^e.f)&flagMask)==0&&c.intrIE==e.ie;
         foreach(var w in e.writes)e.ram[w.Key]=w.Value;
         ok &= c.RAM.SequenceEqual(e.ram);
-        for(int p=0;p<256;p++)if(e.ports.ContainsKey(p))ok&=c.PORT[p]==e.ports[p];
+        foreach(var p in e.ports)expectedPorts[p.Key]=p.Value;
+        ok &= c.PORT.SequenceEqual(expectedPorts);
         covered.Add(op);checks++;
         if(!ok){if(!errors.ContainsKey(op)){errors[op]=0;Console.WriteLine("FAIL "+op.ToString("X2")+" seed="+seed+" PC="+c.registerPC.ToString("X4")+"/"+e.pc.ToString("X4")+" flags="+Flags(c).ToString("X2")+"/"+e.f.ToString("X2")+" cycles="+c.cycles+"/"+e.t+" "+error);}errors[op]++;}
     }

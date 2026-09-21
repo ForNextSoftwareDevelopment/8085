@@ -13,10 +13,32 @@ static class FlagAudit
     static void Check(bool ok,string info){cases++;if(!ok){if(bad++==0)Console.WriteLine("FAIL "+group+" "+info);}}
     public static int Run(string[] args)
     {
-        foreach(string name in new[]{"alu","inx-dcx","dad","rotates","psw","rim-sim","ei"})
+        foreach(string name in new[]{"alu","inr-dcr","daa","dsub","inx-dcx","dad","rotates","psw","rim-sim","ei"})
         {
             if(args.Length>1&&!args.Skip(1).Contains(name))continue;
             group=name;int start=bad;var c=new Assembler85(new string[0]);
+            if(name=="inr-dcr")for(int reg=0;reg<8;reg++)for(int a=0;a<256;a++)for(int cy=0;cy<2;cy++)foreach(bool dec in new[]{false,true})
+            {
+                c.registerA=c.registerB=c.registerC=c.registerD=c.registerE=c.registerH=c.registerL=(byte)a;
+                int address=(a<<8)|a;c.RAM[address]=(byte)a;Set(c,0xf6|cy);
+                Step(c,(dec?5:4)+8*reg);int q=(a+(dec?-1:1))&255;
+                int actual=reg==0?c.registerB:reg==1?c.registerC:reg==2?c.registerD:reg==3?c.registerE:reg==4?c.registerH:reg==5?c.registerL:reg==6?c.RAM[address]:c.registerA;
+                Check(actual==q&&F(c)==ResultFlags(q,cy!=0,dec?(a&15)!=0:(a&15)==15,dec?a==128:a==127),"register="+reg+" value="+a+" decrement="+dec);
+            }
+            if(name=="daa")for(int a=0;a<256;a++)for(int cy=0;cy<2;cy++)for(int ac=0;ac<2;ac++)
+            {
+                int correction=((a&15)>9||ac!=0?6:0)+(a>0x99||cy!=0?0x60:0);
+                int q=(a+correction)&255,signed=(sbyte)a+correction;
+                c.registerA=(byte)a;Set(c,cy|(ac<<4));Step(c,0x27);
+                Check(c.registerA==q&&F(c)==ResultFlags(q,cy!=0||a>0x99,(a&15)+(correction&15)>15,signed>127),"A="+a+" CY="+cy+" AC="+ac);
+            }
+            if(name=="dsub")foreach(int a in new[]{0,1,15,16,255,256,0x7fff,0x8000,0xffff})foreach(int b in new[]{0,1,15,16,255,256,0x7fff,0x8000,0xffff})foreach(int f in new[]{0,0xf7})
+            {
+                c.registerH=(byte)(a>>8);c.registerL=(byte)a;c.registerB=(byte)(b>>8);c.registerC=(byte)b;Set(c,f);Step(c,8);
+                int q=(a-b)&65535,signed=(short)a-(short)b;bool v=signed<-32768||signed>32767;
+                int ef=(q>=32768?128:0)|(q==0?64:0)|(((q>=32768)^v)?32:0)|(v?2:0)|(a<b?1:0);
+                Check(((c.registerH<<8)|c.registerL)==q&&(F(c)&0xe3)==ef,"HL="+a+" BC="+b+" expected flags="+ef+" actual="+F(c));
+            }
             if(name=="alu")for(int op=0;op<8;op++)for(int a=0;a<256;a++)for(int b=0;b<256;b++)for(int cy=0;cy<2;cy++)
             {
                 int carry=(op==1||op==3)?cy:0;bool sub=op==2||op==3||op==7;
