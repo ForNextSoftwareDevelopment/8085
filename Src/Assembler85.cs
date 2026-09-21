@@ -3931,14 +3931,6 @@ namespace _8085
                 {
                     byte h = registerH;
                     byte l = registerL;
-                    byte saveC;
-                    if (flagC)
-                    {
-                        saveC = 1;
-                    } else
-                    {
-                        saveC = 0;
-                    }
                     if ((l & 0x01) == 0x01)
                     {
                         flagC = true;
