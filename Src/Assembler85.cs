@@ -316,6 +316,7 @@ namespace _8085
                 flagP = false;
             }
 
+            flagK = flagS ^ flagV;
             return (result);    
         }
 
