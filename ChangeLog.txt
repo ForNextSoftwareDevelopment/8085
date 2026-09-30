@@ -132,3 +132,10 @@ https://github.com/ForNextSoftwareDevelopment/8085
 ## [3.1] - 2025-10-12
 ### Debug
 - CZ (Call on Zero) was not performed correct
+
+## [3.2] - 2026-09-30
+### Debug
+- CNZ (Call on Non Zero) was not performed correct 
+- Cycles were missing at some instructions
+- LDHI: DE and HL should be switched
+- RSTV: registerPC should be increased before handling the instruction 
