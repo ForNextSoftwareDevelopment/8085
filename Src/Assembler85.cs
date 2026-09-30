@@ -2666,6 +2666,7 @@ namespace _8085
                 {
                     registerA = (byte)(0xFF - registerA);
                     registerPC++;
+                    cycles += 4;
                 } else if (byteInstruction == 0x3F)                                                                         // CMC
                 {
                     flagC = !flagC;
@@ -2719,9 +2720,14 @@ namespace _8085
                         registerPC++;
                         address += RAM[registerPC];
                         registerPC++;
-                        address += (UInt16)(0x0100 * RAM[registerPC++]);
+                        address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC++;
-                        registerA = RAM[address];
+                        Get2ByteFromInt(registerPC, out lo, out hi);
+                        registerSP--;
+                        RAM[registerSP] = Convert.ToByte(hi, 16);
+                        registerSP--;
+                        RAM[registerSP] = Convert.ToByte(lo, 16);
+                        registerPC = address;
                         cycles += 18;
                     }
                 } else if (byteInstruction == 0xF4)                                                                         // CP
@@ -3105,11 +3111,13 @@ namespace _8085
                         registerPC++;
                         address += (UInt16)(0x0100 * RAM[registerPC]);
                         registerPC = address;
+                        cycles += 10;
                     } else
                     {
                         registerPC++;
                         registerPC++;
                         registerPC++;
+                        cycles += 7;
                     }
                 } else if (byteInstruction == 0xFA)                                                                         // JM
                 {
@@ -3993,10 +4001,10 @@ namespace _8085
                 {
                     registerPC++;
                     num = RAM[registerPC];
-                    num += registerD * 0x100 + registerE;
+                    num += registerH * 0x100 + registerL;
                     Get2ByteFromInt(num, out lo, out hi);
-                    registerH = Convert.ToByte(hi, 16);
-                    registerL = Convert.ToByte(lo, 16);
+                    registerD = Convert.ToByte(hi, 16);
+                    registerE = Convert.ToByte(lo, 16);
                     registerPC++;
                     cycles += 10;
                 } else if (byteInstruction == 0x38)                                                                         // LDSI (UNDOCUMENTED)
@@ -4049,6 +4057,7 @@ namespace _8085
                 {
                     if (flagV)
                     {
+                        registerPC++;
                         Get2ByteFromInt(registerPC, out lo, out hi);
                         registerSP--;
                         RAM[registerSP] = Convert.ToByte(hi, 16);
